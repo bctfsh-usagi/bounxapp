@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>bounX — 시드 데이터 관리</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #fafafa; -webkit-font-smoothing: antialiased; }
+  .font-display { font-family: 'Outfit', 'Inter', sans-serif; letter-spacing: -0.02em; }
+  .gradient-word { background: linear-gradient(110deg, #111827 0%, #6d5dfc 42%, #0f766e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .gradient-bg { background: linear-gradient(110deg, #111827 0%, #6d5dfc 42%, #0f766e 100%); }
+  .log-line { animation: slideIn 0.2s ease; }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+  .spin { animation: spin 1s linear infinite; }
+  @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+</style>
+</head>
+<body class="min-h-screen">
+
+<div class="max-w-2xl mx-auto px-6 py-12">
+  
+  <!-- 헤더 -->
+  <div class="mb-8">
+    <a href="./" class="inline-flex items-center gap-2 mb-6 text-sm text-neutral-500 hover:text-neutral-900">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      메인으로
+    </a>
+    <h1 class="font-display text-3xl font-bold tracking-tight mb-2">
+      🌱 <span class="gradient-word">시드 데이터</span> 관리
+    </h1>
+    <p class="text-sm text-neutral-500">데모용 가상 바운티를 한 번에 채우거나 삭제할 수 있어요</p>
+  </div>
+
+  <!-- 경고 박스 -->
+  <div class="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-100">
+    <div class="flex items-start gap-2">
+      <span class="text-base">⚠️</span>
+      <div class="text-xs text-amber-800">
+        <div class="font-semibold mb-1">데모 관리 페이지예요</div>
+        <div>여기서 등록한 시드 데이터는 모든 사용자에게 보입니다. 데모 끝나면 삭제하세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 현재 상태 -->
+  <div class="mb-6 p-6 rounded-3xl bg-white border border-neutral-100">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-display text-lg font-bold tracking-tight">현재 상태</h2>
+      <button onclick="refreshStatus()" class="text-xs text-violet-600 hover:text-violet-700 font-medium">🔄 새로고침</button>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="text-center p-3 rounded-xl bg-neutral-50">
+        <div class="text-xs text-neutral-500 mb-1">총 바운티</div>
+        <div class="font-display text-2xl font-bold" id="statTotal">-</div>
+      </div>
+      <div class="text-center p-3 rounded-xl bg-emerald-50">
+        <div class="text-xs text-emerald-600 mb-1">진행 가능</div>
+        <div class="font-display text-2xl font-bold text-emerald-700" id="statOpen">-</div>
+      </div>
+      <div class="text-center p-3 rounded-xl bg-amber-50">
+        <div class="text-xs text-amber-600 mb-1">진행 중</div>
+        <div class="font-display text-2xl font-bold text-amber-700" id="statProgress">-</div>
+      </div>
+      <div class="text-center p-3 rounded-xl bg-violet-50">
+        <div class="text-xs text-violet-600 mb-1">완료</div>
+        <div class="font-display text-2xl font-bold text-violet-700" id="statDone">-</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 액션 버튼 -->
+  <div class="space-y-3 mb-6">
+    <button onclick="seedData()" id="seedBtn" class="w-full p-4 rounded-2xl gradient-bg text-white font-medium text-sm hover:opacity-90 transition-all">
+      🌱 시드 데이터 채우기 (30+개 자동 등록)
+    </button>
+    <button onclick="resetData()" id="resetBtn" class="w-full p-4 rounded-2xl bg-violet-50 text-violet-700 font-medium text-sm hover:bg-violet-100 transition-all border border-violet-100">
+      🔄 리셋 + 재채우기 (전체 삭제 후 새로 채우기)
+    </button>
+    <button onclick="deleteAll()" id="deleteBtn" class="w-full p-4 rounded-2xl bg-rose-50 text-rose-700 font-medium text-sm hover:bg-rose-100 transition-all border border-rose-100">
+      🗑 전체 삭제 (모든 바운티 제거)
+    </button>
+  </div>
+
+  <!-- 로그 -->
+  <div class="p-6 rounded-3xl bg-neutral-900 text-neutral-100 font-mono text-xs min-h-[200px] max-h-[400px] overflow-y-auto">
+    <div class="text-neutral-500 mb-2">$ bounx seed --status</div>
+    <div id="logArea" class="space-y-1">
+      <div class="text-emerald-400">✓ 준비 완료. 버튼을 눌러주세요.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDvyqVX-VzYj6Qz2Nz4TvzDYzc1-8vGJLA",
+  authDomain: "bounxapp.firebaseapp.com",
+  databaseURL: "https://bounxapp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "bounxapp",
+  storageBucket: "bounxapp.firebasestorage.app",
+  messagingSenderId: "726222014757",
+  appId: "1:726222014757:web:c8f03fa7a26c4c24f0f2cc"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ============ 시드 데이터 정의 ============
+const SEED_BOUNTIES = [
+  // 📊 리서치 (4개)
+  { categoryId: 'research', title: '한국 AI 스타트업 투자 동향 2025', desc: '국내 AI 스타트업의 시드~시리즈A 투자 트렌드를 분석하고 주요 투자자, 분야별 분포, 평균 투자 규모를 정리해주세요. 최근 12개월 데이터 기준.', reward: 120, deadline: '3일', status: 'open', likes: 7 },
+  { categoryId: 'research', title: 'Web3 vs Web2 사용자 행동 비교', desc: '두 환경에서 사용자가 보이는 결제, 인증, 데이터 소유권 관련 행동 차이를 사례 중심으로 분석', reward: 80, deadline: '7일', status: 'progress', likes: 4 },
+  { categoryId: 'research', title: 'K-Pop 글로벌 시장 5년 추이', desc: '주요 5개 회사 매출과 해외 비중 변화', reward: 60, deadline: '3일', status: 'done', likes: 12, hasSubmission: true },
+  { categoryId: 'research', title: '국내 NFT 시장 현황 분석', desc: '거래량, 주요 플랫폼, 사용자 데모그래픽 정리. 2024-2025 데이터로 부탁해요.', reward: 90, deadline: '1일', status: 'open', likes: 3 },
+  
+  // 📝 콘텐츠 (4개)
+  { categoryId: 'content', title: 'Web3 개발자 인터뷰 10편 정리', desc: '주요 Web3 미디어의 개발자 인터뷰를 추려서 핵심 인사이트로 정리. 각 인터뷰당 3-5개 키 메시지.', reward: 50, deadline: '1일', status: 'open', likes: 6 },
+  { categoryId: 'content', title: 'AI 시대의 마케팅 카피 30개', desc: 'SaaS 제품 기준, A/B 테스트할 수 있는 다양한 톤의 카피 30종', reward: 40, deadline: '12시간', status: 'open', likes: 9 },
+  { categoryId: 'content', title: '스타트업 성공 사례 분석 블로그 5편', desc: '국내외 성공 스타트업 5개 선정해서 각각 3000자 분석', reward: 70, deadline: '3일', status: 'review', likes: 5, hasSubmission: true },
+  { categoryId: 'content', title: '제품 출시 보도자료 작성', desc: '신규 SaaS 출시용 한글/영문 보도자료 각 1부', reward: 55, deadline: '1일', status: 'open', likes: 2 },
+  
+  // 💻 코드 (4개)
+  { categoryId: 'code', title: 'ERC-20 컨트랙트 보안 리뷰', desc: 'Solidity 0.8.x 기준 ERC-20 컨트랙트 검토. OpenZeppelin 베스트 프랙티스 적용 여부 점검 + 개선안 제시.', reward: 120, deadline: '3일', status: 'open', likes: 11 },
+  { categoryId: 'code', title: 'React 컴포넌트 최적화', desc: '느린 리스트 렌더링 컴포넌트 진단 + 메모이제이션', reward: 45, deadline: '1일', status: 'done', likes: 8, hasSubmission: true },
+  { categoryId: 'code', title: 'Python 데이터 자동화 스크립트', desc: 'CSV 정제 + Google Sheets 업로드 자동화', reward: 35, deadline: '12시간', status: 'progress', likes: 3 },
+  { categoryId: 'code', title: 'Next.js 14 App Router 마이그레이션 가이드', desc: 'Pages Router에서 App Router로 옮기는 단계별 체크리스트', reward: 80, deadline: '3일', status: 'open', likes: 14 },
+  
+  // 🎨 디자인 (3개)
+  { categoryId: 'design', title: '스타트업 로고 시안 5개', desc: 'AI 에이전트 마켓플레이스 컨셉. 미니멀, Web3 톤. 컬러 팔레트 포함.', reward: 60, deadline: '3일', status: 'open', likes: 18 },
+  { categoryId: 'design', title: '다크모드 컬러 팔레트', desc: 'WCAG AA 통과 가능한 다크모드 컬러 시스템', reward: 30, deadline: '12시간', status: 'open', likes: 5 },
+  { categoryId: 'design', title: '랜딩페이지 와이어프레임', desc: 'SaaS 제품 랜딩페이지 와이어프레임 + 모바일 대응', reward: 90, deadline: '7일', status: 'done', likes: 22, hasSubmission: true },
+  
+  // 📈 데이터 (3개)
+  { categoryId: 'data', title: '고객 데이터 정제 + 시각화', desc: '5만 행 CSV 정제 + Tableau 대시보드 3종', reward: 80, deadline: '3일', status: 'open', likes: 4 },
+  { categoryId: 'data', title: '엑셀 매크로 자동화', desc: '월간 매출 리포트 자동 생성 매크로', reward: 40, deadline: '1일', status: 'progress', likes: 2 },
+  { categoryId: 'data', title: '대시보드 KPI 설계 문서', desc: 'B2B SaaS 대시보드용 핵심 KPI 20개 정의 + 측정 방법', reward: 100, deadline: '7일', status: 'open', likes: 7 },
+  
+  // 🌐 번역 (3개)
+  { categoryId: 'translation', title: '기술 블로그 한→영 번역 5편', desc: '편당 약 2000자, 기술 용어 정확도 중요', reward: 35, deadline: '1일', status: 'open', likes: 3 },
+  { categoryId: 'translation', title: '마케팅 카피 일본어 번역', desc: '제품 소개 페이지 일본어 현지화', reward: 45, deadline: '12시간', status: 'done', likes: 6, hasSubmission: true },
+  { categoryId: 'translation', title: '법률 문서 영문 검토', desc: '서비스 이용약관 영문 버전 법률 검토 + 수정 제안', reward: 120, deadline: '3일', status: 'open', likes: 1 },
+  
+  // 📣 마케팅 (3개)
+  { categoryId: 'marketing', title: '인스타 콘텐츠 30일 캘린더', desc: 'B2C 브랜드용 인스타 콘텐츠 30일치 기획. 카피 + 시안 방향 포함.', reward: 50, deadline: '3일', status: 'open', likes: 11 },
+  { categoryId: 'marketing', title: 'SEO 키워드 100개 리서치', desc: 'AI 도구 카테고리, 검색량/난이도/의도 분석', reward: 60, deadline: '1일', status: 'progress', likes: 5 },
+  { categoryId: 'marketing', title: '광고 카피 A/B 테스트 5세트', desc: 'Facebook Ads용 5가지 A/B 카피 + 타겟 가이드', reward: 70, deadline: '3일', status: 'open', likes: 8 },
+  
+  // 🎯 기획 (3개)
+  { categoryId: 'planning', title: '신규 서비스 PRD 작성', desc: 'AI 코칭 SaaS 제품 요구사항 문서. 기능 명세 + 화면 흐름 + 우선순위.', reward: 150, deadline: '7일', status: 'open', likes: 19 },
+  { categoryId: 'planning', title: '사용자 인터뷰 질문지', desc: '20-30대 직장인 대상 핀테크 사용 인터뷰 질문 30개', reward: 40, deadline: '12시간', status: 'done', likes: 7, hasSubmission: true },
+  { categoryId: 'planning', title: 'MVP 기능 우선순위 정리', desc: 'RICE 프레임워크로 기능 30개 우선순위 분류', reward: 80, deadline: '3일', status: 'open', likes: 6 },
+  
+  // 🎬 영상 (3개)
+  { categoryId: 'video', title: '유튜브 쇼츠 5개 편집', desc: '원본 30분 강의에서 60초 쇼츠 5개 추출 + 자막', reward: 60, deadline: '1일', status: 'open', likes: 4 },
+  { categoryId: 'video', title: '회사 소개 영상 자막', desc: '3분짜리 영상, 한글 + 영문 자막', reward: 30, deadline: '12시간', status: 'open', likes: 2 },
+  { categoryId: 'video', title: '강의 영상 챕터 분할', desc: '2시간 강의를 주제별 5-10개 챕터로 분할 + 타임코드', reward: 45, deadline: '1일', status: 'progress', likes: 3 },
+  
+  // 🤖 AI/자동화 (3개)
+  { categoryId: 'ai', title: 'Claude 프롬프트 템플릿 20개', desc: '비즈니스용 (이메일/리포트/분석) 프롬프트 템플릿 20종, 사용 예시 포함', reward: 50, deadline: '1일', status: 'open', likes: 16 },
+  { categoryId: 'ai', title: 'Slack 봇 자동 응답 설정', desc: 'FAQ 자동 응답 + 티켓 분류 봇', reward: 70, deadline: '3일', status: 'done', likes: 9, hasSubmission: true },
+  { categoryId: 'ai', title: '이메일 자동 분류 시스템', desc: 'Gmail 라벨 기반 자동 분류 + 우선순위 태깅', reward: 90, deadline: '7일', status: 'open', likes: 5 },
+];
+
+// ============ 가상 사용자 풀 ============
+function randomAddress() {
+  return '0x' + Array.from({length: 40}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+}
+function shortAddress(addr) {
+  return addr.slice(0, 6) + '...' + addr.slice(-4);
+}
+
+// 12명의 가상 사용자
+const FAKE_USERS = Array.from({length: 12}, () => {
+  const addr = randomAddress();
+  return { address: addr, shortAddress: shortAddress(addr) };
+});
+
+// 결과물 샘플 (done/review 상태용)
+const SAMPLE_SUBMISSIONS = {
+  research: '요청하신 분석을 정리했습니다.\n\n주요 발견:\n1. 핵심 트렌드 3가지 도출\n2. 데이터 출처 12개 검증\n3. 인사이트 + 액션 아이템 정리\n\n첨부 문서: PDF 25페이지, 데이터 시각화 8개 포함',
+  content: '요청하신 콘텐츠를 작성했습니다.\n\n각 항목별 톤앤매너 차별화, 핵심 메시지 명확히 정리. SEO 키워드도 자연스럽게 녹였습니다.\n\n파일: docx + Notion 링크',
+  code: '구현 완료했습니다.\n\n주요 변경:\n- 메모이제이션 적용\n- 불필요한 리렌더 제거\n- 번들 사이즈 12% 감소\n\nGitHub PR + 벤치마크 결과 첨부',
+  design: '디자인 시안 완성했습니다.\n\nFigma 링크 + 컴포넌트 라이브러리 포함. 다크모드 대응도 같이 설계했어요.',
+  data: '데이터 정제 + 분석 완료.\n\n원본 5만 행 → 정제 4.7만 행. 결측치 처리 방법 명시. 인사이트 10개 도출.',
+  translation: '번역 완료. 원문 의도 유지하면서 자연스러운 일본어 표현으로 정리했습니다. 핵심 키워드는 일관성 있게 통일.',
+  marketing: '캘린더 + 카피 + 시안 방향 모두 정리했어요. 실제 운영 시 변형 가능한 템플릿도 포함.',
+  planning: '인터뷰 질문지 30개. 워밍업 → 핵심 → 마무리 구조로 구성. 후속 질문 가이드도 포함했어요.',
+  video: '챕터 분할 완료. 각 챕터에 핵심 요약 1줄 + 타임코드 포함. 시청자가 원하는 부분만 볼 수 있게 정리.',
+  ai: '봇 설정 완료. 키워드 매칭 + 의도 분류 + 자동 응답 + 티켓 생성까지 한 번에 처리되도록 만들었어요.',
+};
+
+// ============ 유틸 함수 ============
+function log(msg, type = 'info') {
+  const colors = { info: 'text-neutral-300', success: 'text-emerald-400', error: 'text-rose-400', warning: 'text-amber-400' };
+  const line = document.createElement('div');
+  line.className = 'log-line ' + (colors[type] || colors.info);
+  line.textContent = msg;
+  const area = document.getElementById('logArea');
+  area.appendChild(line);
+  area.parentElement.scrollTop = area.parentElement.scrollHeight;
+}
+
+function clearLog() {
+  document.getElementById('logArea').innerHTML = '';
+}
+
+function setButtonsDisabled(disabled) {
+  ['seedBtn', 'resetBtn', 'deleteBtn'].forEach(id => {
+    const btn = document.getElementById(id);
+    btn.disabled = disabled;
+    btn.style.opacity = disabled ? '0.5' : '1';
+    btn.style.cursor = disabled ? 'not-allowed' : 'pointer';
+  });
+}
+
+// ============ 상태 새로고침 ============
+async function refreshStatus() {
+  try {
+    const snap = await db.ref('bounties').once('value');
+    const data = snap.val() || {};
+    const arr = Object.values(data);
+    const total = arr.length;
+    const open = arr.filter(b => b.status === 'open').length;
+    const progress = arr.filter(b => b.status === 'progress').length;
+    const review = arr.filter(b => b.status === 'review').length;
+    const done = arr.filter(b => b.status === 'done').length;
+    
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statOpen').textContent = open;
+    document.getElementById('statProgress').textContent = progress + review;
+    document.getElementById('statDone').textContent = done;
+  } catch (e) {
+    log('상태 조회 실패: ' + e.message, 'error');
+  }
+}
+
+// ============ 시드 데이터 채우기 ============
+async function seedData() {
+  setButtonsDisabled(true);
+  clearLog();
+  log('$ bounx seed --insert', 'info');
+  log('시드 데이터 등록 시작...', 'info');
+  
+  let success = 0;
+  let failed = 0;
+  
+  try {
+    const now = Date.now();
+    
+    for (let i = 0; i < SEED_BOUNTIES.length; i++) {
+      const seed = SEED_BOUNTIES[i];
+      const requester = FAKE_USERS[Math.floor(Math.random() * FAKE_USERS.length)];
+      const ageMinutes = Math.floor(Math.random() * 60 * 24 * 3); // 0-3일 전
+      const createdAt = now - (ageMinutes * 60 * 1000);
+      
+      const bountyRef = db.ref('bounties').push();
+      const bounty = {
+        id: bountyRef.key,
+        title: seed.title,
+        categoryId: seed.categoryId,
+        desc: seed.desc,
+        reward: seed.reward,
+        deadline: seed.deadline,
+        status: seed.status,
+        requester: requester.address,
+        requesterShort: requester.shortAddress,
+        createdAt: createdAt,
+        txHash: '0x' + Math.random().toString(16).slice(2, 18),
+        likes: seed.likes || 0,
+        isSeed: true, // 시드 데이터 표시
+      };
+      
+      // 진행 중이거나 검토/완료 상태는 작업자 필요
+      if (['progress', 'review', 'done'].includes(seed.status)) {
+        let worker;
+        do {
+          worker = FAKE_USERS[Math.floor(Math.random() * FAKE_USERS.length)];
+        } while (worker.address === requester.address);
+        
+        bounty.worker = worker.address;
+        bounty.workerShort = worker.shortAddress;
+        bounty.appliedAt = createdAt + 60000 * 30; // 30분 후 신청
+      }
+      
+      // 검토/완료 상태는 결과물 필요
+      if (['review', 'done'].includes(seed.status) || seed.hasSubmission) {
+        bounty.submission = {
+          summary: SAMPLE_SUBMISSIONS[seed.categoryId] || '결과물을 제출합니다.',
+          proofBundle: '0x' + Math.random().toString(16).slice(2, 18),
+          submittedAt: createdAt + 60000 * 60 * 2, // 2시간 후 제출
+        };
+      }
+      
+      // 완료 상태
+      if (seed.status === 'done') {
+        bounty.completedAt = createdAt + 60000 * 60 * 4; // 4시간 후 완료
+      }
+      
+      // 좋아요 시뮬레이션
+      if (seed.likes && seed.likes > 0) {
+        const likedBy = {};
+        const shuffled = [...FAKE_USERS].sort(() => Math.random() - 0.5);
+        for (let j = 0; j < Math.min(seed.likes, FAKE_USERS.length); j++) {
+          likedBy[shuffled[j].address] = true;
+        }
+        bounty.likedBy = likedBy;
+      }
+      
+      try {
+        await bountyRef.set(bounty);
+        success++;
+        log('✓ [' + (i+1) + '/' + SEED_BOUNTIES.length + '] ' + seed.title.slice(0, 40) + (seed.title.length > 40 ? '...' : ''), 'success');
+      } catch (e) {
+        failed++;
+        log('✗ 실패: ' + seed.title.slice(0, 30) + ' - ' + e.message, 'error');
+      }
+    }
+    
+    log('', 'info');
+    log('등록 완료: ' + success + '개 성공' + (failed > 0 ? ', ' + failed + '개 실패' : ''), 'success');
+    log('메인 페이지로 가서 확인해보세요!', 'success');
+    
+    await refreshStatus();
+  } catch (e) {
+    log('전체 작업 실패: ' + e.message, 'error');
+  } finally {
+    setButtonsDisabled(false);
+  }
+}
+
+// ============ 전체 삭제 ============
+async function deleteAll() {
+  if (!confirm('정말 모든 바운티를 삭제할까요? 사용자가 등록한 것까지 다 삭제됩니다!')) return;
+  
+  setButtonsDisabled(true);
+  clearLog();
+  log('$ bounx seed --delete-all', 'warning');
+  log('전체 삭제 중...', 'warning');
+  
+  try {
+    await db.ref('bounties').remove();
+    log('✓ 모든 바운티 삭제 완료', 'success');
+    await refreshStatus();
+  } catch (e) {
+    log('삭제 실패: ' + e.message, 'error');
+  } finally {
+    setButtonsDisabled(false);
+  }
+}
+
+// ============ 리셋 + 재채우기 ============
+async function resetData() {
+  if (!confirm('전체 삭제 후 다시 시드 데이터를 채울까요?')) return;
+  
+  setButtonsDisabled(true);
+  clearLog();
+  log('$ bounx seed --reset', 'warning');
+  log('1단계: 전체 삭제 중...', 'warning');
+  
+  try {
+    await db.ref('bounties').remove();
+    log('✓ 삭제 완료', 'success');
+    log('', 'info');
+    log('2단계: 시드 데이터 재등록...', 'info');
+    
+    // seedData 호출하되 setButtonsDisabled 중복 호출 방지
+    setButtonsDisabled(false); // 임시 해제
+    await seedData();
+  } catch (e) {
+    log('리셋 실패: ' + e.message, 'error');
+    setButtonsDisabled(false);
+  }
+}
+
+// 초기 상태 조회
+refreshStatus();
+</script>
+
+</body>
+</html>
