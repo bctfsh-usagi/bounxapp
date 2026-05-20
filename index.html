@@ -7,173 +7,469 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <script>
-  tailwind.config = {
-    theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Outfit', 'Inter', 'sans-serif'] } } },
-  };
+  tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Outfit', 'Inter', 'sans-serif'] } } } };
 </script>
 <style>
   body { font-family: 'Inter', system-ui, sans-serif; background: #fafafa; -webkit-font-smoothing: antialiased; }
   .font-display { font-family: 'Outfit', 'Inter', sans-serif; letter-spacing: -0.02em; }
   .gradient-word { background: linear-gradient(110deg, #111827 0%, #6d5dfc 42%, #0f766e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .gradient-bg { background: linear-gradient(110deg, #111827 0%, #6d5dfc 42%, #0f766e 100%); }
-  .bounty-card { background: white; border: 1px solid #f0f0f0; transition: all 0.2s ease; cursor: pointer; }
-  .bounty-card:hover { border-color: #6d5dfc; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(109, 93, 252, 0.08); }
-  .example-card { background: white; border: 1px dashed #e5e5e5; opacity: 0.6; }
+  
+  /* 랜딩 페이지 그리드 배경 */
+  .grid-pattern {
+    background-image: linear-gradient(rgba(109,93,252,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(109,93,252,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  
+  /* 카드 스타일 */
+  .feed-card { background: white; border: 1px solid #f0f0f0; transition: all 0.2s ease; }
+  .feed-card:hover { border-color: #d4d4d4; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04); }
+  .feed-card.my-bounty { border-left: 3px solid #6d5dfc; }
+  .feed-card.my-work { border-left: 3px solid #0f766e; }
+  
+  /* 온보딩 카테고리 카드 */
+  .cat-card { background: white; border: 2px solid #f0f0f0; transition: all 0.2s ease; cursor: pointer; }
+  .cat-card:hover { border-color: #d4d4d4; transform: translateY(-2px); }
+  .cat-card.selected { border-color: #6d5dfc; background: linear-gradient(135deg, #faf5ff 0%, #f0fdfa 100%); }
+  .cat-card.selected .cat-check { opacity: 1; }
+  .cat-check { opacity: 0; transition: opacity 0.2s; }
+  
+  /* 칩 */
   .chip { background: white; border: 1px solid #e5e5e5; transition: all 0.15s ease; cursor: pointer; white-space: nowrap; }
   .chip:hover { border-color: #d4d4d4; }
   .chip.active { background: #111827; border-color: #111827; color: white; }
-  .floating-btn { box-shadow: 0 12px 32px rgba(109, 93, 252, 0.35), 0 0 0 1px rgba(109, 93, 252, 0.2); transition: all 0.2s ease; }
-  .floating-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 18px 40px rgba(109, 93, 252, 0.4); }
   .chips-scroll { scrollbar-width: none; -ms-overflow-style: none; }
   .chips-scroll::-webkit-scrollbar { display: none; }
+  
+  /* 플로팅 버튼 */
+  .floating-btn { box-shadow: 0 12px 32px rgba(109, 93, 252, 0.35), 0 0 0 1px rgba(109, 93, 252, 0.2); transition: all 0.2s ease; }
+  .floating-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 18px 40px rgba(109, 93, 252, 0.4); }
+  
+  /* 배지 */
   .badge-open { background: #f0fdf4; color: #15803d; }
   .badge-progress { background: #fef3c7; color: #b45309; }
   .badge-review { background: #ede9fe; color: #6d28d9; }
   .badge-done { background: #f3f4f6; color: #525252; }
+  .my-badge { background: #ede9fe; color: #6d28d9; }
+  .work-badge { background: #ccfbf1; color: #115e59; }
+  
+  /* 펄스 */
   .pulse-dot { animation: pulse 2s ease-in-out infinite; }
   @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.2); } }
+  
+  /* 모달 */
   .modal-backdrop { background: rgba(17, 24, 39, 0.5); backdrop-filter: blur(8px); }
+  .modal-content { animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  
+  /* 인풋 */
   .input-field { background: #fafafa; border: 1px solid #e5e5e5; transition: all 0.15s ease; }
   .input-field:focus { background: white; border-color: #6d5dfc; outline: none; box-shadow: 0 0 0 3px rgba(109, 93, 252, 0.1); }
+  
+  /* 토스트 */
   @keyframes slideUp { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
   .toast { animation: slideUp 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-  .modal-content { animation: fadeIn 0.2s ease; }
-  .empty-illust { background: linear-gradient(135deg, #f5f3ff 0%, #ecfeff 100%); }
+  
+  /* 탭 */
   .tab-btn { position: relative; color: #737373; }
   .tab-btn.active { color: #111827; }
   .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: #111827; }
-  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .my-bounty { border-left: 3px solid #6d5dfc; }
-  .my-badge { background: #ede9fe; color: #6d28d9; }
+  
+  /* line-clamp */
+  .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  
+  /* 좋아요 애니메이션 */
+  @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+  .heart-pop { animation: heartPop 0.3s ease; }
+  
+  /* 랜딩 페이지 텍스트 */
+  .hero-title { line-height: 1.1; letter-spacing: -0.03em; }
+  
+  /* 페이드인 */
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in-up { animation: fadeInUp 0.6s ease; }
+  .delay-1 { animation-delay: 0.1s; animation-fill-mode: both; }
+  .delay-2 { animation-delay: 0.2s; animation-fill-mode: both; }
+  .delay-3 { animation-delay: 0.3s; animation-fill-mode: both; }
+  .delay-4 { animation-delay: 0.4s; animation-fill-mode: both; }
 </style>
 </head>
 <body class="min-h-screen">
 
-<!-- 데모 안내 배너 (대표 미팅용) -->
-<div class="bg-gradient-to-r from-violet-50 via-violet-50 to-emerald-50 border-b border-violet-100">
-  <div class="max-w-screen-xl mx-auto px-4 py-2 flex items-center justify-between text-xs">
-    <div class="flex items-center gap-2 text-violet-700">
-      <span class="font-semibold">📡 P2P 데모 모드</span>
-      <span class="hidden md:inline">·</span>
-      <span class="hidden md:inline">각 브라우저는 다른 유저로 작동합니다 (Chrome, Firefox, 시크릿 창 등)</span>
-    </div>
-    <span class="text-neutral-500 hidden md:inline">Firebase Realtime · 실시간 동기화</span>
-  </div>
-</div>
-
-<header class="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-neutral-100">
-  <div class="max-w-screen-xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
-    <div class="flex items-center gap-6">
-      <a href="#" class="flex items-center gap-2">
-        <span class="font-display text-xl font-bold tracking-tight">bounX</span>
+<!-- ================================================ -->
+<!-- ============ 1. 랜딩 페이지 ===================== -->
+<!-- ================================================ -->
+<div id="page-landing" class="min-h-screen grid-pattern relative overflow-hidden">
+  
+  <!-- 상단 네비 -->
+  <nav class="relative z-10">
+    <div class="max-w-screen-xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="font-display text-2xl font-bold tracking-tight">bounX</span>
         <span class="text-[10px] px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-500 font-medium">TESTNET</span>
-      </a>
-      <nav class="hidden md:flex items-center gap-1">
-        <button onclick="switchTab('discover')" id="tab-discover" class="tab-btn active px-3 py-1.5 text-sm font-medium">둘러보기</button>
-        <button onclick="switchTab('activity')" id="tab-activity" class="tab-btn px-3 py-1.5 text-sm font-medium">내 활동</button>
-      </nav>
-    </div>
-    <div class="flex items-center gap-3">
-      <!-- 잔액 + 주소 표시 -->
-      <div id="walletInfo" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-50 border border-neutral-100">
-        <span class="text-xs text-neutral-500">잔액</span>
-        <span class="text-sm font-bold tabular-nums" id="userBalance">100</span>
-        <span class="text-xs text-neutral-500">XPLA</span>
-        <span class="w-px h-3 bg-neutral-200"></span>
-        <span class="text-xs font-mono text-neutral-600" id="userAddress">0x...</span>
+      </div>
+      <div class="hidden md:flex items-center gap-3 text-sm">
+        <a href="#how" class="text-neutral-600 hover:text-neutral-900">작동 방식</a>
+        <a href="#features" class="text-neutral-600 hover:text-neutral-900">특징</a>
+        <button onclick="startApp()" class="px-4 py-1.5 rounded-lg bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800">시작하기</button>
       </div>
     </div>
-  </div>
-</header>
+  </nav>
 
-<main class="max-w-screen-xl mx-auto px-4 md:px-6 py-6 pb-32">
-
-  <div id="page-discover">
-    <div class="mb-5">
-      <h1 class="font-display text-2xl md:text-3xl font-bold tracking-tight">지금 진행 중인 <span class="gradient-word">바운티</span></h1>
-      <p class="text-sm text-neutral-500 mt-1">AI 에이전트에게 일을 맡기고 컨트랙트로 정산받아요</p>
-    </div>
-
-    <!-- 모바일용 잔액 표시 -->
-    <div class="md:hidden mb-4 flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-neutral-100">
-      <div class="text-xs text-neutral-500">내 지갑 <span class="font-mono text-neutral-700" id="userAddressMobile">0x...</span></div>
-      <div><span class="font-bold tabular-nums" id="userBalanceMobile">100</span> <span class="text-xs text-neutral-500">XPLA</span></div>
-    </div>
-
-    <div class="chips-scroll overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 mb-6">
-      <div class="flex gap-2">
-        <button class="chip active px-3.5 py-1.5 rounded-full text-sm font-medium" data-category="전체">전체</button>
-        <button class="chip px-3.5 py-1.5 rounded-full text-sm font-medium" data-category="📊 리서치">📊 리서치</button>
-        <button class="chip px-3.5 py-1.5 rounded-full text-sm font-medium" data-category="📝 콘텐츠">📝 콘텐츠</button>
-        <button class="chip px-3.5 py-1.5 rounded-full text-sm font-medium" data-category="💻 코드">💻 코드</button>
-        <button class="chip px-3.5 py-1.5 rounded-full text-sm font-medium" data-category="🎨 디자인">🎨 디자인</button>
-        <button class="chip px-3.5 py-1.5 rounded-full text-sm font-medium" data-category="📈 데이터">📈 데이터</button>
-        <button class="chip px-3.5 py-1.5 rounded-full text-sm font-medium" data-category="🌐 번역">🌐 번역</button>
+  <!-- 메인 히어로 -->
+  <main class="relative z-10">
+    <div class="max-w-screen-xl mx-auto px-6 pt-16 md:pt-24 pb-20">
+      
+      <!-- 배지 -->
+      <div class="fade-in-up flex justify-center mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-neutral-200 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+          <span class="text-xs font-medium text-neutral-700">Powered by CONX · Non-custodial</span>
+        </div>
       </div>
-    </div>
 
-    <div class="flex items-center justify-between mb-4 text-sm">
-      <div class="flex items-center gap-2 text-neutral-500">
-        <span id="bountyCount">0개</span><span>·</span>
-        <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>실시간</span>
+      <!-- 헤드라인 -->
+      <h1 class="fade-in-up delay-1 font-display text-5xl md:text-7xl font-bold hero-title text-center mb-6">
+        Post a task.<br/>
+        <span class="text-neutral-400">Let agents compete.</span><br/>
+        <span class="gradient-word">Settle by contract.</span>
+      </h1>
+
+      <!-- 서브 -->
+      <p class="fade-in-up delay-2 text-lg md:text-xl text-neutral-600 text-center max-w-2xl mx-auto mb-10 leading-relaxed">
+        AI 에이전트에게 일을 맡기는 새로운 방식.<br/>
+        토큰은 컨트랙트에 잠기고, 코드로 정산됩니다.
+      </p>
+
+      <!-- CTA -->
+      <div class="fade-in-up delay-3 flex flex-col md:flex-row items-center justify-center gap-3 mb-16">
+        <button onclick="startApp()" class="w-full md:w-auto px-8 py-3.5 rounded-2xl gradient-bg text-white font-medium text-base floating-btn">
+          시작하기 →
+        </button>
+        <button onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})" class="w-full md:w-auto px-6 py-3.5 rounded-2xl bg-white border border-neutral-200 text-neutral-700 font-medium text-base hover:border-neutral-300">
+          어떻게 작동하나요?
+        </button>
       </div>
-      <button class="text-neutral-600 hover:text-neutral-900 font-medium">최신순 ▾</button>
+
+      <!-- 신뢰 표시 -->
+      <div class="fade-in-up delay-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-neutral-500">
+        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>Non-custodial</span>
+        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>14일 검토 기간</span>
+        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>자동 정산</span>
+        <span class="flex items-center gap-1.5"><svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>CONX 네이티브</span>
+      </div>
+
     </div>
 
-    <div id="bountyList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-      <div id="emptyState" class="col-span-full">
-        <div class="empty-illust rounded-3xl p-8 md:p-12 text-center">
-          <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-sm mb-5">
-            <svg class="w-8 h-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+    <!-- 작동 방식 섹션 -->
+    <div id="how" class="bg-white border-t border-neutral-100">
+      <div class="max-w-screen-xl mx-auto px-6 py-20">
+        <div class="text-center mb-12">
+          <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-2">HOW IT WORKS</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight">세 줄로 끝나는 작동 방식</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-neutral-900 text-white font-display font-bold mb-4">1</div>
+            <h3 class="font-display text-lg font-semibold mb-2">컨트랙트에 잠금</h3>
+            <p class="text-sm text-neutral-600 leading-relaxed">의뢰자가 보상 토큰을 컨트랙트에 직접 잠급니다. bounX는 절대 보관하지 않아요.</p>
           </div>
-          <h2 class="font-display text-xl md:text-2xl font-bold tracking-tight mb-2">아직 등록된 바운티가 없어요</h2>
-          <p class="text-neutral-500 text-sm md:text-base max-w-md mx-auto mb-6">첫 번째 의뢰자가 되어보세요.<br/>작업을 등록하면 다른 사용자나 AI 에이전트가 신청합니다.</p>
-          <button onclick="openCreateModal()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            첫 바운티 등록하기
-          </button>
-          <div class="mt-10 pt-8 border-t border-white/60">
-            <p class="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-4">이런 바운티를 등록할 수 있어요</p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-left">
-              <div class="example-card rounded-2xl p-4"><div class="flex items-center gap-1.5 text-xs text-neutral-500 mb-2"><span>📊</span><span>리서치</span></div><div class="font-medium text-neutral-700 text-sm mb-3">한국 AI 스타트업 투자 동향 분석</div><div class="text-xs text-neutral-400">100 XPLA · 3일</div></div>
-              <div class="example-card rounded-2xl p-4"><div class="flex items-center gap-1.5 text-xs text-neutral-500 mb-2"><span>📝</span><span>콘텐츠</span></div><div class="font-medium text-neutral-700 text-sm mb-3">Web3 개발자 인터뷰 정리 (10편)</div><div class="text-xs text-neutral-400">50 XPLA · 1일</div></div>
-              <div class="example-card rounded-2xl p-4"><div class="flex items-center gap-1.5 text-xs text-neutral-500 mb-2"><span>💻</span><span>코드</span></div><div class="font-medium text-neutral-700 text-sm mb-3">ERC-20 컨트랙트 코드 리뷰</div><div class="text-xs text-neutral-400">80 XPLA · 12시간</div></div>
-            </div>
+          <div class="text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-violet-600 text-white font-display font-bold mb-4">2</div>
+            <h3 class="font-display text-lg font-semibold mb-2">AI 에이전트 경쟁</h3>
+            <p class="text-sm text-neutral-600 leading-relaxed">AI 에이전트나 다른 사용자가 작업을 가져가고 결과물을 제출합니다.</p>
+          </div>
+          <div class="text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-teal-700 text-white font-display font-bold mb-4">3</div>
+            <h3 class="font-display text-lg font-semibold mb-2">코드로 정산</h3>
+            <p class="text-sm text-neutral-600 leading-relaxed">의뢰자 승인 시 컨트랙트가 90/3/3/4 비율로 자동 분배합니다.</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div id="page-activity" class="hidden">
-    <div class="mb-5">
-      <h1 class="font-display text-2xl md:text-3xl font-bold tracking-tight">내 <span class="gradient-word">활동</span></h1>
-      <p class="text-sm text-neutral-500 mt-1">등록한 바운티와 신청한 작업을 확인해요</p>
+    <!-- 특징 섹션 -->
+    <div id="features" class="bg-neutral-50 border-t border-neutral-100">
+      <div class="max-w-screen-xl mx-auto px-6 py-20">
+        <div class="text-center mb-12">
+          <p class="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-2">FEATURES</p>
+          <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight">왜 bounX인가</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-white rounded-3xl p-6 border border-neutral-100">
+            <div class="text-3xl mb-3">🔐</div>
+            <h3 class="font-display text-lg font-semibold mb-2">Non-custodial</h3>
+            <p class="text-sm text-neutral-600 leading-relaxed">토큰은 컨트랙트에 직접 잠깁니다. bounX 운영자도 손댈 수 없어요.</p>
+          </div>
+          <div class="bg-white rounded-3xl p-6 border border-neutral-100">
+            <div class="text-3xl mb-3">⚡</div>
+            <h3 class="font-display text-lg font-semibold mb-2">코드 정산</h3>
+            <p class="text-sm text-neutral-600 leading-relaxed">사람의 판단을 기다리지 않습니다. 승인 즉시 컨트랙트가 분배합니다.</p>
+          </div>
+          <div class="bg-white rounded-3xl p-6 border border-neutral-100">
+            <div class="text-3xl mb-3">🤖</div>
+            <h3 class="font-display text-lg font-semibold mb-2">AI 에이전트 친화</h3>
+            <p class="text-sm text-neutral-600 leading-relaxed">사람도 AI도 작업을 가져갈 수 있습니다. 결과물이 좋으면 보상 받아요.</p>
+          </div>
+          <div class="bg-white rounded-3xl p-6 border border-neutral-100">
+            <div class="text-3xl mb-3">🌐</div>
+            <h3 class="font-display text-lg font-semibold mb-2">CONX 생태계 네이티브</h3>
+            <p class="text-sm text-neutral-600 leading-relaxed">CONX 위에서 EVM 호환으로 작동합니다. 빠르고 저렴하게.</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="grid grid-cols-3 gap-3 mb-6">
-      <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">내 잔액</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-balance">100</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
-      <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">잠금 중</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-locked">0</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
-      <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">받은 보상</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-earned">0</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
+
+    <!-- 최종 CTA -->
+    <div class="bg-white border-t border-neutral-100">
+      <div class="max-w-screen-xl mx-auto px-6 py-20 text-center">
+        <h2 class="font-display text-3xl md:text-4xl font-bold tracking-tight mb-4">
+          준비되셨나요?
+        </h2>
+        <p class="text-neutral-600 mb-8">관심 분야를 선택하고 바로 시작해보세요.</p>
+        <button onclick="startApp()" class="px-8 py-3.5 rounded-2xl gradient-bg text-white font-medium text-base floating-btn">
+          시작하기 →
+        </button>
+      </div>
     </div>
-    <div id="activityList" class="space-y-2"></div>
+
+    <!-- 푸터 -->
+    <footer class="border-t border-neutral-100 bg-white">
+      <div class="max-w-screen-xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-neutral-500">
+        <div class="flex items-center gap-3"><span class="font-medium text-neutral-700">bounX</span><span>·</span><span>Powered by CONX</span></div>
+        <div>Testnet · Early Preview</div>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<!-- ================================================ -->
+<!-- ============ 2. 온보딩 (관심사 선택) ============= -->
+<!-- ================================================ -->
+<div id="page-onboarding" class="hidden min-h-screen bg-white">
+  <div class="max-w-2xl mx-auto px-6 py-12 md:py-20">
+    
+    <!-- 진행도 -->
+    <div class="mb-10">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="h-1 flex-1 rounded-full bg-neutral-900"></div>
+        <div class="h-1 flex-1 rounded-full bg-neutral-200"></div>
+      </div>
+      <p class="text-xs text-neutral-500">1 / 2</p>
+    </div>
+
+    <!-- 헤딩 -->
+    <div class="mb-10">
+      <h1 class="font-display text-3xl md:text-4xl font-bold tracking-tight mb-3">
+        어떤 분야에<br/>
+        <span class="gradient-word">관심</span>이 있으세요?
+      </h1>
+      <p class="text-neutral-500 text-sm md:text-base">
+        선택한 분야의 바운티를 우선적으로 추천해드려요. <br/>최소 <strong class="text-neutral-700">3개</strong> 이상 선택해주세요.
+      </p>
+    </div>
+
+    <!-- 카테고리 그리드 -->
+    <div id="categoryGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-10">
+      <!-- JS로 생성 -->
+    </div>
+
+    <!-- 선택 카운트 -->
+    <div class="flex items-center justify-between mb-4">
+      <p class="text-sm text-neutral-500">
+        <span id="selectedCount" class="font-semibold text-neutral-900">0</span>개 선택됨
+      </p>
+      <button onclick="selectAll()" class="text-xs text-violet-600 hover:text-violet-700 font-medium">모두 선택</button>
+    </div>
+
+    <!-- 다음 버튼 -->
+    <button id="onboardingNextBtn" onclick="completeOnboarding()" disabled class="w-full px-6 py-3.5 rounded-2xl bg-neutral-200 text-neutral-400 font-medium text-base cursor-not-allowed transition-all">
+      3개 이상 선택해주세요
+    </button>
+
+    <!-- 건너뛰기 -->
+    <button onclick="skipOnboarding()" class="w-full mt-3 py-3 text-sm text-neutral-500 hover:text-neutral-700">
+      나중에 설정할게요
+    </button>
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- ============ 3. 메인 앱 (피드) =================== -->
+<!-- ================================================ -->
+<div id="page-app" class="hidden min-h-screen">
+  
+  <!-- 상단 데모 배너 -->
+  <div class="bg-gradient-to-r from-violet-50 via-violet-50 to-emerald-50 border-b border-violet-100">
+    <div class="max-w-screen-lg mx-auto px-4 py-2 flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2 text-violet-700">
+        <span class="font-semibold">📡 P2P 데모 모드</span>
+        <span class="hidden md:inline">·</span>
+        <span class="hidden md:inline">각 브라우저는 다른 유저로 작동합니다</span>
+      </div>
+      <span class="text-neutral-500 hidden md:inline">Firebase Realtime · 실시간 동기화</span>
+    </div>
   </div>
 
-</main>
+  <!-- 헤더 -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-neutral-100">
+    <div class="max-w-screen-lg mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-6">
+        <button onclick="goToLanding()" class="flex items-center gap-2">
+          <span class="font-display text-xl font-bold tracking-tight">bounX</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-500 font-medium">TESTNET</span>
+        </button>
+        <nav class="hidden md:flex items-center gap-1">
+          <button onclick="switchTab('feed')" id="tab-feed" class="tab-btn active px-3 py-1.5 text-sm font-medium">피드</button>
+          <button onclick="switchTab('activity')" id="tab-activity" class="tab-btn px-3 py-1.5 text-sm font-medium">내 활동</button>
+        </nav>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="walletInfo" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-100">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span class="text-xs font-medium text-emerald-700">CONX</span>
+          <span class="w-px h-3 bg-emerald-200"></span>
+          <span class="text-xs font-bold tabular-nums" id="userBalance">100</span>
+          <span class="text-xs text-emerald-600">XPLA</span>
+          <span class="w-px h-3 bg-emerald-200"></span>
+          <span class="text-xs font-mono text-emerald-700" id="userAddress">0x...</span>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<button onclick="openCreateModal()" id="floatingBtn" class="floating-btn fixed bottom-6 right-6 z-30 inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl gradient-bg text-white font-medium text-sm">
-  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-  바운티 등록
-</button>
+  <!-- 메인 컨텐츠 -->
+  <main class="max-w-screen-lg mx-auto px-4 md:px-6 py-6 pb-32">
+    
+    <!-- 피드 페이지 -->
+    <div id="page-feed">
+      <!-- 환영 메시지 -->
+      <div class="mb-5">
+        <h1 class="font-display text-2xl md:text-3xl font-bold tracking-tight">
+          안녕하세요, <span class="gradient-word" id="userGreet">0x...</span>
+        </h1>
+        <p class="text-sm text-neutral-500 mt-1" id="feedSubtitle">당신의 관심사 기반 추천 바운티예요</p>
+      </div>
 
-<footer class="border-t border-neutral-100 bg-white">
-  <div class="max-w-screen-xl mx-auto px-4 md:px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-neutral-500">
-    <div class="flex items-center gap-3"><span class="font-medium text-neutral-700">bounX</span><span>·</span><span>Non-custodial · 토큰은 컨트랙트에 직접 잠깁니다</span></div>
-    <div class="flex items-center gap-3"><span>Powered by CONX</span><span>·</span><span>Testnet · Early Preview</span></div>
+      <!-- 모바일 잔액 -->
+      <div class="md:hidden mb-4 flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-100">
+        <div class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span class="text-xs font-medium text-emerald-700">CONX Wallet</span>
+          <span class="text-xs font-mono text-emerald-700" id="userAddressMobile">0x...</span>
+        </div>
+        <div><span class="font-bold tabular-nums" id="userBalanceMobile">100</span> <span class="text-xs text-emerald-600">XPLA</span></div>
+      </div>
+
+      <!-- 필터 칩 -->
+      <div class="chips-scroll overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 mb-5">
+        <div id="categoryChips" class="flex gap-2">
+          <!-- JS로 생성 -->
+        </div>
+      </div>
+
+      <!-- 피드 정보 바 -->
+      <div class="flex items-center justify-between mb-4 text-sm">
+        <div class="flex items-center gap-2 text-neutral-500">
+          <span id="feedCount">0개</span><span>·</span>
+          <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>실시간</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleFeedMode()" id="feedModeBtn" class="text-xs px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700 font-medium border border-violet-100">
+            ⭐ 내 관심사
+          </button>
+        </div>
+      </div>
+
+      <!-- 피드 -->
+      <div id="feedList" class="space-y-3">
+        <!-- 빈 상태 -->
+        <div id="feedEmpty" class="text-center py-16 px-6">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-violet-50 mb-5">
+            <svg class="w-8 h-8 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h2 class="font-display text-xl font-bold tracking-tight mb-2">아직 바운티가 없어요</h2>
+          <p class="text-neutral-500 text-sm max-w-sm mx-auto mb-6">
+            첫 번째로 바운티를 등록해보세요.<br/>다른 사용자가 가져갈 수 있어요.
+          </p>
+          <button onclick="openCreateModal()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            바운티 등록하기
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 내 활동 페이지 -->
+    <div id="page-activity" class="hidden">
+      <div class="mb-5">
+        <h1 class="font-display text-2xl md:text-3xl font-bold tracking-tight">내 <span class="gradient-word">활동</span></h1>
+        <p class="text-sm text-neutral-500 mt-1">의뢰한 작업과 신청한 작업</p>
+      </div>
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">내 잔액</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-balance">100</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
+        <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">잠금 중</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-locked">0</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
+        <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">받은 보상</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-earned">0</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
+      </div>
+      <div id="activityList" class="space-y-2"></div>
+    </div>
+
+  </main>
+
+  <!-- 플로팅 등록 버튼 -->
+  <button onclick="openCreateModal()" id="floatingBtn" class="floating-btn fixed bottom-6 right-6 z-30 inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl gradient-bg text-white font-medium text-sm">
+    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+    바운티 등록
+  </button>
+
+  <!-- 푸터 -->
+  <footer class="border-t border-neutral-100 bg-white">
+    <div class="max-w-screen-lg mx-auto px-4 md:px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-neutral-500">
+      <div class="flex items-center gap-3"><span class="font-medium text-neutral-700">bounX</span><span>·</span><span>Non-custodial · 토큰은 컨트랙트에 직접 잠깁니다</span></div>
+      <div class="flex items-center gap-3"><span>Powered by CONX</span><span>·</span><span>Testnet</span></div>
+    </div>
+  </footer>
+</div>
+
+<!-- ================================================ -->
+<!-- ============ 모달들 ============================ -->
+<!-- ================================================ -->
+
+<!-- 지갑 연결 알림 -->
+<div id="walletConnectModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
+  <div class="modal-content bg-white rounded-3xl w-full max-w-sm overflow-hidden">
+    <div class="gradient-bg p-6 text-white text-center">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/20 backdrop-blur mb-3">
+        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      </div>
+      <h3 class="font-display text-xl font-bold tracking-tight mb-1">CONX Wallet 연결됨</h3>
+      <p class="text-sm text-white/80">데모용으로 자동 연결되었어요</p>
+    </div>
+    <div class="p-6 space-y-3">
+      <div class="bg-neutral-50 rounded-xl p-3.5">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-neutral-500">지갑 주소</span>
+          <span class="font-mono text-sm text-neutral-900" id="walletConnectAddress">0x...</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-neutral-500">잔액</span>
+          <span class="font-display text-lg font-bold text-neutral-900"><span id="walletConnectBalance">100</span> XPLA</span>
+        </div>
+      </div>
+      <div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800 border border-emerald-100">
+        <div class="font-semibold mb-1">🎁 신규 사용자 보너스</div>
+        <div>데모 사용을 위해 100 XPLA가 지급되었어요</div>
+      </div>
+      <button onclick="closeWalletConnectModal()" class="w-full px-4 py-2.5 rounded-xl bg-neutral-900 text-white font-medium text-sm hover:bg-neutral-800">
+        시작하기
+      </button>
+    </div>
   </div>
-</footer>
+</div>
 
 <!-- 등록 모달 -->
 <div id="createModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
@@ -189,9 +485,7 @@
     <div class="p-6 space-y-4">
       <div><label class="block text-sm font-medium text-neutral-700 mb-1.5">제목</label><input id="titleInput" type="text" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm" placeholder="예: 한국 부동산 정책 변화 분석" /></div>
       <div><label class="block text-sm font-medium text-neutral-700 mb-1.5">카테고리</label>
-        <select id="categoryInput" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm">
-          <option value="📊 리서치">📊 리서치</option><option value="📝 콘텐츠">📝 콘텐츠</option><option value="💻 코드">💻 코드</option><option value="🎨 디자인">🎨 디자인</option><option value="📈 데이터">📈 데이터</option><option value="🌐 번역">🌐 번역</option>
-        </select>
+        <select id="categoryInput" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm"></select>
       </div>
       <div><label class="block text-sm font-medium text-neutral-700 mb-1.5">상세 설명</label><textarea id="descInput" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm resize-none" rows="3" placeholder="에이전트가 무엇을 해야 하는지 설명해주세요"></textarea></div>
       <div class="grid grid-cols-2 gap-3">
@@ -229,11 +523,11 @@
   </div>
 </div>
 
-<!-- 신청/작업 제출 모달 -->
+<!-- 작업 제출 모달 -->
 <div id="workModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
   <div class="modal-content bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
     <div class="sticky top-0 bg-white px-6 pt-6 pb-3 flex items-center justify-between border-b border-neutral-100">
-      <h3 class="font-display text-xl font-bold tracking-tight" id="workModalTitle">작업 제출</h3>
+      <h3 class="font-display text-xl font-bold tracking-tight">결과물 제출</h3>
       <button onclick="closeWorkModal()" class="text-neutral-400 hover:text-neutral-700"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
     </div>
     <div id="workContent" class="p-6"></div>
@@ -274,7 +568,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// ============ Firebase Config ============
+// ============ Firebase ============
 const firebaseConfig = {
   apiKey: "AIzaSyDvyqVX-VzYj6Qz2Nz4TvzDYzc1-8vGJLA",
   authDomain: "bounxapp.firebaseapp.com",
@@ -287,14 +581,31 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ============ State ============
-let bounties = {};      // Firebase에서 가져온 바운티들
-let activeCategory = '전체';
-let currentUser = null; // 현재 브라우저의 사용자 정보
+// ============ 카테고리 정의 (10개로 확장) ============
+const CATEGORIES = [
+  { id: 'research', icon: '📊', name: '리서치', desc: '시장/경쟁사/주제 조사' },
+  { id: 'content', icon: '📝', name: '콘텐츠', desc: '블로그/카피/스토리' },
+  { id: 'code', icon: '💻', name: '코드', desc: '리뷰/스크립트/도구' },
+  { id: 'design', icon: '🎨', name: '디자인', desc: 'UI/그래픽/일러스트' },
+  { id: 'data', icon: '📈', name: '데이터', desc: '분석/시각화/정제' },
+  { id: 'translation', icon: '🌐', name: '번역', desc: '한↔영 외 다국어' },
+  { id: 'marketing', icon: '📣', name: '마케팅', desc: 'SNS/광고/전략' },
+  { id: 'planning', icon: '🎯', name: '기획', desc: '제품/서비스/이벤트' },
+  { id: 'video', icon: '🎬', name: '영상', desc: '편집/자막/요약' },
+  { id: 'ai', icon: '🤖', name: 'AI/자동화', desc: '프롬프트/봇/자동화' },
+];
 
-// ============ 사용자 자동 생성 (브라우저별) ============
+// ============ State ============
+let bounties = {};
+let activeCategory = 'all';
+let currentUser = null;
+let userInterests = [];
+let feedMode = 'recommended'; // 'recommended' or 'all'
+let currentTab = 'feed';
+
+// ============ 사용자 자동 생성 ============
 function initUser() {
-  const STORAGE_KEY = 'bounx-user-v6';
+  const STORAGE_KEY = 'bounx-user-v7';
   let user = null;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -302,7 +613,6 @@ function initUser() {
   } catch (e) {}
   
   if (!user || !user.address) {
-    // 새 사용자 생성: 랜덤 0x 주소 + 100 XPLA
     const address = '0x' + Array.from({length: 40}, () => Math.floor(Math.random() * 16).toString(16)).join('');
     user = {
       address: address,
@@ -311,54 +621,243 @@ function initUser() {
       createdAt: new Date().toISOString(),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    showToast('🎁 신규 사용자로 100 XPLA 받음');
   }
-  
   currentUser = user;
-  updateUserUI();
 }
 
 function saveUser() {
-  localStorage.setItem('bounx-user-v6', JSON.stringify(currentUser));
+  localStorage.setItem('bounx-user-v7', JSON.stringify(currentUser));
   updateUserUI();
 }
 
 function updateUserUI() {
   if (!currentUser) return;
-  document.getElementById('userAddress').textContent = currentUser.shortAddress;
-  document.getElementById('userAddressMobile').textContent = currentUser.shortAddress;
-  document.getElementById('userBalance').textContent = currentUser.balance.toLocaleString();
-  document.getElementById('userBalanceMobile').textContent = currentUser.balance.toLocaleString();
-  document.getElementById('walletInfo').classList.remove('hidden');
-  document.getElementById('walletInfo').classList.add('flex');
+  ['userAddress', 'userAddressMobile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = currentUser.shortAddress;
+  });
+  ['userBalance', 'userBalanceMobile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = currentUser.balance.toLocaleString();
+  });
+  const greet = document.getElementById('userGreet');
+  if (greet) greet.textContent = currentUser.shortAddress;
+}
+
+// ============ 관심사 ============
+function loadInterests() {
+  try {
+    const saved = localStorage.getItem('bounx-interests-v7');
+    if (saved) userInterests = JSON.parse(saved);
+  } catch (e) { userInterests = []; }
+}
+function saveInterests() {
+  localStorage.setItem('bounx-interests-v7', JSON.stringify(userInterests));
+}
+
+// ============ 페이지 라우팅 ============
+function showPage(page) {
+  ['page-landing', 'page-onboarding', 'page-app'].forEach(id => {
+    document.getElementById(id).classList.add('hidden');
+  });
+  document.getElementById('page-' + page).classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function startApp() {
+  loadInterests();
+  if (userInterests.length === 0) {
+    showPage('onboarding');
+    renderCategoryGrid();
+  } else {
+    enterApp();
+  }
+}
+
+function goToLanding() {
+  showPage('landing');
+}
+
+function enterApp() {
+  showPage('app');
+  initUser();
+  updateUserUI();
+  
+  // 처음 들어올 때 지갑 연결 알림
+  if (!sessionStorage.getItem('walletShown')) {
+    document.getElementById('walletConnectAddress').textContent = currentUser.shortAddress;
+    document.getElementById('walletConnectBalance').textContent = currentUser.balance;
+    document.getElementById('walletConnectModal').classList.remove('hidden');
+    document.getElementById('walletConnectModal').classList.add('flex');
+    sessionStorage.setItem('walletShown', '1');
+  }
+  
+  renderCategoryChips();
+  populateCategorySelect();
+  listenToBounties();
+}
+
+function closeWalletConnectModal() {
+  document.getElementById('walletConnectModal').classList.add('hidden');
+  document.getElementById('walletConnectModal').classList.remove('flex');
+}
+
+// ============ 온보딩 ============
+function renderCategoryGrid() {
+  const grid = document.getElementById('categoryGrid');
+  grid.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const card = document.createElement('div');
+    card.className = 'cat-card rounded-2xl p-4 relative';
+    card.dataset.id = cat.id;
+    card.onclick = () => toggleCategory(cat.id);
+    if (userInterests.includes(cat.id)) card.classList.add('selected');
+    card.innerHTML = `
+      <div class="cat-check absolute top-2 right-2">
+        <div class="w-5 h-5 rounded-full bg-violet-600 flex items-center justify-center">
+          <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+      <div class="text-2xl mb-2">${cat.icon}</div>
+      <div class="font-semibold text-sm text-neutral-900 mb-0.5">${cat.name}</div>
+      <div class="text-xs text-neutral-500">${cat.desc}</div>
+    `;
+    grid.appendChild(card);
+  });
+  updateOnboardingState();
+}
+
+function toggleCategory(id) {
+  const idx = userInterests.indexOf(id);
+  if (idx >= 0) userInterests.splice(idx, 1);
+  else userInterests.push(id);
+  
+  document.querySelectorAll('.cat-card').forEach(card => {
+    if (card.dataset.id === id) card.classList.toggle('selected');
+  });
+  updateOnboardingState();
+}
+
+function selectAll() {
+  userInterests = CATEGORIES.map(c => c.id);
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.add('selected'));
+  updateOnboardingState();
+}
+
+function updateOnboardingState() {
+  const count = userInterests.length;
+  document.getElementById('selectedCount').textContent = count;
+  const btn = document.getElementById('onboardingNextBtn');
+  if (count >= 3) {
+    btn.disabled = false;
+    btn.className = 'w-full px-6 py-3.5 rounded-2xl gradient-bg text-white font-medium text-base transition-all hover:opacity-90';
+    btn.textContent = '다음 →';
+  } else {
+    btn.disabled = true;
+    btn.className = 'w-full px-6 py-3.5 rounded-2xl bg-neutral-200 text-neutral-400 font-medium text-base cursor-not-allowed transition-all';
+    btn.textContent = (3 - count) + '개 더 선택해주세요';
+  }
+}
+
+function completeOnboarding() {
+  if (userInterests.length < 3) return;
+  saveInterests();
+  enterApp();
+}
+
+function skipOnboarding() {
+  userInterests = CATEGORIES.map(c => c.id);
+  saveInterests();
+  enterApp();
+}
+
+// ============ 메인 앱 ============
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'feed') {
+    document.getElementById('page-feed').classList.remove('hidden');
+    document.getElementById('page-activity').classList.add('hidden');
+    document.getElementById('floatingBtn').classList.remove('hidden');
+    renderFeed();
+  } else {
+    document.getElementById('page-feed').classList.add('hidden');
+    document.getElementById('page-activity').classList.remove('hidden');
+    document.getElementById('floatingBtn').classList.add('hidden');
+    renderActivity();
+  }
+}
+
+function toggleFeedMode() {
+  feedMode = feedMode === 'recommended' ? 'all' : 'recommended';
+  const btn = document.getElementById('feedModeBtn');
+  const sub = document.getElementById('feedSubtitle');
+  if (feedMode === 'recommended') {
+    btn.innerHTML = '⭐ 내 관심사';
+    btn.className = 'text-xs px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700 font-medium border border-violet-100';
+    sub.textContent = '당신의 관심사 기반 추천 바운티예요';
+  } else {
+    btn.innerHTML = '🌐 전체';
+    btn.className = 'text-xs px-2.5 py-1 rounded-lg bg-neutral-100 text-neutral-700 font-medium border border-neutral-200';
+    sub.textContent = '모든 바운티를 보고 있어요';
+  }
+  renderFeed();
+}
+
+// ============ 카테고리 칩 ============
+function renderCategoryChips() {
+  const container = document.getElementById('categoryChips');
+  container.innerHTML = '';
+  
+  const allChip = document.createElement('button');
+  allChip.className = 'chip active px-3.5 py-1.5 rounded-full text-sm font-medium';
+  allChip.dataset.cat = 'all';
+  allChip.textContent = '전체';
+  allChip.onclick = () => selectChip('all');
+  container.appendChild(allChip);
+  
+  CATEGORIES.forEach(cat => {
+    const chip = document.createElement('button');
+    chip.className = 'chip px-3.5 py-1.5 rounded-full text-sm font-medium';
+    chip.dataset.cat = cat.id;
+    chip.textContent = `${cat.icon} ${cat.name}`;
+    chip.onclick = () => selectChip(cat.id);
+    container.appendChild(chip);
+  });
+}
+
+function selectChip(catId) {
+  activeCategory = catId;
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.cat === catId);
+  });
+  renderFeed();
+}
+
+function populateCategorySelect() {
+  const select = document.getElementById('categoryInput');
+  select.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat.id;
+    opt.textContent = `${cat.icon} ${cat.name}`;
+    select.appendChild(opt);
+  });
+}
+
+function getCategoryById(id) {
+  return CATEGORIES.find(c => c.id === id) || { icon: '📋', name: id };
 }
 
 // ============ Firebase 실시간 동기화 ============
 function listenToBounties() {
   db.ref('bounties').on('value', (snapshot) => {
-    const data = snapshot.val() || {};
-    bounties = data;
-    renderBounties();
-    if (currentTab === 'activity') renderActivity();
+    bounties = snapshot.val() || {};
+    if (currentTab === 'feed') renderFeed();
+    else renderActivity();
+    checkAndCollectRewards();
   });
-}
-
-// ============ Tab Switch ============
-let currentTab = 'discover';
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  if (tab === 'discover') {
-    document.getElementById('page-discover').classList.remove('hidden');
-    document.getElementById('page-activity').classList.add('hidden');
-    document.getElementById('floatingBtn').classList.remove('hidden');
-  } else {
-    document.getElementById('page-discover').classList.add('hidden');
-    document.getElementById('page-activity').classList.remove('hidden');
-    document.getElementById('floatingBtn').classList.add('hidden');
-    renderActivity();
-  }
 }
 
 // ============ 등록 모달 ============
@@ -381,10 +880,9 @@ function updatePreview() {
 }
 document.getElementById('rewardInput').addEventListener('input', updatePreview);
 
-// ============ 바운티 등록 ============
 function submitBounty() {
   const title = document.getElementById('titleInput').value.trim();
-  const category = document.getElementById('categoryInput').value;
+  const categoryId = document.getElementById('categoryInput').value;
   const desc = document.getElementById('descInput').value.trim();
   const reward = parseFloat(document.getElementById('rewardInput').value);
   const deadline = document.getElementById('deadlineInput').value;
@@ -395,20 +893,19 @@ function submitBounty() {
     return;
   }
   
-  // 사용자 잔액 차감
   currentUser.balance -= reward;
   saveUser();
   
-  // Firebase에 저장
   const bountyRef = db.ref('bounties').push();
   const bounty = {
     id: bountyRef.key,
-    title, category, desc, reward, deadline,
+    title, categoryId, desc, reward, deadline,
     status: 'open',
     requester: currentUser.address,
     requesterShort: currentUser.shortAddress,
     createdAt: Date.now(),
     txHash: '0x' + Math.random().toString(16).slice(2, 18),
+    likes: 0,
   };
   bountyRef.set(bounty);
   
@@ -420,63 +917,148 @@ function submitBounty() {
   showToast('✓ ' + reward + ' XPLA 컨트랙트에 잠금 완료');
 }
 
-// ============ 상세 모달 ============
-function openDetail(bountyId) {
-  const b = bounties[bountyId];
-  if (!b) return;
+// ============ 시간 포맷 ============
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return '방금';
+  if (m < 60) return m + '분 전';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + '시간 전';
+  const d = Math.floor(h / 24);
+  return d + '일 전';
+}
+
+// ============ 피드 렌더 (트위터 스타일) ============
+function renderFeed() {
+  const list = document.getElementById('feedList');
+  const empty = document.getElementById('feedEmpty');
   
-  const isMine = b.requester === currentUser.address;
-  const isWorker = b.worker === currentUser.address;
+  let bountyArr = Object.values(bounties).sort((a, b) => b.createdAt - a.createdAt);
   
-  const labels = {
-    open: '<span class="badge-open text-xs font-semibold px-2 py-0.5 rounded-full">진행 가능</span>',
-    progress: '<span class="badge-progress text-xs font-semibold px-2 py-0.5 rounded-full">진행 중</span>',
-    review: '<span class="badge-review text-xs font-semibold px-2 py-0.5 rounded-full">검토 대기</span>',
-    done: '<span class="badge-done text-xs font-semibold px-2 py-0.5 rounded-full">완료</span>',
-  };
-  
-  let html = '<div class="space-y-4">';
-  html += '<div class="flex items-center justify-between"><div class="text-xs text-neutral-500 font-medium">' + b.category + '</div>' + labels[b.status] + '</div>';
-  html += '<div><h2 class="font-display text-xl font-bold tracking-tight mb-2">' + escapeHtml(b.title) + '</h2>';
-  if (b.desc) html += '<p class="text-sm text-neutral-600 leading-relaxed">' + escapeHtml(b.desc) + '</p>';
-  html += '</div>';
-  
-  html += '<div class="grid grid-cols-2 gap-3">';
-  html += '<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">보상</div><div class="font-display text-lg font-bold">' + b.reward + ' XPLA</div></div>';
-  html += '<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">마감</div><div class="font-display text-lg font-bold">' + b.deadline + '</div></div>';
-  html += '</div>';
-  
-  html += '<div class="space-y-2 text-xs">';
-  html += '<div class="flex justify-between text-neutral-500"><span>의뢰자</span><span class="font-mono text-neutral-700">' + b.requesterShort + (isMine ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : '') + '</span></div>';
-  if (b.workerShort) html += '<div class="flex justify-between text-neutral-500"><span>작업자</span><span class="font-mono text-neutral-700">' + b.workerShort + (isWorker ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : '') + '</span></div>';
-  html += '<div class="flex justify-between text-neutral-500"><span>트랜잭션</span><span class="font-mono text-neutral-700">' + b.txHash.slice(0, 10) + '...</span></div>';
-  html += '</div>';
-  
-  // 액션 버튼들
-  if (b.status === 'open' && !isMine) {
-    html += '<button onclick="closeDetailModal(); applyToBounty(\'' + b.id + '\')" class="w-full px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700">신청하기</button>';
-  } else if (b.status === 'open' && isMine) {
-    html += '<div class="bg-blue-50 rounded-xl p-3 text-xs text-blue-800 text-center">다른 사용자가 신청하기를 기다리는 중...<br/><span class="text-blue-600">다른 브라우저에서 접속해서 신청해보세요</span></div>';
-  } else if (b.status === 'progress' && isWorker) {
-    html += '<button onclick="closeDetailModal(); openWorkSubmit(\'' + b.id + '\')" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">결과물 제출하기</button>';
-  } else if (b.status === 'progress' && isMine) {
-    html += '<div class="bg-amber-50 rounded-xl p-3 text-xs text-amber-800 text-center">작업자가 결과물을 제출하기를 기다리는 중...</div>';
-  } else if (b.status === 'review' && isMine) {
-    html += '<button onclick="closeDetailModal(); openReview(\'' + b.id + '\')" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">결과물 검토하기</button>';
-  } else if (b.status === 'review' && isWorker) {
-    html += '<div class="bg-violet-50 rounded-xl p-3 text-xs text-violet-800 text-center">의뢰자의 검토를 기다리는 중...</div>';
-  } else if (b.status === 'done') {
-    html += '<div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800"><div class="font-semibold mb-1">✓ 정산 완료</div><div>' + (b.completedAt ? new Date(b.completedAt).toLocaleString('ko') : '') + '</div></div>';
+  // 카테고리 필터
+  if (activeCategory !== 'all') {
+    bountyArr = bountyArr.filter(b => b.categoryId === activeCategory);
   }
   
-  html += '</div>';
-  document.getElementById('detailContent').innerHTML = html;
-  document.getElementById('detailModal').classList.remove('hidden');
-  document.getElementById('detailModal').classList.add('flex');
+  // 추천 모드 필터
+  if (feedMode === 'recommended' && userInterests.length > 0 && activeCategory === 'all') {
+    bountyArr = bountyArr.filter(b => userInterests.includes(b.categoryId));
+  }
+  
+  document.getElementById('feedCount').textContent = bountyArr.length + '개';
+  
+  Array.from(list.children).forEach(child => { if (child.id !== 'feedEmpty') child.remove(); });
+  
+  if (bountyArr.length === 0) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  
+  const badges = {
+    open: '<span class="badge-open text-[10px] font-semibold px-2 py-0.5 rounded-full">진행 가능</span>',
+    progress: '<span class="badge-progress text-[10px] font-semibold px-2 py-0.5 rounded-full">진행 중</span>',
+    review: '<span class="badge-review text-[10px] font-semibold px-2 py-0.5 rounded-full">검토 대기</span>',
+    done: '<span class="badge-done text-[10px] font-semibold px-2 py-0.5 rounded-full">완료</span>',
+  };
+  
+  bountyArr.forEach(b => {
+    const cat = getCategoryById(b.categoryId);
+    const isMine = b.requester === currentUser.address;
+    const isWorker = b.worker === currentUser.address;
+    const likes = b.likes || 0;
+    const isLiked = (b.likedBy || {})[currentUser.address];
+    
+    const card = document.createElement('article');
+    card.className = 'feed-card rounded-2xl p-4 cursor-pointer' + (isMine ? ' my-bounty' : isWorker ? ' my-work' : '');
+    card.onclick = (e) => {
+      if (e.target.closest('.action-btn')) return;
+      openDetail(b.id);
+    };
+    
+    // 아바타 이니셜
+    const avatarChar = b.requesterShort.slice(2, 3).toUpperCase();
+    const avatarColors = ['bg-violet-100 text-violet-700', 'bg-emerald-100 text-emerald-700', 'bg-amber-100 text-amber-700', 'bg-rose-100 text-rose-700', 'bg-sky-100 text-sky-700'];
+    const avatarColor = avatarColors[parseInt(b.requesterShort.slice(2, 4), 16) % avatarColors.length];
+    
+    let html = '';
+    
+    // 상단 라인: 아바타 + 주소 + 카테고리 + 시간
+    html += '<div class="flex items-start gap-3 mb-3">';
+    html += `<div class="w-10 h-10 rounded-full ${avatarColor} flex items-center justify-center font-bold text-sm flex-shrink-0">${avatarChar}</div>`;
+    html += '<div class="flex-1 min-w-0">';
+    html += '<div class="flex items-center gap-2 flex-wrap">';
+    html += `<span class="font-semibold text-sm text-neutral-900 font-mono">${b.requesterShort}</span>`;
+    if (isMine) html += '<span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">나</span>';
+    html += `<span class="text-xs text-neutral-400">·</span>`;
+    html += `<span class="text-xs text-neutral-500">${timeAgo(b.createdAt)}</span>`;
+    html += '</div>';
+    html += '<div class="flex items-center gap-1.5 mt-0.5">';
+    html += `<span class="text-xs text-neutral-500">${cat.icon} ${cat.name}</span>`;
+    html += badges[b.status];
+    if (isWorker && !isMine) html += '<span class="work-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">내 작업</span>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    
+    // 본문: 제목 + 설명
+    html += `<h3 class="font-semibold text-neutral-900 mb-1.5 leading-tight">${escapeHtml(b.title)}</h3>`;
+    if (b.desc) {
+      html += `<p class="text-sm text-neutral-600 leading-relaxed line-clamp-3 mb-3">${escapeHtml(b.desc)}</p>`;
+    } else {
+      html += '<div class="mb-3"></div>';
+    }
+    
+    // 메타: 보상 + 마감
+    html += '<div class="flex items-center gap-3 mb-3 text-sm">';
+    html += `<span class="font-display font-bold text-neutral-900">💰 ${b.reward} XPLA</span>`;
+    html += `<span class="text-neutral-500">⏱ ${b.deadline}</span>`;
+    html += '</div>';
+    
+    // 액션 바
+    html += '<div class="flex items-center justify-between pt-3 border-t border-neutral-100">';
+    html += '<div class="flex items-center gap-1">';
+    html += `<button class="action-btn flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors" onclick="event.stopPropagation(); toggleLike('${b.id}')">`;
+    html += `<span class="text-base ${isLiked ? 'heart-pop' : ''}">${isLiked ? '💜' : '🤍'}</span>`;
+    html += `<span class="text-xs text-neutral-500">${likes}</span>`;
+    html += '</button>';
+    html += '</div>';
+    
+    // 상태별 우측 버튼
+    if (b.status === 'open' && !isMine) {
+      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800" onclick="event.stopPropagation(); applyToBounty('${b.id}')">신청하기 ✋</button>`;
+    } else if (b.status === 'progress' && isWorker) {
+      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openWorkSubmit('${b.id}')">결과 제출</button>`;
+    } else if (b.status === 'review' && isMine) {
+      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openReview('${b.id}')">검토하기</button>`;
+    } else {
+      html += `<span class="text-xs text-neutral-400">${b.workerShort ? b.workerShort + ' 진행 중' : '대기 중'}</span>`;
+    }
+    html += '</div>';
+    
+    card.innerHTML = html;
+    list.appendChild(card);
+  });
 }
-function closeDetailModal() {
-  document.getElementById('detailModal').classList.add('hidden');
-  document.getElementById('detailModal').classList.remove('flex');
+
+// ============ 좋아요 ============
+function toggleLike(bountyId) {
+  const b = bounties[bountyId];
+  if (!b) return;
+  const likedBy = b.likedBy || {};
+  const wasLiked = !!likedBy[currentUser.address];
+  
+  if (wasLiked) {
+    delete likedBy[currentUser.address];
+    db.ref('bounties/' + bountyId).update({
+      likes: Math.max(0, (b.likes || 0) - 1),
+      likedBy: likedBy,
+    });
+  } else {
+    likedBy[currentUser.address] = true;
+    db.ref('bounties/' + bountyId).update({
+      likes: (b.likes || 0) + 1,
+      likedBy: likedBy,
+    });
+  }
 }
 
 // ============ 신청 ============
@@ -494,44 +1076,94 @@ function applyToBounty(bountyId) {
   showToast('🤝 신청 완료! 작업을 시작하세요');
 }
 
+// ============ 상세 모달 ============
+function openDetail(bountyId) {
+  const b = bounties[bountyId];
+  if (!b) return;
+  const cat = getCategoryById(b.categoryId);
+  
+  const isMine = b.requester === currentUser.address;
+  const isWorker = b.worker === currentUser.address;
+  
+  const labels = {
+    open: '<span class="badge-open text-xs font-semibold px-2 py-0.5 rounded-full">진행 가능</span>',
+    progress: '<span class="badge-progress text-xs font-semibold px-2 py-0.5 rounded-full">진행 중</span>',
+    review: '<span class="badge-review text-xs font-semibold px-2 py-0.5 rounded-full">검토 대기</span>',
+    done: '<span class="badge-done text-xs font-semibold px-2 py-0.5 rounded-full">완료</span>',
+  };
+  
+  let html = '<div class="space-y-4">';
+  html += '<div class="flex items-center justify-between">';
+  html += `<div class="text-xs text-neutral-500 font-medium">${cat.icon} ${cat.name}</div>`;
+  html += labels[b.status] + '</div>';
+  html += `<div><h2 class="font-display text-xl font-bold tracking-tight mb-2">${escapeHtml(b.title)}</h2>`;
+  if (b.desc) html += `<p class="text-sm text-neutral-600 leading-relaxed whitespace-pre-wrap">${escapeHtml(b.desc)}</p>`;
+  html += '</div>';
+  
+  html += '<div class="grid grid-cols-2 gap-3">';
+  html += `<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">보상</div><div class="font-display text-lg font-bold">${b.reward} XPLA</div></div>`;
+  html += `<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">마감</div><div class="font-display text-lg font-bold">${b.deadline}</div></div>`;
+  html += '</div>';
+  
+  html += '<div class="space-y-2 text-xs">';
+  html += `<div class="flex justify-between text-neutral-500"><span>의뢰자</span><span class="font-mono text-neutral-700">${b.requesterShort}${isMine ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : ''}</span></div>`;
+  if (b.workerShort) html += `<div class="flex justify-between text-neutral-500"><span>작업자</span><span class="font-mono text-neutral-700">${b.workerShort}${isWorker ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : ''}</span></div>`;
+  html += `<div class="flex justify-between text-neutral-500"><span>트랜잭션</span><span class="font-mono text-neutral-700">${b.txHash.slice(0, 10)}...</span></div>`;
+  html += '</div>';
+  
+  if (b.status === 'open' && !isMine) {
+    html += `<button onclick="closeDetailModal(); applyToBounty('${b.id}')" class="w-full px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700">신청하기 ✋</button>`;
+  } else if (b.status === 'open' && isMine) {
+    html += '<div class="bg-blue-50 rounded-xl p-3 text-xs text-blue-800 text-center">다른 사용자가 신청하기를 기다리는 중...<br/><span class="text-blue-600">다른 브라우저에서 접속해서 신청해보세요</span></div>';
+  } else if (b.status === 'progress' && isWorker) {
+    html += `<button onclick="closeDetailModal(); openWorkSubmit('${b.id}')" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">결과물 제출하기</button>`;
+  } else if (b.status === 'progress' && isMine) {
+    html += '<div class="bg-amber-50 rounded-xl p-3 text-xs text-amber-800 text-center">작업자가 결과물을 제출하기를 기다리는 중...</div>';
+  } else if (b.status === 'review' && isMine) {
+    html += `<button onclick="closeDetailModal(); openReview('${b.id}')" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">결과물 검토하기</button>`;
+  } else if (b.status === 'review' && isWorker) {
+    html += '<div class="bg-violet-50 rounded-xl p-3 text-xs text-violet-800 text-center">의뢰자의 검토를 기다리는 중...</div>';
+  } else if (b.status === 'done') {
+    html += `<div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800"><div class="font-semibold mb-1">✓ 정산 완료</div><div>${b.completedAt ? new Date(b.completedAt).toLocaleString('ko') : ''}</div></div>`;
+  }
+  
+  html += '</div>';
+  document.getElementById('detailContent').innerHTML = html;
+  document.getElementById('detailModal').classList.remove('hidden');
+  document.getElementById('detailModal').classList.add('flex');
+}
+function closeDetailModal() {
+  document.getElementById('detailModal').classList.add('hidden');
+  document.getElementById('detailModal').classList.remove('flex');
+}
+
 // ============ 작업 제출 ============
 function openWorkSubmit(bountyId) {
   const b = bounties[bountyId];
   if (!b) return;
-  
   let html = '<div class="space-y-4">';
-  html += '<div class="bg-violet-50 rounded-xl p-3.5 border border-violet-100 text-sm text-violet-800"><div class="font-semibold mb-1">📋 ' + escapeHtml(b.title) + '</div><div class="text-xs">' + escapeHtml(b.desc || '설명 없음') + '</div></div>';
+  html += `<div class="bg-violet-50 rounded-xl p-3.5 border border-violet-100 text-sm text-violet-800"><div class="font-semibold mb-1">📋 ${escapeHtml(b.title)}</div><div class="text-xs">${escapeHtml(b.desc || '설명 없음')}</div></div>`;
   html += '<div><label class="block text-sm font-medium text-neutral-700 mb-1.5">결과물 요약</label><textarea id="submissionInput" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm resize-none" rows="5" placeholder="작업한 결과를 정리해주세요..."></textarea></div>';
-  html += '<div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800 border border-emerald-100"><div class="font-semibold mb-1">💰 예상 보상</div><div>승인 시 <strong>' + (b.reward * 0.9).toFixed(1) + ' XPLA</strong>가 정산됩니다 (90%)</div></div>';
+  html += `<div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800 border border-emerald-100"><div class="font-semibold mb-1">💰 예상 보상</div><div>승인 시 <strong>${(b.reward * 0.9).toFixed(1)} XPLA</strong>가 정산됩니다 (90%)</div></div>`;
   html += '<div class="flex gap-2">';
   html += '<button onclick="closeWorkModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 font-medium text-sm">취소</button>';
-  html += '<button onclick="submitWork(\'' + b.id + '\')" class="flex-1 px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">제출하기</button>';
+  html += `<button onclick="submitWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">제출하기</button>`;
   html += '</div></div>';
-  
-  document.getElementById('workModalTitle').textContent = '결과물 제출';
   document.getElementById('workContent').innerHTML = html;
   document.getElementById('workModal').classList.remove('hidden');
   document.getElementById('workModal').classList.add('flex');
 }
-
 function closeWorkModal() {
   document.getElementById('workModal').classList.add('hidden');
   document.getElementById('workModal').classList.remove('flex');
 }
-
 function submitWork(bountyId) {
   const summary = document.getElementById('submissionInput').value.trim();
   if (!summary) { showToast('결과물 요약을 작성해주세요'); return; }
-  
   db.ref('bounties/' + bountyId).update({
     status: 'review',
-    submission: {
-      summary: summary,
-      proofBundle: '0x' + Math.random().toString(16).slice(2, 18),
-      submittedAt: Date.now(),
-    },
+    submission: { summary: summary, proofBundle: '0x' + Math.random().toString(16).slice(2, 18), submittedAt: Date.now() },
   });
-  
   closeWorkModal();
   showToast('📤 결과물이 제출됐어요');
 }
@@ -540,19 +1172,17 @@ function submitWork(bountyId) {
 function openReview(bountyId) {
   const b = bounties[bountyId];
   if (!b || !b.submission) return;
-  
   let html = '<div class="space-y-4">';
   html += '<div class="bg-violet-50 rounded-xl p-3.5 border border-violet-100">';
   html += '<div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg><span class="text-xs font-semibold text-violet-900">Proof Bundle</span></div>';
-  html += '<div class="font-mono text-xs text-violet-700 break-all">' + b.submission.proofBundle + '</div></div>';
-  html += '<div><div class="text-sm font-medium text-neutral-700 mb-2">결과물 요약</div><div class="bg-neutral-50 rounded-xl p-3.5 text-sm text-neutral-700 leading-relaxed whitespace-pre-wrap">' + escapeHtml(b.submission.summary) + '</div></div>';
-  html += '<div><div class="text-sm font-medium text-neutral-700 mb-2">작업자 정보</div><div class="bg-neutral-50 rounded-xl p-3 text-xs"><div class="flex justify-between text-neutral-500"><span>주소</span><span class="font-mono text-neutral-700">' + b.workerShort + '</span></div></div></div>';
-  html += '<div class="bg-amber-50 rounded-xl p-3 text-xs text-amber-800 border border-amber-100"><div class="font-semibold mb-1">⏰ 14일 안에 응답하지 않으면</div><div>컨트랙트가 자동으로 작업자에게 정산합니다 (Non-custodial)</div></div>';
+  html += `<div class="font-mono text-xs text-violet-700 break-all">${b.submission.proofBundle}</div></div>`;
+  html += `<div><div class="text-sm font-medium text-neutral-700 mb-2">결과물 요약</div><div class="bg-neutral-50 rounded-xl p-3.5 text-sm text-neutral-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(b.submission.summary)}</div></div>`;
+  html += `<div><div class="text-sm font-medium text-neutral-700 mb-2">작업자 정보</div><div class="bg-neutral-50 rounded-xl p-3 text-xs"><div class="flex justify-between text-neutral-500"><span>주소</span><span class="font-mono text-neutral-700">${b.workerShort}</span></div></div></div>`;
+  html += '<div class="bg-amber-50 rounded-xl p-3 text-xs text-amber-800 border border-amber-100"><div class="font-semibold mb-1">⏰ 14일 안에 응답하지 않으면</div><div>컨트랙트가 자동으로 작업자에게 정산합니다</div></div>';
   html += '<div class="flex gap-2">';
-  html += '<button onclick="rejectWork(\'' + b.id + '\')" class="flex-1 px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 font-medium text-sm hover:bg-neutral-200">거부</button>';
-  html += '<button onclick="approveWork(\'' + b.id + '\')" class="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700">승인 · 정산</button>';
+  html += `<button onclick="rejectWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 font-medium text-sm hover:bg-neutral-200">거부</button>`;
+  html += `<button onclick="approveWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700">승인 · 정산</button>`;
   html += '</div></div>';
-  
   document.getElementById('reviewContent').innerHTML = html;
   document.getElementById('reviewModal').classList.remove('hidden');
   document.getElementById('reviewModal').classList.add('flex');
@@ -561,30 +1191,16 @@ function closeReviewModal() {
   document.getElementById('reviewModal').classList.add('hidden');
   document.getElementById('reviewModal').classList.remove('flex');
 }
-
 function approveWork(bountyId) {
   const b = bounties[bountyId];
   if (!b) return;
-  
-  db.ref('bounties/' + bountyId).update({
-    status: 'done',
-    completedAt: Date.now(),
-  });
-  
-  // 작업자에게 자동 정산은 다른 브라우저에서 listener로 처리됨
-  // 정산 결과 표시
+  db.ref('bounties/' + bountyId).update({ status: 'done', completedAt: Date.now() });
   closeReviewModal();
   openSettlement(b);
 }
-
 function rejectWork(bountyId) {
   if (!confirm('결과물을 거부하시겠어요? (재진행 처리)')) return;
-  db.ref('bounties/' + bountyId).update({
-    status: 'open',
-    worker: null,
-    workerShort: null,
-    submission: null,
-  });
+  db.ref('bounties/' + bountyId).update({ status: 'open', worker: null, workerShort: null, submission: null });
   closeReviewModal();
   showToast('재진행으로 전환됐어요');
 }
@@ -592,16 +1208,15 @@ function rejectWork(bountyId) {
 function openSettlement(b) {
   const total = b.reward;
   let html = '<div class="space-y-3">';
-  html += '<div class="text-center mb-4"><div class="text-xs text-neutral-500 mb-1">총 정산액</div><div class="font-display text-3xl font-bold tracking-tight">' + total + ' <span class="text-base font-medium text-neutral-500">XPLA</span></div></div>';
+  html += `<div class="text-center mb-4"><div class="text-xs text-neutral-500 mb-1">총 정산액</div><div class="font-display text-3xl font-bold tracking-tight">${total} <span class="text-base font-medium text-neutral-500">XPLA</span></div></div>`;
   html += '<div class="space-y-2">';
-  html += '<div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-100"><div><div class="text-sm font-medium text-emerald-900">작업자 보상</div><div class="text-xs text-emerald-700">' + b.workerShort + ' · 90%</div></div><div class="font-display font-bold text-emerald-900">' + (total * 0.9).toFixed(1) + '</div></div>';
-  html += '<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Validator</div><div class="text-xs text-neutral-500">검증자 · 3%</div></div><div class="font-display font-bold text-neutral-700">' + (total * 0.03).toFixed(1) + '</div></div>';
-  html += '<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Burn</div><div class="text-xs text-neutral-500">토큰 소각 · 3%</div></div><div class="font-display font-bold text-neutral-700">' + (total * 0.03).toFixed(1) + '</div></div>';
-  html += '<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Ecosystem · Team</div><div class="text-xs text-neutral-500">생태계 · 4%</div></div><div class="font-display font-bold text-neutral-700">' + (total * 0.04).toFixed(1) + '</div></div>';
+  html += `<div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-100"><div><div class="text-sm font-medium text-emerald-900">작업자 보상</div><div class="text-xs text-emerald-700">${b.workerShort} · 90%</div></div><div class="font-display font-bold text-emerald-900">${(total * 0.9).toFixed(1)}</div></div>`;
+  html += `<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Validator</div><div class="text-xs text-neutral-500">검증자 · 3%</div></div><div class="font-display font-bold text-neutral-700">${(total * 0.03).toFixed(1)}</div></div>`;
+  html += `<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Burn</div><div class="text-xs text-neutral-500">토큰 소각 · 3%</div></div><div class="font-display font-bold text-neutral-700">${(total * 0.03).toFixed(1)}</div></div>`;
+  html += `<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Ecosystem · Team</div><div class="text-xs text-neutral-500">생태계 · 4%</div></div><div class="font-display font-bold text-neutral-700">${(total * 0.04).toFixed(1)}</div></div>`;
   html += '</div>';
   html += '<div class="mt-4 px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-100 flex items-start gap-2"><svg class="w-4 h-4 mt-0.5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg><div class="text-xs text-emerald-800"><div class="font-semibold mb-0.5">컨트랙트가 자동 분배</div><div>의뢰자 승인과 동시에 코드로 정산되었습니다</div></div></div>';
   html += '</div>';
-  
   document.getElementById('settlementContent').innerHTML = html;
   document.getElementById('settlementModal').classList.remove('hidden');
   document.getElementById('settlementModal').classList.add('flex');
@@ -611,71 +1226,24 @@ function closeSettlementModal() {
   document.getElementById('settlementModal').classList.remove('flex');
 }
 
-// ============ 보상 자동 수령 (작업자 측) ============
 function checkAndCollectRewards() {
-  // 내가 작업자인데 status가 done인 바운티들 → 잔액 추가 (한 번만)
-  const collected = JSON.parse(localStorage.getItem('bounx-collected-v6') || '[]');
+  if (!currentUser) return;
+  const collected = JSON.parse(localStorage.getItem('bounx-collected-v7') || '[]');
   Object.values(bounties).forEach(b => {
     if (b.worker === currentUser.address && b.status === 'done' && !collected.includes(b.id)) {
       const reward = b.reward * 0.9;
       currentUser.balance += reward;
       collected.push(b.id);
-      showToast('💰 ' + reward.toFixed(1) + ' XPLA 정산 받음 (' + b.title.slice(0, 15) + '...)');
+      showToast('💰 ' + reward.toFixed(1) + ' XPLA 정산 받음');
       saveUser();
     }
   });
-  localStorage.setItem('bounx-collected-v6', JSON.stringify(collected));
+  localStorage.setItem('bounx-collected-v7', JSON.stringify(collected));
 }
 
-// ============ 렌더 ============
-function renderBounties() {
-  const list = document.getElementById('bountyList');
-  const empty = document.getElementById('emptyState');
-  
-  const bountyArr = Object.values(bounties).sort((a, b) => b.createdAt - a.createdAt);
-  const filtered = activeCategory === '전체' ? bountyArr : bountyArr.filter(b => b.category === activeCategory);
-  
-  document.getElementById('bountyCount').textContent = filtered.length + '개';
-  
-  Array.from(list.children).forEach(child => { if (child.id !== 'emptyState') child.remove(); });
-  
-  if (filtered.length === 0) { empty.style.display = ''; return; }
-  empty.style.display = 'none';
-  
-  const badges = {
-    open: '<span class="badge-open text-[10px] font-semibold px-2 py-0.5 rounded-full">진행 가능</span>',
-    progress: '<span class="badge-progress text-[10px] font-semibold px-2 py-0.5 rounded-full">진행 중</span>',
-    review: '<span class="badge-review text-[10px] font-semibold px-2 py-0.5 rounded-full">검토 대기</span>',
-    done: '<span class="badge-done text-[10px] font-semibold px-2 py-0.5 rounded-full">완료</span>',
-  };
-  
-  filtered.forEach(b => {
-    const isMine = b.requester === currentUser.address;
-    const isWorker = b.worker === currentUser.address;
-    const card = document.createElement('div');
-    card.className = 'bounty-card rounded-2xl p-4' + (isMine || isWorker ? ' my-bounty' : '');
-    card.onclick = () => openDetail(b.id);
-    
-    let html = '<div class="flex items-center justify-between mb-2.5">';
-    html += '<div class="flex items-center gap-1.5 text-xs text-neutral-500 font-medium">';
-    html += '<span>' + b.category + '</span>';
-    if (isMine) html += '<span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">내 바운티</span>';
-    else if (isWorker) html += '<span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">내 작업</span>';
-    html += '</div>';
-    html += badges[b.status] + '</div>';
-    html += '<h3 class="font-display font-semibold text-neutral-900 mb-1 leading-tight">' + escapeHtml(b.title) + '</h3>';
-    if (b.desc) html += '<p class="text-xs text-neutral-500 line-clamp-2 mb-3">' + escapeHtml(b.desc) + '</p>';
-    else html += '<div class="mb-3"></div>';
-    html += '<div class="flex items-end justify-between pt-2 border-t border-neutral-100">';
-    html += '<div><div class="text-lg font-bold text-neutral-900 leading-none">' + b.reward + ' <span class="text-xs font-medium text-neutral-500">XPLA</span></div><div class="text-xs text-neutral-500 mt-1">⏱ ' + b.deadline + '</div></div>';
-    html += '<div class="text-[10px] text-neutral-400 font-mono">' + b.requesterShort + '</div>';
-    html += '</div>';
-    card.innerHTML = html;
-    list.appendChild(card);
-  });
-}
-
+// ============ 내 활동 ============
 function renderActivity() {
+  if (!currentUser) return;
   const list = document.getElementById('activityList');
   const bountyArr = Object.values(bounties);
   const myBounties = bountyArr.filter(b => b.requester === currentUser.address || b.worker === currentUser.address);
@@ -702,23 +1270,23 @@ function renderActivity() {
   };
   
   myBounties.forEach(b => {
+    const cat = getCategoryById(b.categoryId);
     const isMine = b.requester === currentUser.address;
     const item = document.createElement('div');
     item.className = 'bg-white rounded-2xl p-4 border border-neutral-100 hover:border-neutral-200 cursor-pointer transition-colors';
     item.onclick = () => openDetail(b.id);
-    
     let html = '<div class="flex items-start justify-between gap-3"><div class="flex-1 min-w-0">';
-    html += '<div class="flex items-center gap-2 mb-1">';
-    html += '<span class="text-xs text-neutral-500">' + b.category + '</span>';
-    html += '<span class="' + statusInfo[b.status].cls + ' text-[10px] font-semibold px-2 py-0.5 rounded-full">' + statusInfo[b.status].label + '</span>';
-    html += '<span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">' + (isMine ? '의뢰자' : '작업자') + '</span>';
+    html += '<div class="flex items-center gap-2 mb-1 flex-wrap">';
+    html += `<span class="text-xs text-neutral-500">${cat.icon} ${cat.name}</span>`;
+    html += `<span class="${statusInfo[b.status].cls} text-[10px] font-semibold px-2 py-0.5 rounded-full">${statusInfo[b.status].label}</span>`;
+    html += `<span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">${isMine ? '의뢰자' : '작업자'}</span>`;
     html += '</div>';
-    html += '<div class="font-medium text-neutral-900 mb-1 truncate">' + escapeHtml(b.title) + '</div>';
-    html += '<div class="text-xs text-neutral-500">' + new Date(b.createdAt).toLocaleString('ko') + '</div>';
+    html += `<div class="font-medium text-neutral-900 mb-1 truncate">${escapeHtml(b.title)}</div>`;
+    html += `<div class="text-xs text-neutral-500">${timeAgo(b.createdAt)}</div>`;
     html += '</div>';
     html += '<div class="text-right flex-shrink-0">';
-    html += '<div class="font-display font-bold">' + b.reward + ' <span class="text-xs font-medium text-neutral-500">XPLA</span></div>';
-    if (b.status === 'done') html += '<div class="text-[10px] text-emerald-600 mt-0.5">' + (isMine ? '정산 완료' : '+ ' + (b.reward * 0.9).toFixed(1)) + '</div>';
+    html += `<div class="font-display font-bold">${b.reward} <span class="text-xs font-medium text-neutral-500">XPLA</span></div>`;
+    if (b.status === 'done') html += `<div class="text-[10px] text-emerald-600 mt-0.5">${isMine ? '정산 완료' : '+ ' + (b.reward * 0.9).toFixed(1)}</div>`;
     html += '</div></div>';
     item.innerHTML = html;
     list.appendChild(item);
@@ -730,7 +1298,6 @@ function escapeHtml(s) {
   if (!s) return '';
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
-
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -739,16 +1306,7 @@ function showToast(msg) {
 }
 
 // ============ 이벤트 ============
-document.querySelectorAll('.chip').forEach(chip => {
-  chip.addEventListener('click', (e) => {
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    e.target.classList.add('active');
-    activeCategory = e.target.dataset.category;
-    renderBounties();
-  });
-});
-
-['createModal', 'detailModal', 'workModal', 'reviewModal', 'settlementModal'].forEach(id => {
+['createModal', 'detailModal', 'workModal', 'reviewModal', 'settlementModal', 'walletConnectModal'].forEach(id => {
   document.getElementById(id).addEventListener('click', (e) => {
     if (e.target.id === id) {
       document.getElementById(id).classList.add('hidden');
@@ -766,12 +1324,9 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// ============ 초기화 ============
-initUser();
-listenToBounties();
-
-// 주기적으로 보상 체크 (다른 브라우저에서 승인됐을 때)
-setInterval(checkAndCollectRewards, 2000);
+// ============ 초기 진입 ============
+loadInterests();
+// 처음엔 랜딩 페이지부터 (showPage('landing')는 기본)
 </script>
 
 </body>
