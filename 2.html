@@ -323,7 +323,12 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
     mix-blend-mode: overlay;
   }
-  #page-onboarding > *, #page-app > * { position: relative; z-index: 1; }
+  #page-onboarding > :not(.landing-glow):not(.noise-layer),
+  #page-app > :not(.landing-glow):not(.noise-layer) { position: relative; z-index: 1; }
+  #page-onboarding > .landing-glow,
+  #page-app > .landing-glow,
+  #page-onboarding > .noise-layer,
+  #page-app > .noise-layer { position: absolute; z-index: 0; }
   #page-app header {
     background: rgba(5, 8, 22, 0.74) !important;
     border-color: rgba(255,255,255,0.1) !important;
