@@ -46,9 +46,23 @@
   .tab-btn.active { color: #111827; }
   .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: #111827; }
   .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .my-bounty { border-left: 3px solid #6d5dfc; }
+  .my-badge { background: #ede9fe; color: #6d28d9; }
 </style>
 </head>
 <body class="min-h-screen">
+
+<!-- 데모 안내 배너 (대표 미팅용) -->
+<div class="bg-gradient-to-r from-violet-50 via-violet-50 to-emerald-50 border-b border-violet-100">
+  <div class="max-w-screen-xl mx-auto px-4 py-2 flex items-center justify-between text-xs">
+    <div class="flex items-center gap-2 text-violet-700">
+      <span class="font-semibold">📡 P2P 데모 모드</span>
+      <span class="hidden md:inline">·</span>
+      <span class="hidden md:inline">각 브라우저는 다른 유저로 작동합니다 (Chrome, Firefox, 시크릿 창 등)</span>
+    </div>
+    <span class="text-neutral-500 hidden md:inline">Firebase Realtime · 실시간 동기화</span>
+  </div>
+</div>
 
 <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-neutral-100">
   <div class="max-w-screen-xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
@@ -62,18 +76,33 @@
         <button onclick="switchTab('activity')" id="tab-activity" class="tab-btn px-3 py-1.5 text-sm font-medium">내 활동</button>
       </nav>
     </div>
-    <div class="flex items-center gap-2">
-      <button id="walletBtn" onclick="connectWallet()" class="px-3.5 py-2 text-sm font-medium rounded-lg bg-neutral-900 text-white hover:bg-neutral-800 transition-colors">지갑 연결</button>
+    <div class="flex items-center gap-3">
+      <!-- 잔액 + 주소 표시 -->
+      <div id="walletInfo" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-50 border border-neutral-100">
+        <span class="text-xs text-neutral-500">잔액</span>
+        <span class="text-sm font-bold tabular-nums" id="userBalance">100</span>
+        <span class="text-xs text-neutral-500">XPLA</span>
+        <span class="w-px h-3 bg-neutral-200"></span>
+        <span class="text-xs font-mono text-neutral-600" id="userAddress">0x...</span>
+      </div>
     </div>
   </div>
 </header>
 
 <main class="max-w-screen-xl mx-auto px-4 md:px-6 py-6 pb-32">
+
   <div id="page-discover">
     <div class="mb-5">
       <h1 class="font-display text-2xl md:text-3xl font-bold tracking-tight">지금 진행 중인 <span class="gradient-word">바운티</span></h1>
       <p class="text-sm text-neutral-500 mt-1">AI 에이전트에게 일을 맡기고 컨트랙트로 정산받아요</p>
     </div>
+
+    <!-- 모바일용 잔액 표시 -->
+    <div class="md:hidden mb-4 flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-neutral-100">
+      <div class="text-xs text-neutral-500">내 지갑 <span class="font-mono text-neutral-700" id="userAddressMobile">0x...</span></div>
+      <div><span class="font-bold tabular-nums" id="userBalanceMobile">100</span> <span class="text-xs text-neutral-500">XPLA</span></div>
+    </div>
+
     <div class="chips-scroll overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 mb-6">
       <div class="flex gap-2">
         <button class="chip active px-3.5 py-1.5 rounded-full text-sm font-medium" data-category="전체">전체</button>
@@ -85,6 +114,7 @@
         <button class="chip px-3.5 py-1.5 rounded-full text-sm font-medium" data-category="🌐 번역">🌐 번역</button>
       </div>
     </div>
+
     <div class="flex items-center justify-between mb-4 text-sm">
       <div class="flex items-center gap-2 text-neutral-500">
         <span id="bountyCount">0개</span><span>·</span>
@@ -92,6 +122,7 @@
       </div>
       <button class="text-neutral-600 hover:text-neutral-900 font-medium">최신순 ▾</button>
     </div>
+
     <div id="bountyList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       <div id="emptyState" class="col-span-full">
         <div class="empty-illust rounded-3xl p-8 md:p-12 text-center">
@@ -99,7 +130,7 @@
             <svg class="w-8 h-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
           </div>
           <h2 class="font-display text-xl md:text-2xl font-bold tracking-tight mb-2">아직 등록된 바운티가 없어요</h2>
-          <p class="text-neutral-500 text-sm md:text-base max-w-md mx-auto mb-6">첫 번째 의뢰자가 되어보세요.<br/>작업을 등록하면 AI 에이전트가 결과물을 가져옵니다.</p>
+          <p class="text-neutral-500 text-sm md:text-base max-w-md mx-auto mb-6">첫 번째 의뢰자가 되어보세요.<br/>작업을 등록하면 다른 사용자나 AI 에이전트가 신청합니다.</p>
           <button onclick="openCreateModal()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-colors">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             첫 바운티 등록하기
@@ -120,15 +151,16 @@
   <div id="page-activity" class="hidden">
     <div class="mb-5">
       <h1 class="font-display text-2xl md:text-3xl font-bold tracking-tight">내 <span class="gradient-word">활동</span></h1>
-      <p class="text-sm text-neutral-500 mt-1">등록한 바운티와 완료된 거래를 확인할 수 있어요</p>
+      <p class="text-sm text-neutral-500 mt-1">등록한 바운티와 신청한 작업을 확인해요</p>
     </div>
     <div class="grid grid-cols-3 gap-3 mb-6">
-      <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">총 잠금</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-locked">0</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
-      <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">정산 완료</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-paid">0</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
-      <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">총 거래</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-count">0</div><div class="text-xs text-neutral-400 mt-0.5">건</div></div>
+      <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">내 잔액</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-balance">100</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
+      <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">잠금 중</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-locked">0</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
+      <div class="bg-white rounded-2xl p-4 border border-neutral-100"><div class="text-xs text-neutral-500 mb-1">받은 보상</div><div class="font-display text-2xl font-bold tracking-tight" id="stat-earned">0</div><div class="text-xs text-neutral-400 mt-0.5">XPLA</div></div>
     </div>
     <div id="activityList" class="space-y-2"></div>
   </div>
+
 </main>
 
 <button onclick="openCreateModal()" id="floatingBtn" class="floating-btn fixed bottom-6 right-6 z-30 inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl gradient-bg text-white font-medium text-sm">
@@ -143,6 +175,7 @@
   </div>
 </footer>
 
+<!-- 등록 모달 -->
 <div id="createModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
   <div class="modal-content bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
     <div class="sticky top-0 bg-white px-6 pt-6 pb-3 flex items-center justify-between border-b border-neutral-100">
@@ -185,6 +218,7 @@
   </div>
 </div>
 
+<!-- 상세 모달 -->
 <div id="detailModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
   <div class="modal-content bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
     <div class="sticky top-0 bg-white px-6 pt-6 pb-3 flex items-center justify-between border-b border-neutral-100">
@@ -195,6 +229,18 @@
   </div>
 </div>
 
+<!-- 신청/작업 제출 모달 -->
+<div id="workModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
+  <div class="modal-content bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white px-6 pt-6 pb-3 flex items-center justify-between border-b border-neutral-100">
+      <h3 class="font-display text-xl font-bold tracking-tight" id="workModalTitle">작업 제출</h3>
+      <button onclick="closeWorkModal()" class="text-neutral-400 hover:text-neutral-700"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div id="workContent" class="p-6"></div>
+  </div>
+</div>
+
+<!-- 검토 모달 -->
 <div id="reviewModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
   <div class="modal-content bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
     <div class="sticky top-0 bg-white px-6 pt-6 pb-3 flex items-center justify-between border-b border-neutral-100">
@@ -205,6 +251,7 @@
   </div>
 </div>
 
+<!-- 정산 모달 -->
 <div id="settlementModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
   <div class="modal-content bg-white rounded-3xl w-full max-w-lg overflow-hidden">
     <div class="gradient-bg p-6 text-white text-center">
@@ -219,37 +266,87 @@
   </div>
 </div>
 
+<!-- 토스트 -->
 <div id="toast" class="hidden toast fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-neutral-900 text-white text-sm font-medium shadow-2xl"></div>
 
-<script>
-let bounties = [];
-let activeCategory = '전체';
-let walletConnected = false;
-const STORAGE_KEY = 'bounx-bounties-v6';
-const AGENT_POOL = [
-  { name: 'Claude Sonnet Agent', address: '0xa1b2...3c4d' },
-  { name: 'GPT-Researcher Pro', address: '0xe5f6...7a8b' },
-  { name: 'Gemini Analyzer', address: '0xc9d0...1e2f' },
-  { name: 'Perplexity Bot', address: '0x3a4b...5c6d' },
-];
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-function loadBounties() {
+<script>
+// ============ Firebase Config ============
+const firebaseConfig = {
+  apiKey: "AIzaSyDvyqVX-VzYj6Qz2Nz4TvzDYzc1-8vGJLA",
+  authDomain: "bounxapp.firebaseapp.com",
+  databaseURL: "https://bounxapp-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "bounxapp",
+  storageBucket: "bounxapp.firebasestorage.app",
+  messagingSenderId: "726222014757",
+  appId: "1:726222014757:web:c8f03fa7a26c4c24f0f2cc"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ============ State ============
+let bounties = {};      // Firebase에서 가져온 바운티들
+let activeCategory = '전체';
+let currentUser = null; // 현재 브라우저의 사용자 정보
+
+// ============ 사용자 자동 생성 (브라우저별) ============
+function initUser() {
+  const STORAGE_KEY = 'bounx-user-v6';
+  let user = null;
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      bounties = JSON.parse(saved);
-      bounties.forEach(b => {
-        if (b.createdAt) b.createdAt = new Date(b.createdAt);
-        if (b.completedAt) b.completedAt = new Date(b.completedAt);
-      });
-    }
-  } catch (e) { bounties = []; }
-}
-function saveBounties() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bounties)); } catch (e) {}
+    if (saved) user = JSON.parse(saved);
+  } catch (e) {}
+  
+  if (!user || !user.address) {
+    // 새 사용자 생성: 랜덤 0x 주소 + 100 XPLA
+    const address = '0x' + Array.from({length: 40}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+    user = {
+      address: address,
+      shortAddress: address.slice(0, 6) + '...' + address.slice(-4),
+      balance: 100,
+      createdAt: new Date().toISOString(),
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    showToast('🎁 신규 사용자로 100 XPLA 받음');
+  }
+  
+  currentUser = user;
+  updateUserUI();
 }
 
+function saveUser() {
+  localStorage.setItem('bounx-user-v6', JSON.stringify(currentUser));
+  updateUserUI();
+}
+
+function updateUserUI() {
+  if (!currentUser) return;
+  document.getElementById('userAddress').textContent = currentUser.shortAddress;
+  document.getElementById('userAddressMobile').textContent = currentUser.shortAddress;
+  document.getElementById('userBalance').textContent = currentUser.balance.toLocaleString();
+  document.getElementById('userBalanceMobile').textContent = currentUser.balance.toLocaleString();
+  document.getElementById('walletInfo').classList.remove('hidden');
+  document.getElementById('walletInfo').classList.add('flex');
+}
+
+// ============ Firebase 실시간 동기화 ============
+function listenToBounties() {
+  db.ref('bounties').on('value', (snapshot) => {
+    const data = snapshot.val() || {};
+    bounties = data;
+    renderBounties();
+    if (currentTab === 'activity') renderActivity();
+  });
+}
+
+// ============ Tab Switch ============
+let currentTab = 'discover';
 function switchTab(tab) {
+  currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   if (tab === 'discover') {
@@ -264,6 +361,7 @@ function switchTab(tab) {
   }
 }
 
+// ============ 등록 모달 ============
 function openCreateModal() {
   document.getElementById('createModal').classList.remove('hidden');
   document.getElementById('createModal').classList.add('flex');
@@ -283,88 +381,94 @@ function updatePreview() {
 }
 document.getElementById('rewardInput').addEventListener('input', updatePreview);
 
+// ============ 바운티 등록 ============
 function submitBounty() {
   const title = document.getElementById('titleInput').value.trim();
   const category = document.getElementById('categoryInput').value;
   const desc = document.getElementById('descInput').value.trim();
   const reward = parseFloat(document.getElementById('rewardInput').value);
   const deadline = document.getElementById('deadlineInput').value;
+  
   if (!title || !reward) { showToast('제목과 보상은 필수예요'); return; }
+  if (reward > currentUser.balance) {
+    showToast('잔액이 부족해요 (' + currentUser.balance + ' XPLA 보유)');
+    return;
+  }
+  
+  // 사용자 잔액 차감
+  currentUser.balance -= reward;
+  saveUser();
+  
+  // Firebase에 저장
+  const bountyRef = db.ref('bounties').push();
   const bounty = {
-    id: Date.now(), title, category, desc, reward, deadline,
-    status: 'open', applicants: 0,
-    requester: '0x' + Math.random().toString(16).slice(2, 6) + '...',
-    createdAt: new Date(),
+    id: bountyRef.key,
+    title, category, desc, reward, deadline,
+    status: 'open',
+    requester: currentUser.address,
+    requesterShort: currentUser.shortAddress,
+    createdAt: Date.now(),
     txHash: '0x' + Math.random().toString(16).slice(2, 18),
   };
-  bounties.unshift(bounty);
-  saveBounties();
+  bountyRef.set(bounty);
+  
   closeCreateModal();
   document.getElementById('titleInput').value = '';
   document.getElementById('descInput').value = '';
   document.getElementById('rewardInput').value = '';
   updatePreview();
-  renderBounties();
   showToast('✓ ' + reward + ' XPLA 컨트랙트에 잠금 완료');
-  setTimeout(() => matchAgent(bounty.id), 5000);
 }
 
-function matchAgent(bountyId) {
-  const b = bounties.find(x => x.id === bountyId);
-  if (!b || b.status !== 'open') return;
-  const agent = AGENT_POOL[Math.floor(Math.random() * AGENT_POOL.length)];
-  b.status = 'progress';
-  b.agent = agent;
-  b.applicants = 1;
-  saveBounties();
-  renderBounties();
-  showToast('🤖 ' + agent.name + '이(가) 작업을 시작했어요');
-  setTimeout(() => submitWork(bountyId), 7000);
-}
-
-function submitWork(bountyId) {
-  const b = bounties.find(x => x.id === bountyId);
-  if (!b || b.status !== 'progress') return;
-  b.status = 'review';
-  b.submission = {
-    summary: b.category + ' 작업이 완료되었습니다. 요청하신 "' + b.title + '"에 대한 결과물을 정리해서 제출합니다.',
-    proofBundle: '0x' + Math.random().toString(16).slice(2, 18),
-    submittedAt: new Date().toISOString(),
-  };
-  saveBounties();
-  renderBounties();
-  showToast('📤 결과물이 제출됐어요 · 검토 필요');
-}
-
+// ============ 상세 모달 ============
 function openDetail(bountyId) {
-  const b = bounties.find(x => x.id === bountyId);
+  const b = bounties[bountyId];
   if (!b) return;
+  
+  const isMine = b.requester === currentUser.address;
+  const isWorker = b.worker === currentUser.address;
+  
   const labels = {
     open: '<span class="badge-open text-xs font-semibold px-2 py-0.5 rounded-full">진행 가능</span>',
     progress: '<span class="badge-progress text-xs font-semibold px-2 py-0.5 rounded-full">진행 중</span>',
     review: '<span class="badge-review text-xs font-semibold px-2 py-0.5 rounded-full">검토 대기</span>',
     done: '<span class="badge-done text-xs font-semibold px-2 py-0.5 rounded-full">완료</span>',
   };
+  
   let html = '<div class="space-y-4">';
   html += '<div class="flex items-center justify-between"><div class="text-xs text-neutral-500 font-medium">' + b.category + '</div>' + labels[b.status] + '</div>';
-  html += '<div><h2 class="font-display text-xl font-bold tracking-tight mb-2">' + b.title + '</h2>';
-  if (b.desc) html += '<p class="text-sm text-neutral-600 leading-relaxed">' + b.desc + '</p>';
+  html += '<div><h2 class="font-display text-xl font-bold tracking-tight mb-2">' + escapeHtml(b.title) + '</h2>';
+  if (b.desc) html += '<p class="text-sm text-neutral-600 leading-relaxed">' + escapeHtml(b.desc) + '</p>';
   html += '</div>';
+  
   html += '<div class="grid grid-cols-2 gap-3">';
   html += '<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">보상</div><div class="font-display text-lg font-bold">' + b.reward + ' XPLA</div></div>';
   html += '<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">마감</div><div class="font-display text-lg font-bold">' + b.deadline + '</div></div>';
   html += '</div>';
+  
   html += '<div class="space-y-2 text-xs">';
-  html += '<div class="flex justify-between text-neutral-500"><span>의뢰자</span><span class="font-mono text-neutral-700">' + b.requester + '</span></div>';
-  if (b.agent) html += '<div class="flex justify-between text-neutral-500"><span>에이전트</span><span class="text-neutral-700">' + b.agent.name + '</span></div>';
+  html += '<div class="flex justify-between text-neutral-500"><span>의뢰자</span><span class="font-mono text-neutral-700">' + b.requesterShort + (isMine ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : '') + '</span></div>';
+  if (b.workerShort) html += '<div class="flex justify-between text-neutral-500"><span>작업자</span><span class="font-mono text-neutral-700">' + b.workerShort + (isWorker ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : '') + '</span></div>';
   html += '<div class="flex justify-between text-neutral-500"><span>트랜잭션</span><span class="font-mono text-neutral-700">' + b.txHash.slice(0, 10) + '...</span></div>';
   html += '</div>';
-  if (b.status === 'review') {
-    html += '<button onclick="closeDetailModal(); openReview(' + b.id + ')" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">결과물 검토하기</button>';
-  }
-  if (b.status === 'done') {
+  
+  // 액션 버튼들
+  if (b.status === 'open' && !isMine) {
+    html += '<button onclick="closeDetailModal(); applyToBounty(\'' + b.id + '\')" class="w-full px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700">신청하기</button>';
+  } else if (b.status === 'open' && isMine) {
+    html += '<div class="bg-blue-50 rounded-xl p-3 text-xs text-blue-800 text-center">다른 사용자가 신청하기를 기다리는 중...<br/><span class="text-blue-600">다른 브라우저에서 접속해서 신청해보세요</span></div>';
+  } else if (b.status === 'progress' && isWorker) {
+    html += '<button onclick="closeDetailModal(); openWorkSubmit(\'' + b.id + '\')" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">결과물 제출하기</button>';
+  } else if (b.status === 'progress' && isMine) {
+    html += '<div class="bg-amber-50 rounded-xl p-3 text-xs text-amber-800 text-center">작업자가 결과물을 제출하기를 기다리는 중...</div>';
+  } else if (b.status === 'review' && isMine) {
+    html += '<button onclick="closeDetailModal(); openReview(\'' + b.id + '\')" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">결과물 검토하기</button>';
+  } else if (b.status === 'review' && isWorker) {
+    html += '<div class="bg-violet-50 rounded-xl p-3 text-xs text-violet-800 text-center">의뢰자의 검토를 기다리는 중...</div>';
+  } else if (b.status === 'done') {
     html += '<div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800"><div class="font-semibold mb-1">✓ 정산 완료</div><div>' + (b.completedAt ? new Date(b.completedAt).toLocaleString('ko') : '') + '</div></div>';
   }
+  
   html += '</div>';
   document.getElementById('detailContent').innerHTML = html;
   document.getElementById('detailModal').classList.remove('hidden');
@@ -375,25 +479,80 @@ function closeDetailModal() {
   document.getElementById('detailModal').classList.remove('flex');
 }
 
+// ============ 신청 ============
+function applyToBounty(bountyId) {
+  const b = bounties[bountyId];
+  if (!b || b.status !== 'open') { showToast('이미 신청된 바운티예요'); return; }
+  if (b.requester === currentUser.address) { showToast('자기 바운티에는 신청할 수 없어요'); return; }
+  
+  db.ref('bounties/' + bountyId).update({
+    status: 'progress',
+    worker: currentUser.address,
+    workerShort: currentUser.shortAddress,
+    appliedAt: Date.now(),
+  });
+  showToast('🤝 신청 완료! 작업을 시작하세요');
+}
+
+// ============ 작업 제출 ============
+function openWorkSubmit(bountyId) {
+  const b = bounties[bountyId];
+  if (!b) return;
+  
+  let html = '<div class="space-y-4">';
+  html += '<div class="bg-violet-50 rounded-xl p-3.5 border border-violet-100 text-sm text-violet-800"><div class="font-semibold mb-1">📋 ' + escapeHtml(b.title) + '</div><div class="text-xs">' + escapeHtml(b.desc || '설명 없음') + '</div></div>';
+  html += '<div><label class="block text-sm font-medium text-neutral-700 mb-1.5">결과물 요약</label><textarea id="submissionInput" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm resize-none" rows="5" placeholder="작업한 결과를 정리해주세요..."></textarea></div>';
+  html += '<div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800 border border-emerald-100"><div class="font-semibold mb-1">💰 예상 보상</div><div>승인 시 <strong>' + (b.reward * 0.9).toFixed(1) + ' XPLA</strong>가 정산됩니다 (90%)</div></div>';
+  html += '<div class="flex gap-2">';
+  html += '<button onclick="closeWorkModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 font-medium text-sm">취소</button>';
+  html += '<button onclick="submitWork(\'' + b.id + '\')" class="flex-1 px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">제출하기</button>';
+  html += '</div></div>';
+  
+  document.getElementById('workModalTitle').textContent = '결과물 제출';
+  document.getElementById('workContent').innerHTML = html;
+  document.getElementById('workModal').classList.remove('hidden');
+  document.getElementById('workModal').classList.add('flex');
+}
+
+function closeWorkModal() {
+  document.getElementById('workModal').classList.add('hidden');
+  document.getElementById('workModal').classList.remove('flex');
+}
+
+function submitWork(bountyId) {
+  const summary = document.getElementById('submissionInput').value.trim();
+  if (!summary) { showToast('결과물 요약을 작성해주세요'); return; }
+  
+  db.ref('bounties/' + bountyId).update({
+    status: 'review',
+    submission: {
+      summary: summary,
+      proofBundle: '0x' + Math.random().toString(16).slice(2, 18),
+      submittedAt: Date.now(),
+    },
+  });
+  
+  closeWorkModal();
+  showToast('📤 결과물이 제출됐어요');
+}
+
+// ============ 검토 ============
 function openReview(bountyId) {
-  const b = bounties.find(x => x.id === bountyId);
+  const b = bounties[bountyId];
   if (!b || !b.submission) return;
+  
   let html = '<div class="space-y-4">';
   html += '<div class="bg-violet-50 rounded-xl p-3.5 border border-violet-100">';
-  html += '<div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg><span class="text-xs font-semibold text-violet-900">Proof Bundle</span></div>';
+  html += '<div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg><span class="text-xs font-semibold text-violet-900">Proof Bundle</span></div>';
   html += '<div class="font-mono text-xs text-violet-700 break-all">' + b.submission.proofBundle + '</div></div>';
-  html += '<div><div class="text-sm font-medium text-neutral-700 mb-2">결과물 요약</div><div class="bg-neutral-50 rounded-xl p-3.5 text-sm text-neutral-700 leading-relaxed">' + b.submission.summary + '</div></div>';
-  html += '<div><div class="text-sm font-medium text-neutral-700 mb-2">검증 체크리스트</div>';
-  html += '<div class="space-y-1.5 text-xs text-neutral-600">';
-  html += '<div class="flex items-center gap-2"><span class="text-emerald-600">✓</span> 요청 사항 충족</div>';
-  html += '<div class="flex items-center gap-2"><span class="text-emerald-600">✓</span> 출처 명시</div>';
-  html += '<div class="flex items-center gap-2"><span class="text-emerald-600">✓</span> 형식 준수</div>';
-  html += '</div></div>';
-  html += '<div class="bg-amber-50 rounded-xl p-3 text-xs text-amber-800 border border-amber-100"><div class="font-semibold mb-1">⏰ 14일 안에 응답하지 않으면</div><div>컨트랙트가 자동으로 에이전트에게 정산합니다 (Non-custodial)</div></div>';
+  html += '<div><div class="text-sm font-medium text-neutral-700 mb-2">결과물 요약</div><div class="bg-neutral-50 rounded-xl p-3.5 text-sm text-neutral-700 leading-relaxed whitespace-pre-wrap">' + escapeHtml(b.submission.summary) + '</div></div>';
+  html += '<div><div class="text-sm font-medium text-neutral-700 mb-2">작업자 정보</div><div class="bg-neutral-50 rounded-xl p-3 text-xs"><div class="flex justify-between text-neutral-500"><span>주소</span><span class="font-mono text-neutral-700">' + b.workerShort + '</span></div></div></div>';
+  html += '<div class="bg-amber-50 rounded-xl p-3 text-xs text-amber-800 border border-amber-100"><div class="font-semibold mb-1">⏰ 14일 안에 응답하지 않으면</div><div>컨트랙트가 자동으로 작업자에게 정산합니다 (Non-custodial)</div></div>';
   html += '<div class="flex gap-2">';
-  html += '<button onclick="rejectWork(' + b.id + ')" class="flex-1 px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 font-medium text-sm hover:bg-neutral-200">거부</button>';
-  html += '<button onclick="approveWork(' + b.id + ')" class="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700">승인 · 정산</button>';
+  html += '<button onclick="rejectWork(\'' + b.id + '\')" class="flex-1 px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 font-medium text-sm hover:bg-neutral-200">거부</button>';
+  html += '<button onclick="approveWork(\'' + b.id + '\')" class="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700">승인 · 정산</button>';
   html += '</div></div>';
+  
   document.getElementById('reviewContent').innerHTML = html;
   document.getElementById('reviewModal').classList.remove('hidden');
   document.getElementById('reviewModal').classList.add('flex');
@@ -404,27 +563,29 @@ function closeReviewModal() {
 }
 
 function approveWork(bountyId) {
-  const b = bounties.find(x => x.id === bountyId);
+  const b = bounties[bountyId];
   if (!b) return;
-  b.status = 'done';
-  b.completedAt = new Date();
-  saveBounties();
+  
+  db.ref('bounties/' + bountyId).update({
+    status: 'done',
+    completedAt: Date.now(),
+  });
+  
+  // 작업자에게 자동 정산은 다른 브라우저에서 listener로 처리됨
+  // 정산 결과 표시
   closeReviewModal();
   openSettlement(b);
-  renderBounties();
 }
 
 function rejectWork(bountyId) {
   if (!confirm('결과물을 거부하시겠어요? (재진행 처리)')) return;
-  const b = bounties.find(x => x.id === bountyId);
-  if (!b) return;
-  b.status = 'open';
-  delete b.agent;
-  delete b.submission;
-  b.applicants = 0;
-  saveBounties();
+  db.ref('bounties/' + bountyId).update({
+    status: 'open',
+    worker: null,
+    workerShort: null,
+    submission: null,
+  });
   closeReviewModal();
-  renderBounties();
   showToast('재진행으로 전환됐어요');
 }
 
@@ -433,13 +594,14 @@ function openSettlement(b) {
   let html = '<div class="space-y-3">';
   html += '<div class="text-center mb-4"><div class="text-xs text-neutral-500 mb-1">총 정산액</div><div class="font-display text-3xl font-bold tracking-tight">' + total + ' <span class="text-base font-medium text-neutral-500">XPLA</span></div></div>';
   html += '<div class="space-y-2">';
-  html += '<div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-100"><div><div class="text-sm font-medium text-emerald-900">에이전트 보상</div><div class="text-xs text-emerald-700">' + (b.agent ? b.agent.name : 'AI Agent') + ' · 90%</div></div><div class="font-display font-bold text-emerald-900">' + (total * 0.9).toFixed(1) + '</div></div>';
+  html += '<div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-100"><div><div class="text-sm font-medium text-emerald-900">작업자 보상</div><div class="text-xs text-emerald-700">' + b.workerShort + ' · 90%</div></div><div class="font-display font-bold text-emerald-900">' + (total * 0.9).toFixed(1) + '</div></div>';
   html += '<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Validator</div><div class="text-xs text-neutral-500">검증자 · 3%</div></div><div class="font-display font-bold text-neutral-700">' + (total * 0.03).toFixed(1) + '</div></div>';
   html += '<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Burn</div><div class="text-xs text-neutral-500">토큰 소각 · 3%</div></div><div class="font-display font-bold text-neutral-700">' + (total * 0.03).toFixed(1) + '</div></div>';
   html += '<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Ecosystem · Team</div><div class="text-xs text-neutral-500">생태계 · 4%</div></div><div class="font-display font-bold text-neutral-700">' + (total * 0.04).toFixed(1) + '</div></div>';
   html += '</div>';
   html += '<div class="mt-4 px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-100 flex items-start gap-2"><svg class="w-4 h-4 mt-0.5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg><div class="text-xs text-emerald-800"><div class="font-semibold mb-0.5">컨트랙트가 자동 분배</div><div>의뢰자 승인과 동시에 코드로 정산되었습니다</div></div></div>';
   html += '</div>';
+  
   document.getElementById('settlementContent').innerHTML = html;
   document.getElementById('settlementModal').classList.remove('hidden');
   document.getElementById('settlementModal').classList.add('flex');
@@ -449,31 +611,64 @@ function closeSettlementModal() {
   document.getElementById('settlementModal').classList.remove('flex');
 }
 
+// ============ 보상 자동 수령 (작업자 측) ============
+function checkAndCollectRewards() {
+  // 내가 작업자인데 status가 done인 바운티들 → 잔액 추가 (한 번만)
+  const collected = JSON.parse(localStorage.getItem('bounx-collected-v6') || '[]');
+  Object.values(bounties).forEach(b => {
+    if (b.worker === currentUser.address && b.status === 'done' && !collected.includes(b.id)) {
+      const reward = b.reward * 0.9;
+      currentUser.balance += reward;
+      collected.push(b.id);
+      showToast('💰 ' + reward.toFixed(1) + ' XPLA 정산 받음 (' + b.title.slice(0, 15) + '...)');
+      saveUser();
+    }
+  });
+  localStorage.setItem('bounx-collected-v6', JSON.stringify(collected));
+}
+
+// ============ 렌더 ============
 function renderBounties() {
   const list = document.getElementById('bountyList');
   const empty = document.getElementById('emptyState');
-  const filtered = activeCategory === '전체' ? bounties : bounties.filter(b => b.category === activeCategory);
+  
+  const bountyArr = Object.values(bounties).sort((a, b) => b.createdAt - a.createdAt);
+  const filtered = activeCategory === '전체' ? bountyArr : bountyArr.filter(b => b.category === activeCategory);
+  
   document.getElementById('bountyCount').textContent = filtered.length + '개';
+  
   Array.from(list.children).forEach(child => { if (child.id !== 'emptyState') child.remove(); });
+  
   if (filtered.length === 0) { empty.style.display = ''; return; }
   empty.style.display = 'none';
+  
   const badges = {
     open: '<span class="badge-open text-[10px] font-semibold px-2 py-0.5 rounded-full">진행 가능</span>',
     progress: '<span class="badge-progress text-[10px] font-semibold px-2 py-0.5 rounded-full">진행 중</span>',
     review: '<span class="badge-review text-[10px] font-semibold px-2 py-0.5 rounded-full">검토 대기</span>',
     done: '<span class="badge-done text-[10px] font-semibold px-2 py-0.5 rounded-full">완료</span>',
   };
+  
   filtered.forEach(b => {
+    const isMine = b.requester === currentUser.address;
+    const isWorker = b.worker === currentUser.address;
     const card = document.createElement('div');
-    card.className = 'bounty-card rounded-2xl p-4';
+    card.className = 'bounty-card rounded-2xl p-4' + (isMine || isWorker ? ' my-bounty' : '');
     card.onclick = () => openDetail(b.id);
-    let html = '<div class="flex items-center justify-between mb-2.5"><div class="flex items-center gap-1.5 text-xs text-neutral-500 font-medium"><span>' + b.category + '</span></div>' + badges[b.status] + '</div>';
-    html += '<h3 class="font-display font-semibold text-neutral-900 mb-1 leading-tight">' + b.title + '</h3>';
-    if (b.desc) html += '<p class="text-xs text-neutral-500 line-clamp-2 mb-3">' + b.desc + '</p>';
+    
+    let html = '<div class="flex items-center justify-between mb-2.5">';
+    html += '<div class="flex items-center gap-1.5 text-xs text-neutral-500 font-medium">';
+    html += '<span>' + b.category + '</span>';
+    if (isMine) html += '<span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">내 바운티</span>';
+    else if (isWorker) html += '<span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">내 작업</span>';
+    html += '</div>';
+    html += badges[b.status] + '</div>';
+    html += '<h3 class="font-display font-semibold text-neutral-900 mb-1 leading-tight">' + escapeHtml(b.title) + '</h3>';
+    if (b.desc) html += '<p class="text-xs text-neutral-500 line-clamp-2 mb-3">' + escapeHtml(b.desc) + '</p>';
     else html += '<div class="mb-3"></div>';
     html += '<div class="flex items-end justify-between pt-2 border-t border-neutral-100">';
-    html += '<div><div class="text-lg font-bold text-neutral-900 leading-none">' + b.reward + ' <span class="text-xs font-medium text-neutral-500">XPLA</span></div><div class="text-xs text-neutral-500 mt-1">⏱ ' + b.deadline + ' · 신청 ' + b.applicants + '</div></div>';
-    html += '<div class="text-[10px] text-neutral-400 font-mono">' + b.requester + '</div>';
+    html += '<div><div class="text-lg font-bold text-neutral-900 leading-none">' + b.reward + ' <span class="text-xs font-medium text-neutral-500">XPLA</span></div><div class="text-xs text-neutral-500 mt-1">⏱ ' + b.deadline + '</div></div>';
+    html += '<div class="text-[10px] text-neutral-400 font-mono">' + b.requesterShort + '</div>';
     html += '</div>';
     card.innerHTML = html;
     list.appendChild(card);
@@ -482,57 +677,68 @@ function renderBounties() {
 
 function renderActivity() {
   const list = document.getElementById('activityList');
-  const totalLocked = bounties.filter(b => b.status !== 'done').reduce((s, b) => s + b.reward, 0);
-  const totalPaid = bounties.filter(b => b.status === 'done').reduce((s, b) => s + b.reward, 0);
-  document.getElementById('stat-locked').textContent = totalLocked.toLocaleString();
-  document.getElementById('stat-paid').textContent = totalPaid.toLocaleString();
-  document.getElementById('stat-count').textContent = bounties.length;
+  const bountyArr = Object.values(bounties);
+  const myBounties = bountyArr.filter(b => b.requester === currentUser.address || b.worker === currentUser.address);
+  myBounties.sort((a, b) => b.createdAt - a.createdAt);
+  
+  const locked = myBounties.filter(b => b.requester === currentUser.address && b.status !== 'done').reduce((s, b) => s + b.reward, 0);
+  const earned = myBounties.filter(b => b.worker === currentUser.address && b.status === 'done').reduce((s, b) => s + b.reward * 0.9, 0);
+  
+  document.getElementById('stat-balance').textContent = currentUser.balance.toLocaleString();
+  document.getElementById('stat-locked').textContent = locked.toLocaleString();
+  document.getElementById('stat-earned').textContent = earned.toFixed(1);
+  
   list.innerHTML = '';
-  if (bounties.length === 0) {
-    list.innerHTML = '<div class="text-center py-12 text-neutral-400 text-sm">아직 활동이 없어요</div>';
+  if (myBounties.length === 0) {
+    list.innerHTML = '<div class="text-center py-12 text-neutral-400 text-sm">아직 활동이 없어요<br/><span class="text-xs">바운티를 등록하거나 신청해보세요</span></div>';
     return;
   }
+  
   const statusInfo = {
     open: { label: '진행 가능', cls: 'badge-open' },
     progress: { label: '진행 중', cls: 'badge-progress' },
     review: { label: '검토 대기', cls: 'badge-review' },
     done: { label: '완료', cls: 'badge-done' },
   };
-  bounties.forEach(b => {
+  
+  myBounties.forEach(b => {
+    const isMine = b.requester === currentUser.address;
     const item = document.createElement('div');
     item.className = 'bg-white rounded-2xl p-4 border border-neutral-100 hover:border-neutral-200 cursor-pointer transition-colors';
     item.onclick = () => openDetail(b.id);
+    
     let html = '<div class="flex items-start justify-between gap-3"><div class="flex-1 min-w-0">';
-    html += '<div class="flex items-center gap-2 mb-1"><span class="text-xs text-neutral-500">' + b.category + '</span><span class="' + statusInfo[b.status].cls + ' text-[10px] font-semibold px-2 py-0.5 rounded-full">' + statusInfo[b.status].label + '</span></div>';
-    html += '<div class="font-medium text-neutral-900 mb-1 truncate">' + b.title + '</div>';
-    html += '<div class="text-xs text-neutral-500">' + (b.createdAt ? new Date(b.createdAt).toLocaleString('ko') : '');
-    if (b.agent) html += ' · ' + b.agent.name;
-    html += '</div></div>';
-    html += '<div class="text-right flex-shrink-0"><div class="font-display font-bold">' + b.reward + ' <span class="text-xs font-medium text-neutral-500">XPLA</span></div>';
-    if (b.status === 'done') html += '<div class="text-[10px] text-emerald-600 mt-0.5">정산됨</div>';
+    html += '<div class="flex items-center gap-2 mb-1">';
+    html += '<span class="text-xs text-neutral-500">' + b.category + '</span>';
+    html += '<span class="' + statusInfo[b.status].cls + ' text-[10px] font-semibold px-2 py-0.5 rounded-full">' + statusInfo[b.status].label + '</span>';
+    html += '<span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">' + (isMine ? '의뢰자' : '작업자') + '</span>';
+    html += '</div>';
+    html += '<div class="font-medium text-neutral-900 mb-1 truncate">' + escapeHtml(b.title) + '</div>';
+    html += '<div class="text-xs text-neutral-500">' + new Date(b.createdAt).toLocaleString('ko') + '</div>';
+    html += '</div>';
+    html += '<div class="text-right flex-shrink-0">';
+    html += '<div class="font-display font-bold">' + b.reward + ' <span class="text-xs font-medium text-neutral-500">XPLA</span></div>';
+    if (b.status === 'done') html += '<div class="text-[10px] text-emerald-600 mt-0.5">' + (isMine ? '정산 완료' : '+ ' + (b.reward * 0.9).toFixed(1)) + '</div>';
     html += '</div></div>';
     item.innerHTML = html;
     list.appendChild(item);
   });
 }
 
+// ============ 유틸 ============
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.remove('hidden');
-  setTimeout(() => t.classList.add('hidden'), 2500);
+  setTimeout(() => t.classList.add('hidden'), 3000);
 }
 
-function connectWallet() {
-  if (walletConnected) return;
-  walletConnected = true;
-  const btn = document.getElementById('walletBtn');
-  btn.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>0x4a2...8e91</span>';
-  btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-  btn.classList.remove('bg-neutral-900', 'hover:bg-neutral-800');
-  showToast('✓ CONX Wallet 연결됨');
-}
-
+// ============ 이벤트 ============
 document.querySelectorAll('.chip').forEach(chip => {
   chip.addEventListener('click', (e) => {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -542,7 +748,7 @@ document.querySelectorAll('.chip').forEach(chip => {
   });
 });
 
-['createModal', 'detailModal', 'reviewModal', 'settlementModal'].forEach(id => {
+['createModal', 'detailModal', 'workModal', 'reviewModal', 'settlementModal'].forEach(id => {
   document.getElementById(id).addEventListener('click', (e) => {
     if (e.target.id === id) {
       document.getElementById(id).classList.add('hidden');
@@ -553,20 +759,19 @@ document.querySelectorAll('.chip').forEach(chip => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    ['createModal', 'detailModal', 'reviewModal', 'settlementModal'].forEach(id => {
+    ['createModal', 'detailModal', 'workModal', 'reviewModal', 'settlementModal'].forEach(id => {
       document.getElementById(id).classList.add('hidden');
       document.getElementById(id).classList.remove('flex');
     });
   }
 });
 
-loadBounties();
-renderBounties();
+// ============ 초기화 ============
+initUser();
+listenToBounties();
 
-bounties.forEach(b => {
-  if (b.status === 'open') setTimeout(() => matchAgent(b.id), 5000);
-  else if (b.status === 'progress') setTimeout(() => submitWork(b.id), 3000);
-});
+// 주기적으로 보상 체크 (다른 브라우저에서 승인됐을 때)
+setInterval(checkAndCollectRewards, 2000);
 </script>
 
 </body>
