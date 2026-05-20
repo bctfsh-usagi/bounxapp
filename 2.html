@@ -293,6 +293,7 @@
   #page-onboarding,
   #page-app {
     position: relative;
+    isolation: isolate;
     overflow-x: hidden;
     color: #f8fafc;
     background:
@@ -300,6 +301,7 @@
       radial-gradient(circle at 85% 0%, rgba(20, 184, 166, 0.24), transparent 28%),
       radial-gradient(circle at 55% 100%, rgba(99, 102, 241, 0.18), transparent 34%),
       linear-gradient(135deg, #050816 0%, #0a0f20 50%, #061918 100%);
+    min-height: 100svh;
   }
   #page-onboarding::before,
   #page-app::before {
@@ -323,12 +325,20 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
     mix-blend-mode: overlay;
   }
-  #page-onboarding > :not(.landing-glow):not(.noise-layer),
-  #page-app > :not(.landing-glow):not(.noise-layer) { position: relative; z-index: 1; }
-  #page-onboarding > .landing-glow,
-  #page-app > .landing-glow,
-  #page-onboarding > .noise-layer,
-  #page-app > .noise-layer { position: absolute; z-index: 0; }
+  /* App/onboarding backgrounds are pseudo-layers only.
+     Keep decorative nodes out of normal flow to prevent top blank space. */
+  #page-onboarding > *,
+  #page-app > * { position: relative; z-index: 1; }
+  #page-app > .demo-banner { margin-top: 0 !important; }
+  body.route-landing #page-onboarding,
+  body.route-landing #page-app,
+  body.route-onboarding #page-landing,
+  body.route-onboarding #page-app,
+  body.route-app #page-landing,
+  body.route-app #page-onboarding { display: none !important; }
+  body.route-landing #page-landing,
+  body.route-onboarding #page-onboarding,
+  body.route-app #page-app { display: block !important; }
   #page-app header {
     background: rgba(5, 8, 22, 0.74) !important;
     border-color: rgba(255,255,255,0.1) !important;
@@ -568,7 +578,7 @@
 
 </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen route-landing">
 
 <!-- ============ 1. 랜딩 ============ -->
 <div id="page-landing" class="landing-shell min-h-screen relative overflow-hidden">
@@ -786,9 +796,6 @@
 
 <!-- ============ 2. 온보딩 ============ -->
 <div id="page-onboarding" class="hidden min-h-screen">
-  <div class="landing-glow one"></div>
-  <div class="landing-glow two"></div>
-  <div class="noise-layer"></div>
   <div class="max-w-screen-lg mx-auto px-5 py-8 md:py-14">
     <div class="mb-8 flex items-center justify-between">
       <button onclick="goToLanding()" class="flex items-center gap-2 text-white/90 hover:text-white">
@@ -850,10 +857,6 @@
 
 <!-- ============ 3. 메인 앱 ============ -->
 <div id="page-app" class="hidden min-h-screen">
-  <div class="landing-glow one"></div>
-  <div class="landing-glow two"></div>
-  <div class="noise-layer"></div>
-
   <div class="demo-banner">
     <div class="max-w-screen-lg mx-auto px-4 py-2 flex items-center justify-between text-xs">
       <div class="flex items-center gap-2">
@@ -1219,9 +1222,16 @@ function saveInterests() { localStorage.setItem('bounx-interests-v8', JSON.strin
 
 // ============ 페이지 ============
 function showPage(page) {
-  ['page-landing', 'page-onboarding', 'page-app'].forEach(id => { document.getElementById(id).classList.add('hidden'); });
-  document.getElementById('page-' + page).classList.remove('hidden');
-  window.scrollTo(0, 0);
+  const pages = ['page-landing', 'page-onboarding', 'page-app'];
+  document.body.classList.remove('route-landing', 'route-onboarding', 'route-app');
+  document.body.classList.add('route-' + page);
+  pages.forEach(id => {
+    const el = document.getElementById(id);
+    const isActive = id === 'page-' + page;
+    el.classList.toggle('hidden', !isActive);
+    el.style.display = isActive ? 'block' : 'none';
+  });
+  requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0, behavior: 'auto' }));
 }
 function startApp() {
   loadInterests();
