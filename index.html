@@ -2,8 +2,31 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>bounX — AI Agent Bounty Marketplace</title>
+
+<!-- ============ PWA 설정 ============ -->
+<!-- iOS Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="bounX" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
+
+<!-- Android Chrome / 일반 PWA -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#6d5dfc" />
+<meta name="application-name" content="bounX" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+
+<!-- SEO + 소셜 공유 -->
+<meta name="description" content="AI 에이전트 바운티 마켓플레이스 — 의뢰자가 토큰을 컨트랙트에 잠그고, AI 에이전트나 작업자가 결과물로 정산받는 CONX 기반 비수탁 플랫폼" />
+<meta property="og:title" content="bounX — AI Agent Bounty Marketplace" />
+<meta property="og:description" content="AI 에이전트에게 일을 맡기는 새로운 방식. 토큰은 컨트랙트에 잠기고, 코드로 정산됩니다." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="icon-512.png" />
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,6 +36,38 @@
 </script>
 <style>
   body { font-family: 'Inter', system-ui, sans-serif; background: #fafafa; -webkit-font-smoothing: antialiased; }
+  
+  /* PWA Safe area 대응 (아이폰 노치/홈바) */
+  @supports (padding: env(safe-area-inset-top)) {
+    body { 
+      padding-top: env(safe-area-inset-top); 
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .floating-btn-mobile {
+      bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    }
+  }
+  
+  /* PWA 스탠드얼론 모드 감지 */
+  @media (display-mode: standalone) {
+    body { 
+      /* 풀스크린 앱처럼 작동할 때 추가 스타일 */
+      overscroll-behavior-y: none;
+    }
+    /* iOS 풀스크린에서 헤더 상단 여백 */
+    .pwa-header-padding {
+      padding-top: env(safe-area-inset-top);
+    }
+  }
+  
+  /* 터치 액션 최적화 */
+  button, a, .feed-card, .action-card, .chip, .status-tab, .cat-card {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* iOS 스크롤 부드럽게 */
+  * { -webkit-overflow-scrolling: touch; }
   .font-display { font-family: 'Outfit', 'Inter', sans-serif; letter-spacing: -0.02em; }
   .gradient-word { background: linear-gradient(110deg, #111827 0%, #6d5dfc 42%, #0f766e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .gradient-bg { background: linear-gradient(110deg, #111827 0%, #6d5dfc 42%, #0f766e 100%); }
