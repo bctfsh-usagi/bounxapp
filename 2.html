@@ -566,6 +566,69 @@
     color: rgba(248,250,252,0.92) !important;
   }
   .premium-secondary-btn:hover { background: rgba(255,255,255,0.13) !important; }
+  
+  /* 매칭 방식 선택 카드 */
+  .matching-card {
+    background: rgba(15, 23, 42, 0.45);
+    border-color: rgba(148, 163, 184, 0.20) !important;
+  }
+  .matching-option:hover .matching-card {
+    border-color: rgba(148, 163, 184, 0.40) !important;
+    background: rgba(15, 23, 42, 0.65);
+  }
+  .matching-option input:checked ~ .matching-card {
+    border-color: rgba(167, 139, 250, 0.60) !important;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(34, 211, 238, 0.10));
+    box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.30), 0 8px 24px rgba(139, 92, 246, 0.18);
+  }
+  .matching-option input:checked ~ .matching-card .check-indicator {
+    background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+    border-color: transparent;
+  }
+  .matching-option input:checked ~ .matching-card .check-indicator svg {
+    display: block;
+    color: white;
+  }
+  .matching-option .check-indicator {
+    border-color: rgba(148, 163, 184, 0.30);
+  }
+  
+  /* 매칭 배지 (카드용) */
+  .badge-matching-firstcome {
+    background: rgba(34, 211, 238, 0.15);
+    color: #67e8f9;
+    border: 1px solid rgba(34, 211, 238, 0.25);
+  }
+  .badge-matching-approval {
+    background: rgba(167, 139, 250, 0.15);
+    color: #c4b5fd;
+    border: 1px solid rgba(167, 139, 250, 0.25);
+  }
+  
+  /* 지원자 카드 */
+  .applicant-card {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    transition: all 0.2s ease;
+  }
+  .applicant-card:hover {
+    border-color: rgba(167, 139, 250, 0.40);
+    background: rgba(15, 23, 42, 0.75);
+  }
+  
+  /* 댓글 영역 */
+  .comment-area {
+    background: rgba(15, 23, 42, 0.40);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+  }
+  .comment-bubble {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+  }
+  .comment-bubble.mine {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.20), rgba(34, 211, 238, 0.10));
+    border-color: rgba(167, 139, 250, 0.30);
+  }
   .mobile-bottom-nav {
     position: fixed;
     left: 1rem;
@@ -1344,6 +1407,37 @@
           </select>
         </div>
       </div>
+      
+      <!-- ⭐ 매칭 방식 선택 -->
+      <div>
+        <label class="block text-sm font-medium text-neutral-700 mb-2">매칭 방식</label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="matching-option cursor-pointer">
+            <input type="radio" name="matchingType" value="firstcome" checked class="sr-only" onchange="updateMatchingOption()" />
+            <div class="matching-card rounded-xl p-3 border transition-all">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-base">⚡</span>
+                <span class="check-indicator w-4 h-4 rounded-full border flex items-center justify-center"><svg class="w-2.5 h-2.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+              </div>
+              <div class="text-sm font-semibold text-neutral-900">선착순</div>
+              <div class="text-[11px] text-neutral-500 mt-0.5 leading-snug">먼저 신청하는 사람이 바로 시작</div>
+            </div>
+          </label>
+          <label class="matching-option cursor-pointer">
+            <input type="radio" name="matchingType" value="approval" class="sr-only" onchange="updateMatchingOption()" />
+            <div class="matching-card rounded-xl p-3 border transition-all">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-base">🎯</span>
+                <span class="check-indicator w-4 h-4 rounded-full border flex items-center justify-center"><svg class="w-2.5 h-2.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+              </div>
+              <div class="text-sm font-semibold text-neutral-900">승인 필요</div>
+              <div class="text-[11px] text-neutral-500 mt-0.5 leading-snug">지원자 중에서 작업자 선택</div>
+            </div>
+          </label>
+        </div>
+        <p id="matchingHint" class="text-[11px] text-neutral-500 mt-2 leading-relaxed">⚡ 빠르게 시작할 수 있어요. 정량적 작업에 적합 (번역, 데이터 정제 등)</p>
+      </div>
+      
       <div class="bg-neutral-50 rounded-xl p-3.5 text-xs text-neutral-600">
         <div class="font-medium text-neutral-700 mb-1.5">컨트랙트 잠금 미리보기</div>
         <div class="flex justify-between"><span>에이전트 보상 (90%)</span><span id="previewAgent">90 XPLA</span></div>
@@ -1368,6 +1462,28 @@
       <button onclick="closeDetailModal()" class="text-neutral-400 hover:text-neutral-700"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
     </div>
     <div id="detailContent" class="p-6"></div>
+  </div>
+</div>
+
+<!-- 지원 메시지 모달 (승인 모드) -->
+<div id="applyModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
+  <div class="modal-content bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white px-6 pt-6 pb-3 flex items-center justify-between border-b border-neutral-100">
+      <h3 class="font-display text-xl font-bold tracking-tight">지원하기</h3>
+      <button onclick="closeApplyModal()" class="text-neutral-400 hover:text-neutral-700"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div id="applyContent" class="p-6"></div>
+  </div>
+</div>
+
+<!-- 지원자 리스트 모달 (의뢰자용) -->
+<div id="applicantsModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
+  <div class="modal-content bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white px-6 pt-6 pb-3 flex items-center justify-between border-b border-neutral-100">
+      <h3 class="font-display text-xl font-bold tracking-tight">지원자 검토</h3>
+      <button onclick="closeApplicantsModal()" class="text-neutral-400 hover:text-neutral-700"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div id="applicantsContent" class="p-6"></div>
   </div>
 </div>
 
@@ -1730,7 +1846,12 @@ function listenToBounties() {
 }
 
 // ============ 등록 ============
-function openCreateModal() { document.getElementById('createModal').classList.remove('hidden'); document.getElementById('createModal').classList.add('flex'); }
+function openCreateModal() { 
+  document.getElementById('createModal').classList.remove('hidden'); 
+  document.getElementById('createModal').classList.add('flex');
+  // 매칭 옵션 힌트 초기화
+  setTimeout(() => updateMatchingOption(), 50);
+}
 function closeCreateModal() { document.getElementById('createModal').classList.add('hidden'); document.getElementById('createModal').classList.remove('flex'); }
 function updatePreview() {
   const v = parseFloat(document.getElementById('rewardInput').value) || 0;
@@ -1742,12 +1863,24 @@ function updatePreview() {
 }
 document.getElementById('rewardInput').addEventListener('input', updatePreview);
 
+function updateMatchingOption() {
+  const selected = document.querySelector('input[name="matchingType"]:checked');
+  const hint = document.getElementById('matchingHint');
+  if (!selected || !hint) return;
+  if (selected.value === 'firstcome') {
+    hint.innerHTML = '⚡ 빠르게 시작할 수 있어요. 정량적 작업에 적합 (번역, 데이터 정제 등)';
+  } else {
+    hint.innerHTML = '🎯 지원자를 보고 작업자를 선택할 수 있어요. 정성적 작업에 적합 (디자인, 기획 등)';
+  }
+}
+
 function submitBounty() {
   const title = document.getElementById('titleInput').value.trim();
   const categoryId = document.getElementById('categoryInput').value;
   const desc = document.getElementById('descInput').value.trim();
   const reward = parseFloat(document.getElementById('rewardInput').value);
   const deadline = document.getElementById('deadlineInput').value;
+  const matchingType = document.querySelector('input[name="matchingType"]:checked')?.value || 'firstcome';
   if (!title || !reward) { showToast('제목과 보상은 필수예요'); return; }
   if (reward > currentUser.balance) { showToast('잔액이 부족해요 (' + currentUser.balance + ' XPLA 보유)'); return; }
   currentUser.balance -= reward;
@@ -1757,12 +1890,16 @@ function submitBounty() {
     id: bountyRef.key, title, categoryId, desc, reward, deadline,
     status: 'open', requester: currentUser.address, requesterShort: currentUser.shortAddress,
     createdAt: Date.now(), txHash: '0x' + Math.random().toString(16).slice(2, 18), likes: 0,
+    matchingType: matchingType,  // 'firstcome' or 'approval'
   };
   bountyRef.set(bounty);
   closeCreateModal();
   document.getElementById('titleInput').value = '';
   document.getElementById('descInput').value = '';
   document.getElementById('rewardInput').value = '';
+  // 매칭 방식 초기화 (선착순으로)
+  const firstcomeRadio = document.querySelector('input[name="matchingType"][value="firstcome"]');
+  if (firstcomeRadio) { firstcomeRadio.checked = true; updateMatchingOption(); }
   updatePreview();
   showToast('✓ ' + reward + ' XPLA 컨트랙트에 잠금 완료');
 }
@@ -1783,9 +1920,17 @@ function getMyActionItems() {
   if (!currentUser) return [];
   const items = [];
   Object.values(bounties).forEach(b => {
+    // 의뢰자: 검토 대기 (가장 긴급)
     if (b.requester === currentUser.address && b.status === 'review') items.push({ ...b, actionType: 'review', priority: 1 });
+    // 작업자: 결과 제출 필요
     else if (b.worker === currentUser.address && b.status === 'progress') items.push({ ...b, actionType: 'submit', priority: 2 });
+    // 의뢰자: 지원자 검토 (승인 모드 + 지원자 있음)
+    else if (b.requester === currentUser.address && b.status === 'open' && b.matchingType === 'approval' && b.applicants && Object.keys(b.applicants).length > 0) {
+      items.push({ ...b, actionType: 'select-applicant', priority: 2.5 });
+    }
+    // 작업자: 의뢰자 검토 기다리는 중
     else if (b.worker === currentUser.address && b.status === 'review') items.push({ ...b, actionType: 'waiting-review', priority: 3 });
+    // 의뢰자: 작업자 작업 중 대기
     else if (b.requester === currentUser.address && b.status === 'progress') items.push({ ...b, actionType: 'waiting', priority: 4 });
   });
   items.sort((a, b) => a.priority - b.priority);
@@ -1820,6 +1965,7 @@ function renderActionSection() {
     card.className = 'action-card rounded-2xl p-4';
     if (item.actionType === 'review') card.classList.add('urgent');
     else if (item.actionType === 'submit') card.classList.add('working');
+    else if (item.actionType === 'select-applicant') card.classList.add('urgent');
     card.onclick = () => openDetail(item.id);
     
     let actionLabel = '', actionBtn = '', badge = '';
@@ -1831,6 +1977,11 @@ function renderActionSection() {
       actionLabel = '🟡 작업 중';
       badge = '<span class="badge-progress text-[10px] font-semibold px-2 py-0.5 rounded-full">제출 대기</span>';
       actionBtn = `<button onclick="event.stopPropagation(); openWorkSubmit('${item.id}')" class="w-full mt-2 px-3 py-2 rounded-lg bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700">결과 제출하기 →</button>`;
+    } else if (item.actionType === 'select-applicant') {
+      const applicantCount = item.applicants ? Object.keys(item.applicants).length : 0;
+      actionLabel = '🎯 작업자 선택';
+      badge = `<span class="badge-matching-approval text-[10px] font-semibold px-2 py-0.5 rounded-full">지원 ${applicantCount}명</span>`;
+      actionBtn = `<button onclick="event.stopPropagation(); openApplicantsModal('${item.id}')" class="w-full mt-2 px-3 py-2 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700">지원자 검토하기 →</button>`;
     } else if (item.actionType === 'waiting-review') {
       actionLabel = '⏳ 검토 대기 중';
       badge = '<span class="badge-review text-[10px] font-semibold px-2 py-0.5 rounded-full">제출됨</span>';
@@ -1843,7 +1994,7 @@ function renderActionSection() {
     
     card.innerHTML = `
       <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-semibold ${item.actionType === 'review' ? 'text-violet-700' : item.actionType === 'submit' ? 'text-amber-700' : 'text-neutral-500'}">${actionLabel}</span>
+        <span class="text-xs font-semibold ${item.actionType === 'review' || item.actionType === 'select-applicant' ? 'text-violet-700' : item.actionType === 'submit' ? 'text-amber-700' : 'text-neutral-500'}">${actionLabel}</span>
         ${badge}
       </div>
       <div class="text-xs text-neutral-500 mb-1">${cat.icon} ${cat.name}</div>
@@ -1862,7 +2013,7 @@ function renderActionSection() {
 function updateActivityDot() {
   const dots = ['activityDot', 'activityDotMobile'].map(id => document.getElementById(id)).filter(Boolean);
   const items = getMyActionItems();
-  const urgent = items.filter(i => i.priority <= 2).length;
+  const urgent = items.filter(i => i.priority <= 2.5).length;
   dots.forEach(dot => {
     if (urgent > 0) dot.classList.remove('hidden');
     else dot.classList.add('hidden');
@@ -1971,9 +2122,18 @@ function renderFeed() {
     if (isMine) html += '<span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">나</span>';
     html += `<span class="text-xs text-neutral-400">·</span><span class="text-xs text-neutral-500">${timeAgo(b.createdAt)}</span>`;
     html += '</div>';
-    html += '<div class="flex items-center gap-1.5 mt-0.5">';
+    html += '<div class="flex items-center gap-1.5 mt-0.5 flex-wrap">';
     html += `<span class="text-xs text-neutral-500">${cat.icon} ${cat.name}</span>`;
     html += badges[b.status];
+    // 매칭 방식 배지
+    const matchingType = b.matchingType || 'firstcome';
+    if (b.status === 'open') {
+      if (matchingType === 'firstcome') {
+        html += '<span class="badge-matching-firstcome text-[10px] font-semibold px-1.5 py-0.5 rounded-full">⚡ 선착순</span>';
+      } else {
+        html += '<span class="badge-matching-approval text-[10px] font-semibold px-1.5 py-0.5 rounded-full">🎯 승인 필요</span>';
+      }
+    }
     if (isWorker && !isMine) html += '<span class="work-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">내 작업</span>';
     html += '</div></div></div>';
     
@@ -1984,6 +2144,11 @@ function renderFeed() {
     html += '<div class="flex items-center gap-3 mb-3 text-sm">';
     html += `<span class="font-display font-bold text-neutral-900">💰 ${b.reward} XPLA</span>`;
     html += `<span class="text-neutral-500">⏱ ${b.deadline}</span>`;
+    // 승인 모드면 지원자 수 표시
+    if (b.status === 'open' && matchingType === 'approval') {
+      const applicantCount = b.applicants ? Object.keys(b.applicants).length : 0;
+      html += `<span class="text-neutral-500">📨 지원 ${applicantCount}명</span>`;
+    }
     html += '</div>';
     
     html += '<div class="flex items-center justify-between pt-3 border-t border-neutral-100">';
@@ -1992,10 +2157,30 @@ function renderFeed() {
     html += `<span class="text-base ${isLiked ? 'heart-pop' : ''}">${isLiked ? '💜' : '🤍'}</span>`;
     html += `<span class="text-xs text-neutral-500">${likes}</span></button></div>`;
     
-    if (b.status === 'open' && !isMine) html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800" onclick="event.stopPropagation(); applyToBounty('${b.id}')">신청하기 ✋</button>`;
-    else if (b.status === 'progress' && isWorker) html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openWorkSubmit('${b.id}')">결과 제출</button>`;
-    else if (b.status === 'review' && isMine) html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openReview('${b.id}')">검토하기</button>`;
-    else html += `<span class="text-xs text-neutral-400">${b.workerShort ? b.workerShort + ' 진행 중' : '대기 중'}</span>`;
+    // 액션 버튼: 매칭 모드 + 사용자 역할에 따라 분기
+    const hasApplied = b.applicants && b.applicants[currentUser.address];
+    if (b.status === 'open' && isMine && matchingType === 'approval') {
+      // 의뢰자: 지원자 보기
+      const applicantCount = b.applicants ? Object.keys(b.applicants).length : 0;
+      if (applicantCount > 0) {
+        html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openApplicantsModal('${b.id}')">지원자 ${applicantCount}명 검토</button>`;
+      } else {
+        html += `<span class="text-xs text-neutral-400">지원자 대기 중</span>`;
+      }
+    } else if (b.status === 'open' && !isMine && hasApplied) {
+      // 작업자: 이미 지원함
+      html += `<span class="text-xs text-violet-300">✓ 지원 완료</span>`;
+    } else if (b.status === 'open' && !isMine) {
+      // 작업자: 신청 가능
+      const btnLabel = matchingType === 'approval' ? '지원하기 📨' : '신청하기 ✋';
+      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800" onclick="event.stopPropagation(); applyToBounty('${b.id}')">${btnLabel}</button>`;
+    } else if (b.status === 'progress' && isWorker) {
+      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openWorkSubmit('${b.id}')">결과 제출</button>`;
+    } else if (b.status === 'review' && isMine) {
+      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openReview('${b.id}')">검토하기</button>`;
+    } else {
+      html += `<span class="text-xs text-neutral-400">${b.workerShort ? b.workerShort + ' 진행 중' : '대기 중'}</span>`;
+    }
     html += '</div>';
     card.innerHTML = html;
     list.appendChild(card);
@@ -2020,8 +2205,155 @@ function applyToBounty(bountyId) {
   const b = bounties[bountyId];
   if (!b || b.status !== 'open') { showToast('이미 신청된 바운티예요'); return; }
   if (b.requester === currentUser.address) { showToast('자기 바운티에는 신청할 수 없어요'); return; }
-  db.ref('bounties/' + bountyId).update({ status: 'progress', worker: currentUser.address, workerShort: currentUser.shortAddress, appliedAt: Date.now() });
-  showToast('🤝 신청 완료! 작업을 시작하세요');
+  
+  // 매칭 방식에 따라 분기
+  const matchingType = b.matchingType || 'firstcome';
+  
+  if (matchingType === 'approval') {
+    // 승인 필요 모드: 메시지 모달 열기
+    openApplyMessageModal(bountyId);
+  } else {
+    // 선착순: 기존대로 즉시 작업 시작
+    db.ref('bounties/' + bountyId).update({ status: 'progress', worker: currentUser.address, workerShort: currentUser.shortAddress, appliedAt: Date.now() });
+    showToast('🤝 신청 완료! 작업을 시작하세요');
+  }
+}
+
+// 승인 모드: 지원 메시지 모달
+function openApplyMessageModal(bountyId) {
+  const b = bounties[bountyId];
+  if (!b) return;
+  
+  // 이미 지원했는지 체크
+  const applicants = b.applicants || {};
+  if (applicants[currentUser.address]) {
+    showToast('이미 지원한 바운티예요');
+    return;
+  }
+  
+  let html = '<div class="space-y-4">';
+  html += `<div class="comment-area rounded-xl p-3.5"><div class="text-xs text-white/55 mb-1">${getCategoryById(b.categoryId).icon} ${getCategoryById(b.categoryId).name} · 🎯 승인 필요</div><div class="font-semibold text-white text-sm">${escapeHtml(b.title)}</div></div>`;
+  html += '<div><label class="block text-sm font-medium text-neutral-700 mb-1.5">자기소개 메시지</label><textarea id="applyMessageInput" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm resize-none" rows="4" placeholder="왜 내가 이 작업에 적합한지 짧게 소개해주세요. 예: 부동산 분야 5년 경험, 3일 안에 마무리 가능합니다."></textarea></div>';
+  html += '<div class="bg-violet-50/10 rounded-xl p-3 text-xs border border-violet-100/30"><div class="font-semibold text-violet-200 mb-1">🎯 승인 대기</div><div class="text-white/60 leading-relaxed">의뢰자가 지원자 중에서 작업자를 선택해요. 선택되면 알림이 옵니다.</div></div>';
+  html += '<div class="flex gap-2">';
+  html += '<button onclick="closeApplyModal()" class="flex-1 px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm">취소</button>';
+  html += `<button onclick="submitApplication('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">지원하기</button>`;
+  html += '</div></div>';
+  
+  document.getElementById('applyContent').innerHTML = html;
+  document.getElementById('applyModal').classList.remove('hidden');
+  document.getElementById('applyModal').classList.add('flex');
+}
+
+function closeApplyModal() {
+  document.getElementById('applyModal').classList.add('hidden');
+  document.getElementById('applyModal').classList.remove('flex');
+}
+
+function submitApplication(bountyId) {
+  const message = document.getElementById('applyMessageInput').value.trim();
+  if (!message) { showToast('자기소개 메시지를 작성해주세요'); return; }
+  if (message.length < 10) { showToast('조금 더 자세히 적어주세요 (10자 이상)'); return; }
+  
+  const b = bounties[bountyId];
+  if (!b) return;
+  
+  const applicants = b.applicants || {};
+  applicants[currentUser.address] = {
+    address: currentUser.address,
+    shortAddress: currentUser.shortAddress,
+    message: message,
+    appliedAt: Date.now(),
+  };
+  
+  db.ref('bounties/' + bountyId).update({ applicants });
+  closeApplyModal();
+  showToast('📨 지원 완료! 의뢰자 응답을 기다려주세요');
+}
+
+// 의뢰자: 지원자 리스트 모달 열기
+function openApplicantsModal(bountyId) {
+  const b = bounties[bountyId];
+  if (!b) return;
+  
+  const applicants = b.applicants || {};
+  const applicantList = Object.values(applicants).sort((a, b) => a.appliedAt - b.appliedAt);
+  
+  let html = '<div class="space-y-3">';
+  html += `<div class="comment-area rounded-xl p-3.5"><div class="text-xs text-white/55 mb-1">${getCategoryById(b.categoryId).icon} ${getCategoryById(b.categoryId).name} · 🎯 승인 필요</div><div class="font-semibold text-white text-sm">${escapeHtml(b.title)}</div></div>`;
+  
+  if (applicantList.length === 0) {
+    html += '<div class="text-center py-8 text-white/55"><div class="text-3xl mb-2">🕊️</div><div class="text-sm">아직 지원자가 없어요</div><div class="text-xs mt-1">조금만 기다려주세요</div></div>';
+  } else {
+    html += `<div class="text-xs text-white/55 mb-2">총 <span class="text-white font-semibold">${applicantList.length}명</span>이 지원했어요. 한 명을 선택해주세요.</div>`;
+    applicantList.forEach(a => {
+      const avatarChar = a.shortAddress.slice(2, 3).toUpperCase();
+      const avatarColors = ['bg-violet-100 text-violet-700', 'bg-emerald-100 text-emerald-700', 'bg-amber-100 text-amber-700', 'bg-rose-100 text-rose-700', 'bg-sky-100 text-sky-700'];
+      const avatarColor = avatarColors[parseInt(a.shortAddress.slice(2, 4), 16) % avatarColors.length];
+      
+      html += '<div class="applicant-card rounded-xl p-3.5">';
+      html += '<div class="flex items-start gap-3 mb-2">';
+      html += `<div class="w-9 h-9 rounded-full ${avatarColor} flex items-center justify-center font-bold text-xs flex-shrink-0">${avatarChar}</div>`;
+      html += '<div class="flex-1 min-w-0">';
+      html += `<div class="flex items-center gap-2"><span class="font-mono text-sm font-semibold text-white">${a.shortAddress}</span><span class="text-xs text-white/45">·</span><span class="text-xs text-white/55">${timeAgo(a.appliedAt)}</span></div>`;
+      html += `<div class="text-xs text-white/72 mt-1.5 leading-relaxed">${escapeHtml(a.message)}</div>`;
+      html += '</div></div>';
+      html += `<button onclick="selectApplicant('${b.id}', '${a.address}', '${a.shortAddress}')" class="w-full mt-2 px-3 py-2 rounded-lg premium-btn text-white text-xs font-semibold">이 사람으로 선택 ✓</button>`;
+      html += '</div>';
+    });
+  }
+  
+  html += '</div>';
+  
+  document.getElementById('applicantsContent').innerHTML = html;
+  document.getElementById('applicantsModal').classList.remove('hidden');
+  document.getElementById('applicantsModal').classList.add('flex');
+}
+
+function closeApplicantsModal() {
+  document.getElementById('applicantsModal').classList.add('hidden');
+  document.getElementById('applicantsModal').classList.remove('flex');
+}
+
+function selectApplicant(bountyId, workerAddress, workerShort) {
+  if (!confirm(workerShort + ' 님을 작업자로 선택하시겠어요?')) return;
+  db.ref('bounties/' + bountyId).update({
+    status: 'progress',
+    worker: workerAddress,
+    workerShort: workerShort,
+    appliedAt: Date.now(),
+  });
+  closeApplicantsModal();
+  showToast('✓ 작업자를 선택했어요. 작업이 시작됩니다');
+}
+
+// 댓글 추가
+function addComment(bountyId) {
+  const input = document.getElementById('commentInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  
+  const b = bounties[bountyId];
+  if (!b) return;
+  
+  const comments = b.comments || {};
+  const commentId = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  comments[commentId] = {
+    id: commentId,
+    author: currentUser.address,
+    authorShort: currentUser.shortAddress,
+    text: text,
+    createdAt: Date.now(),
+  };
+  
+  db.ref('bounties/' + bountyId).update({ comments }).then(() => {
+    input.value = '';
+    // 모달이 열려있으면 다시 렌더
+    if (!document.getElementById('detailModal').classList.contains('hidden')) {
+      openDetail(bountyId);
+    }
+  });
 }
 
 function openDetail(bountyId) {
@@ -2030,6 +2362,7 @@ function openDetail(bountyId) {
   const cat = getCategoryById(b.categoryId);
   const isMine = b.requester === currentUser.address;
   const isWorker = b.worker === currentUser.address;
+  const matchingType = b.matchingType || 'firstcome';
   const labels = {
     open: '<span class="badge-open text-xs font-semibold px-2 py-0.5 rounded-full">진행 가능</span>',
     progress: '<span class="badge-progress text-xs font-semibold px-2 py-0.5 rounded-full">진행 중</span>',
@@ -2037,8 +2370,20 @@ function openDetail(bountyId) {
     done: '<span class="badge-done text-xs font-semibold px-2 py-0.5 rounded-full">완료</span>',
   };
   let html = '<div class="space-y-4">';
-  html += '<div class="flex items-center justify-between">';
-  html += `<div class="text-xs text-neutral-500 font-medium">${cat.icon} ${cat.name}</div>` + labels[b.status] + '</div>';
+  html += '<div class="flex items-center justify-between flex-wrap gap-2">';
+  html += `<div class="text-xs text-neutral-500 font-medium">${cat.icon} ${cat.name}</div>`;
+  html += '<div class="flex items-center gap-1.5">';
+  // 매칭 배지
+  if (b.status === 'open') {
+    if (matchingType === 'firstcome') {
+      html += '<span class="badge-matching-firstcome text-[10px] font-semibold px-2 py-0.5 rounded-full">⚡ 선착순</span>';
+    } else {
+      html += '<span class="badge-matching-approval text-[10px] font-semibold px-2 py-0.5 rounded-full">🎯 승인 필요</span>';
+    }
+  }
+  html += labels[b.status];
+  html += '</div></div>';
+  
   html += `<div><h2 class="font-display text-xl font-bold tracking-tight mb-2">${escapeHtml(b.title)}</h2>`;
   if (b.desc) html += `<p class="text-sm text-neutral-600 leading-relaxed whitespace-pre-wrap">${escapeHtml(b.desc)}</p>`;
   html += '</div>';
@@ -2051,13 +2396,74 @@ function openDetail(bountyId) {
   if (b.workerShort) html += `<div class="flex justify-between text-neutral-500"><span>작업자</span><span class="font-mono text-neutral-700">${b.workerShort}${isWorker ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : ''}</span></div>`;
   html += `<div class="flex justify-between text-neutral-500"><span>트랜잭션</span><span class="font-mono text-neutral-700">${b.txHash.slice(0, 10)}...</span></div>`;
   html += '</div>';
-  if (b.status === 'open' && !isMine) html += `<button onclick="closeDetailModal(); applyToBounty('${b.id}')" class="w-full px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700">신청하기 ✋</button>`;
-  else if (b.status === 'open' && isMine) html += '<div class="bg-blue-50 rounded-xl p-3 text-xs text-blue-800 text-center">다른 사용자가 신청하기를 기다리는 중...<br/><span class="text-blue-600">다른 브라우저에서 접속해서 신청해보세요</span></div>';
-  else if (b.status === 'progress' && isWorker) html += `<button onclick="closeDetailModal(); openWorkSubmit('${b.id}')" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">결과물 제출하기</button>`;
-  else if (b.status === 'progress' && isMine) html += '<div class="bg-amber-50 rounded-xl p-3 text-xs text-amber-800 text-center">작업자가 결과물을 제출하기를 기다리는 중...</div>';
-  else if (b.status === 'review' && isMine) html += `<button onclick="closeDetailModal(); openReview('${b.id}')" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">결과물 검토하기</button>`;
-  else if (b.status === 'review' && isWorker) html += '<div class="bg-violet-50 rounded-xl p-3 text-xs text-violet-800 text-center">의뢰자의 검토를 기다리는 중...</div>';
-  else if (b.status === 'done') html += `<div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800"><div class="font-semibold mb-1">✓ 정산 완료</div><div>${b.completedAt ? new Date(b.completedAt).toLocaleString('ko') : ''}</div></div>`;
+  
+  // 상태별 액션
+  if (b.status === 'open' && !isMine) {
+    const hasApplied = b.applicants && b.applicants[currentUser.address];
+    if (hasApplied) {
+      html += '<div class="bg-violet-50/10 rounded-xl p-3 text-xs text-violet-200 text-center border border-violet-100/30">✓ 이미 지원하셨어요. 의뢰자 응답을 기다려주세요</div>';
+    } else {
+      const btnLabel = matchingType === 'approval' ? '지원하기 📨' : '신청하기 ✋';
+      html += `<button onclick="closeDetailModal(); applyToBounty('${b.id}')" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">${btnLabel}</button>`;
+    }
+  } else if (b.status === 'open' && isMine) {
+    const applicantCount = b.applicants ? Object.keys(b.applicants).length : 0;
+    if (matchingType === 'approval' && applicantCount > 0) {
+      html += `<button onclick="closeDetailModal(); openApplicantsModal('${b.id}')" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">지원자 ${applicantCount}명 검토하기 →</button>`;
+    } else if (matchingType === 'approval') {
+      html += '<div class="bg-blue-50/10 rounded-xl p-3 text-xs text-blue-200 text-center border border-blue-100/20">지원자를 기다리는 중...<br/><span class="opacity-75">🎯 승인 필요 모드 · 지원자가 모이면 알림이 와요</span></div>';
+    } else {
+      html += '<div class="bg-blue-50/10 rounded-xl p-3 text-xs text-blue-200 text-center border border-blue-100/20">다른 사용자가 신청하기를 기다리는 중...<br/><span class="opacity-75">⚡ 선착순 · 다른 브라우저에서 신청해보세요</span></div>';
+    }
+  } else if (b.status === 'progress' && isWorker) {
+    html += `<button onclick="closeDetailModal(); openWorkSubmit('${b.id}')" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">결과물 제출하기</button>`;
+  } else if (b.status === 'progress' && isMine) {
+    html += '<div class="bg-amber-50/10 rounded-xl p-3 text-xs text-amber-200 text-center border border-amber-100/20">작업자가 결과물을 제출하기를 기다리는 중...</div>';
+  } else if (b.status === 'review' && isMine) {
+    html += `<button onclick="closeDetailModal(); openReview('${b.id}')" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">결과물 검토하기</button>`;
+  } else if (b.status === 'review' && isWorker) {
+    html += '<div class="bg-violet-50/10 rounded-xl p-3 text-xs text-violet-200 text-center border border-violet-100/30">의뢰자의 검토를 기다리는 중...</div>';
+  } else if (b.status === 'done') {
+    html += `<div class="bg-emerald-50/10 rounded-xl p-3 text-xs text-emerald-200 border border-emerald-100/30"><div class="font-semibold mb-1">✓ 정산 완료</div><div class="opacity-75">${b.completedAt ? new Date(b.completedAt).toLocaleString('ko') : ''}</div></div>`;
+  }
+  
+  // ⭐ 댓글 영역 (작업 시작 후 표시)
+  const canComment = (isMine || isWorker) && ['progress', 'review', 'done'].includes(b.status);
+  const comments = b.comments || {};
+  const commentList = Object.values(comments).sort((a, b) => a.createdAt - b.createdAt);
+  
+  if (canComment || commentList.length > 0) {
+    html += '<div class="pt-3 border-t border-white/10">';
+    html += `<div class="flex items-center gap-2 mb-3"><span class="text-sm font-semibold text-white">💬 대화</span><span class="text-xs text-white/45">${commentList.length}개</span></div>`;
+    
+    // 댓글 리스트
+    html += '<div class="space-y-2 mb-3 max-h-64 overflow-y-auto">';
+    if (commentList.length === 0) {
+      html += '<div class="text-center py-4 text-white/45 text-xs">아직 대화가 없어요<br/><span class="opacity-75">작업 진행 상황을 공유해보세요</span></div>';
+    } else {
+      commentList.forEach(c => {
+        const isMyComment = c.author === currentUser.address;
+        const cls = isMyComment ? 'mine' : '';
+        const align = isMyComment ? 'items-end' : 'items-start';
+        html += `<div class="flex flex-col ${align}">`;
+        html += `<div class="comment-bubble ${cls} rounded-2xl px-3 py-2 max-w-[85%]">`;
+        html += `<div class="flex items-center gap-2 mb-0.5"><span class="text-[10px] font-mono text-white/60">${c.authorShort}</span><span class="text-[10px] text-white/40">${timeAgo(c.createdAt)}</span></div>`;
+        html += `<div class="text-xs text-white/90 leading-relaxed whitespace-pre-wrap">${escapeHtml(c.text)}</div>`;
+        html += '</div></div>';
+      });
+    }
+    html += '</div>';
+    
+    // 댓글 입력
+    if (canComment) {
+      html += '<div class="flex gap-2">';
+      html += `<input id="commentInput" type="text" class="input-field flex-1 px-3 py-2 rounded-xl text-sm" placeholder="메시지 입력..." onkeypress="if(event.key==='Enter') addComment('${b.id}')" />`;
+      html += `<button onclick="addComment('${b.id}')" class="px-4 py-2 rounded-xl premium-btn text-white text-xs font-semibold">전송</button>`;
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  
   html += '</div>';
   document.getElementById('detailContent').innerHTML = html;
   document.getElementById('detailModal').classList.remove('hidden');
@@ -2209,7 +2615,7 @@ function showToast(msg) {
   setTimeout(() => t.classList.add('hidden'), 3000);
 }
 
-['createModal', 'detailModal', 'workModal', 'reviewModal', 'settlementModal', 'walletConnectModal'].forEach(id => {
+['createModal', 'detailModal', 'workModal', 'reviewModal', 'settlementModal', 'walletConnectModal', 'applyModal', 'applicantsModal'].forEach(id => {
   document.getElementById(id).addEventListener('click', (e) => {
     if (e.target.id === id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
   });
@@ -2217,7 +2623,7 @@ function showToast(msg) {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    ['createModal', 'detailModal', 'workModal', 'reviewModal', 'settlementModal'].forEach(id => {
+    ['createModal', 'detailModal', 'workModal', 'reviewModal', 'settlementModal', 'applyModal', 'applicantsModal'].forEach(id => {
       document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex');
     });
   }
