@@ -583,10 +583,19 @@
   }
   @media (min-width: 768px) {
     .mobile-bottom-nav { display: none; }
+    /* 데스크탑: 우측 하단 강제 고정 */
+    #floatingBtn {
+      position: fixed !important;
+      right: 1.5rem !important;
+      bottom: 1.5rem !important;
+      left: auto !important;
+      top: auto !important;
+    }
   }
   @media (max-width: 768px) {
     #page-app main { padding-bottom: 8.5rem; }
-    #floatingBtn { bottom: 5.6rem; right: 1rem; }
+    /* 모바일: floating 버튼 숨김 (하단 네비에 등록 버튼 있음) */
+    #floatingBtn { display: none !important; }
   }
 
 
