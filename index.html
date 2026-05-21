@@ -629,6 +629,87 @@
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.20), rgba(34, 211, 238, 0.10));
     border-color: rgba(167, 139, 250, 0.30);
   }
+  
+  /* 마일스톤 아이템 */
+  .milestone-item {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+  }
+  .milestone-item input {
+    background: rgba(2, 6, 23, 0.40);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    color: var(--bx-text);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+  .milestone-item input:focus {
+    outline: none;
+    border-color: rgba(167, 139, 250, 0.50);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+  }
+  .milestone-item input::placeholder { color: #64748b; }
+  .milestone-remove-btn {
+    color: #fda4af;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    transition: all 0.15s;
+  }
+  .milestone-remove-btn:hover {
+    background: rgba(244, 63, 94, 0.12);
+  }
+  
+  /* 마일스톤 진행 표시 */
+  .milestone-progress {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 0.75rem;
+    padding: 0.625rem 0.875rem;
+  }
+  .milestone-step {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .milestone-step.done {
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+    color: white;
+  }
+  .milestone-step.active {
+    background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+    color: white;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.30);
+  }
+  .milestone-step.pending {
+    background: rgba(148, 163, 184, 0.18);
+    color: rgba(203, 213, 225, 0.60);
+  }
+  .milestone-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(148, 163, 184, 0.18);
+    border-radius: 9999px;
+  }
+  .milestone-line.done {
+    background: linear-gradient(90deg, #10b981, #06b6d4);
+  }
+  
+  /* 마일스톤 배지 (카드용) */
+  .badge-milestone {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+  }
   .mobile-bottom-nav {
     position: fixed;
     left: 1rem;
@@ -1438,6 +1519,46 @@
         <p id="matchingHint" class="text-[11px] text-neutral-500 mt-2 leading-relaxed">⚡ 빠르게 시작할 수 있어요. 정량적 작업에 적합 (번역, 데이터 정제 등)</p>
       </div>
       
+      <!-- ⭐ 결제 방식 선택 -->
+      <div>
+        <label class="block text-sm font-medium text-neutral-700 mb-2">결제 방식</label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="matching-option cursor-pointer">
+            <input type="radio" name="paymentType" value="lump" checked class="sr-only" onchange="updatePaymentOption()" />
+            <div class="matching-card rounded-xl p-3 border transition-all">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-base">💰</span>
+                <span class="check-indicator w-4 h-4 rounded-full border flex items-center justify-center"><svg class="w-2.5 h-2.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+              </div>
+              <div class="text-sm font-semibold text-neutral-900">한 번에</div>
+              <div class="text-[11px] text-neutral-500 mt-0.5 leading-snug">작업 완료 후 전액 정산 (작은 작업)</div>
+            </div>
+          </label>
+          <label class="matching-option cursor-pointer">
+            <input type="radio" name="paymentType" value="milestone" class="sr-only" onchange="updatePaymentOption()" />
+            <div class="matching-card rounded-xl p-3 border transition-all">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-base">🎯</span>
+                <span class="check-indicator w-4 h-4 rounded-full border flex items-center justify-center"><svg class="w-2.5 h-2.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+              </div>
+              <div class="text-sm font-semibold text-neutral-900">마일스톤</div>
+              <div class="text-[11px] text-neutral-500 mt-0.5 leading-snug">단계별로 분할 결제 (큰 프로젝트)</div>
+            </div>
+          </label>
+        </div>
+        <p id="paymentHint" class="text-[11px] text-neutral-500 mt-2 leading-relaxed">💰 작업 완료 후 한 번에 정산해요. 빠르고 단순한 작업에 적합</p>
+      </div>
+      
+      <!-- 마일스톤 정의 영역 (paymentType이 milestone일 때만) -->
+      <div id="milestoneSection" class="hidden space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-sm font-medium text-neutral-700">마일스톤 설정</label>
+          <button type="button" onclick="addMilestone()" class="text-xs text-violet-300 hover:text-violet-200 font-semibold">+ 마일스톤 추가</button>
+        </div>
+        <div id="milestoneList" class="space-y-2"></div>
+        <div id="milestoneSummary" class="text-[11px] text-neutral-500 leading-relaxed"></div>
+      </div>
+      
       <div class="bg-neutral-50 rounded-xl p-3.5 text-xs text-neutral-600">
         <div class="font-medium text-neutral-700 mb-1.5">컨트랙트 잠금 미리보기</div>
         <div class="flex justify-between"><span>에이전트 보상 (90%)</span><span id="previewAgent">90 XPLA</span></div>
@@ -1849,8 +1970,8 @@ function listenToBounties() {
 function openCreateModal() { 
   document.getElementById('createModal').classList.remove('hidden'); 
   document.getElementById('createModal').classList.add('flex');
-  // 매칭 옵션 힌트 초기화
-  setTimeout(() => updateMatchingOption(), 50);
+  // 옵션 초기화
+  setTimeout(() => { updateMatchingOption(); updatePaymentOption(); }, 50);
 }
 function closeCreateModal() { document.getElementById('createModal').classList.add('hidden'); document.getElementById('createModal').classList.remove('flex'); }
 function updatePreview() {
@@ -1860,6 +1981,8 @@ function updatePreview() {
   document.getElementById('previewBurn').textContent = (v * 0.03).toFixed(1) + ' XPLA';
   document.getElementById('previewEco').textContent = (v * 0.04).toFixed(1) + ' XPLA';
   document.getElementById('previewTotal').textContent = v + ' XPLA';
+  // 마일스톤 금액 다시 계산
+  updateMilestoneSummary();
 }
 document.getElementById('rewardInput').addEventListener('input', updatePreview);
 
@@ -1874,6 +1997,101 @@ function updateMatchingOption() {
   }
 }
 
+// 결제 방식 토글
+function updatePaymentOption() {
+  const selected = document.querySelector('input[name="paymentType"]:checked');
+  const hint = document.getElementById('paymentHint');
+  const section = document.getElementById('milestoneSection');
+  if (!selected || !hint || !section) return;
+  if (selected.value === 'lump') {
+    hint.innerHTML = '💰 작업 완료 후 한 번에 정산해요. 빠르고 단순한 작업에 적합';
+    section.classList.add('hidden');
+  } else {
+    hint.innerHTML = '🎯 마일스톤마다 결과 검토 후 단계별 정산. 큰 프로젝트에 적합 (디자인, 개발 등)';
+    section.classList.remove('hidden');
+    // 마일스톤이 비어있으면 기본 2개 생성
+    const list = document.getElementById('milestoneList');
+    if (list.children.length === 0) {
+      addMilestone('초안', 40);
+      addMilestone('최종안', 60);
+    }
+    updateMilestoneSummary();
+  }
+}
+
+// 마일스톤 추가
+function addMilestone(title = '', percent = 0) {
+  const list = document.getElementById('milestoneList');
+  const idx = list.children.length;
+  const item = document.createElement('div');
+  item.className = 'milestone-item';
+  
+  // 자동 퍼센트 계산 (남은 거 N등분)
+  if (percent === 0) {
+    const remaining = 100 - Array.from(list.querySelectorAll('.ms-percent')).reduce((s, el) => s + (parseInt(el.value) || 0), 0);
+    percent = Math.max(remaining, 10);
+  }
+  
+  item.innerHTML = `
+    <div class="flex items-start gap-2 mb-2">
+      <div class="milestone-step pending flex-shrink-0">${idx + 1}</div>
+      <div class="flex-1 min-w-0">
+        <input type="text" class="ms-title w-full" placeholder="마일스톤 제목 (예: 초안 제출)" value="${escapeHtml(title)}" maxlength="40" />
+      </div>
+      <button type="button" onclick="removeMilestone(this)" class="milestone-remove-btn flex-shrink-0">✕</button>
+    </div>
+    <div class="flex items-center gap-2">
+      <label class="text-[11px] text-white/55">비율</label>
+      <input type="number" class="ms-percent" style="width: 70px" value="${percent}" min="5" max="100" oninput="updateMilestoneSummary()" />
+      <span class="text-[11px] text-white/55">%</span>
+      <span class="text-[11px] text-white/45 ms-amount-display ml-auto"></span>
+    </div>
+  `;
+  list.appendChild(item);
+  updateMilestoneSummary();
+}
+
+// 마일스톤 삭제
+function removeMilestone(btn) {
+  const list = document.getElementById('milestoneList');
+  if (list.children.length <= 1) {
+    showToast('최소 1개 이상 필요해요');
+    return;
+  }
+  btn.closest('.milestone-item').remove();
+  // 번호 재정렬
+  Array.from(list.querySelectorAll('.milestone-step')).forEach((el, i) => el.textContent = i + 1);
+  updateMilestoneSummary();
+}
+
+// 마일스톤 합계 표시
+function updateMilestoneSummary() {
+  const list = document.getElementById('milestoneList');
+  const summary = document.getElementById('milestoneSummary');
+  const reward = parseFloat(document.getElementById('rewardInput').value) || 0;
+  if (!summary) return;
+  
+  const percents = Array.from(list.querySelectorAll('.ms-percent')).map(el => parseInt(el.value) || 0);
+  const total = percents.reduce((s, p) => s + p, 0);
+  
+  // 각 마일스톤 금액 표시
+  Array.from(list.children).forEach((item, i) => {
+    const amountEl = item.querySelector('.ms-amount-display');
+    if (amountEl && reward > 0) {
+      const amount = (reward * (percents[i] || 0) / 100).toFixed(1);
+      amountEl.textContent = `${amount} XPLA`;
+    } else if (amountEl) {
+      amountEl.textContent = '';
+    }
+  });
+  
+  if (total === 100) {
+    summary.innerHTML = `<span class="text-emerald-300">✓ 합계 ${total}% (정확함)</span>`;
+  } else {
+    summary.innerHTML = `<span class="text-amber-300">⚠️ 합계 ${total}% (100%가 되도록 조정해주세요)</span>`;
+  }
+}
+
 function submitBounty() {
   const title = document.getElementById('titleInput').value.trim();
   const categoryId = document.getElementById('categoryInput').value;
@@ -1881,8 +2099,43 @@ function submitBounty() {
   const reward = parseFloat(document.getElementById('rewardInput').value);
   const deadline = document.getElementById('deadlineInput').value;
   const matchingType = document.querySelector('input[name="matchingType"]:checked')?.value || 'firstcome';
+  const paymentType = document.querySelector('input[name="paymentType"]:checked')?.value || 'lump';
+  
   if (!title || !reward) { showToast('제목과 보상은 필수예요'); return; }
   if (reward > currentUser.balance) { showToast('잔액이 부족해요 (' + currentUser.balance + ' XPLA 보유)'); return; }
+  
+  // 마일스톤 모드 검증
+  let milestones = null;
+  if (paymentType === 'milestone') {
+    const list = document.getElementById('milestoneList');
+    const items = Array.from(list.children);
+    if (items.length < 1) { showToast('마일스톤을 최소 1개 만들어주세요'); return; }
+    
+    const ms = [];
+    let totalPercent = 0;
+    for (let i = 0; i < items.length; i++) {
+      const titleEl = items[i].querySelector('.ms-title');
+      const percentEl = items[i].querySelector('.ms-percent');
+      const msTitle = titleEl.value.trim();
+      const percent = parseInt(percentEl.value) || 0;
+      if (!msTitle) { showToast(`마일스톤 ${i + 1} 제목을 입력해주세요`); return; }
+      if (percent < 5) { showToast(`마일스톤 ${i + 1} 비율은 최소 5% 이상`); return; }
+      totalPercent += percent;
+      ms.push({ 
+        id: `m_${i}`, 
+        title: msTitle, 
+        percent: percent, 
+        reward: parseFloat((reward * percent / 100).toFixed(2)),
+        status: 'pending',  // pending | active | review | done
+      });
+    }
+    if (totalPercent !== 100) { showToast(`마일스톤 합계가 100%여야 해요 (현재 ${totalPercent}%)`); return; }
+    
+    // 첫 마일스톤은 active 상태로
+    ms[0].status = 'active';
+    milestones = ms;
+  }
+  
   currentUser.balance -= reward;
   saveUser();
   const bountyRef = db.ref('bounties').push();
@@ -1890,18 +2143,30 @@ function submitBounty() {
     id: bountyRef.key, title, categoryId, desc, reward, deadline,
     status: 'open', requester: currentUser.address, requesterShort: currentUser.shortAddress,
     createdAt: Date.now(), txHash: '0x' + Math.random().toString(16).slice(2, 18), likes: 0,
-    matchingType: matchingType,  // 'firstcome' or 'approval'
+    matchingType: matchingType,
+    paymentType: paymentType,
   };
+  if (milestones) {
+    bounty.milestones = milestones;
+    bounty.currentMilestone = 0;
+  }
   bountyRef.set(bounty);
   closeCreateModal();
   document.getElementById('titleInput').value = '';
   document.getElementById('descInput').value = '';
   document.getElementById('rewardInput').value = '';
-  // 매칭 방식 초기화 (선착순으로)
+  // 매칭/결제 방식 초기화
   const firstcomeRadio = document.querySelector('input[name="matchingType"][value="firstcome"]');
   if (firstcomeRadio) { firstcomeRadio.checked = true; updateMatchingOption(); }
+  const lumpRadio = document.querySelector('input[name="paymentType"][value="lump"]');
+  if (lumpRadio) { lumpRadio.checked = true; updatePaymentOption(); }
+  document.getElementById('milestoneList').innerHTML = '';
   updatePreview();
-  showToast('✓ ' + reward + ' XPLA 컨트랙트에 잠금 완료');
+  
+  const msg = paymentType === 'milestone' 
+    ? `✓ ${reward} XPLA 컨트랙트 잠금 (${milestones.length}단계 마일스톤)`
+    : `✓ ${reward} XPLA 컨트랙트에 잠금 완료`;
+  showToast(msg);
 }
 
 function timeAgo(ts) {
@@ -2133,6 +2398,13 @@ function renderFeed() {
       } else {
         html += '<span class="badge-matching-approval text-[10px] font-semibold px-1.5 py-0.5 rounded-full">🎯 승인 필요</span>';
       }
+    }
+    // 마일스톤 배지
+    if (b.paymentType === 'milestone' && b.milestones) {
+      const totalMs = b.milestones.length;
+      const currentIdx = (b.currentMilestone || 0);
+      const doneCount = b.milestones.filter(m => m.status === 'done').length;
+      html += `<span class="badge-milestone text-[10px] font-semibold px-1.5 py-0.5 rounded-full">🎯 마일스톤 ${doneCount}/${totalMs}</span>`;
     }
     if (isWorker && !isMine) html += '<span class="work-badge text-[10px] font-semibold px-1.5 py-0.5 rounded">내 작업</span>';
     html += '</div></div></div>';
@@ -2391,6 +2663,51 @@ function openDetail(bountyId) {
   html += `<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">보상</div><div class="font-display text-lg font-bold">${b.reward} XPLA</div></div>`;
   html += `<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">마감</div><div class="font-display text-lg font-bold">${b.deadline}</div></div>`;
   html += '</div>';
+  
+  // ⭐ 마일스톤 진행도 표시
+  if (b.paymentType === 'milestone' && b.milestones) {
+    const currentIdx = b.currentMilestone || 0;
+    html += '<div class="milestone-progress">';
+    html += '<div class="flex items-center justify-between mb-3"><span class="text-sm font-semibold text-white">🎯 마일스톤 진행도</span>';
+    const doneCount = b.milestones.filter(m => m.status === 'done').length;
+    html += `<span class="text-xs text-white/55">${doneCount}/${b.milestones.length} 완료</span></div>`;
+    
+    // 단계 시각화
+    html += '<div class="flex items-center mb-3">';
+    b.milestones.forEach((m, i) => {
+      let stepCls = 'pending';
+      let icon = i + 1;
+      if (m.status === 'done') { stepCls = 'done'; icon = '✓'; }
+      else if (m.status === 'active' || m.status === 'review') { stepCls = 'active'; }
+      html += `<div class="milestone-step ${stepCls}">${icon}</div>`;
+      if (i < b.milestones.length - 1) {
+        const lineCls = m.status === 'done' ? 'done' : '';
+        html += `<div class="milestone-line ${lineCls}"></div>`;
+      }
+    });
+    html += '</div>';
+    
+    // 각 마일스톤 상세
+    html += '<div class="space-y-1.5">';
+    b.milestones.forEach((m, i) => {
+      const isCurrent = i === currentIdx;
+      const isDone = m.status === 'done';
+      const isReview = m.status === 'review';
+      let statusLabel = '';
+      if (isDone) statusLabel = '<span class="text-[10px] text-emerald-300 font-semibold">✓ 완료</span>';
+      else if (isReview) statusLabel = '<span class="text-[10px] text-violet-300 font-semibold">검토 중</span>';
+      else if (isCurrent) statusLabel = '<span class="text-[10px] text-cyan-300 font-semibold">진행 중</span>';
+      else statusLabel = '<span class="text-[10px] text-white/45">대기</span>';
+      
+      html += '<div class="flex items-center justify-between gap-2 text-xs">';
+      html += `<div class="flex items-center gap-2 flex-1 min-w-0"><span class="text-white/45 flex-shrink-0">${i + 1}.</span><span class="text-white/85 truncate ${isCurrent ? 'font-semibold' : ''}">${escapeHtml(m.title)}</span>${statusLabel}</div>`;
+      html += `<span class="text-white/65 font-mono flex-shrink-0">${m.reward} XPLA <span class="text-white/45">(${m.percent}%)</span></span>`;
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '</div>';
+  }
+  
   html += '<div class="space-y-2 text-xs">';
   html += `<div class="flex justify-between text-neutral-500"><span>의뢰자</span><span class="font-mono text-neutral-700">${b.requesterShort}${isMine ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : ''}</span></div>`;
   if (b.workerShort) html += `<div class="flex justify-between text-neutral-500"><span>작업자</span><span class="font-mono text-neutral-700">${b.workerShort}${isWorker ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : ''}</span></div>`;
@@ -2474,13 +2791,28 @@ function closeDetailModal() { document.getElementById('detailModal').classList.a
 function openWorkSubmit(bountyId) {
   const b = bounties[bountyId];
   if (!b) return;
+  
+  // 마일스톤 모드면 현재 활성 마일스톤 정보 표시
+  const isMilestone = b.paymentType === 'milestone' && b.milestones;
+  const currentMs = isMilestone ? b.milestones[b.currentMilestone || 0] : null;
+  const submitReward = currentMs ? currentMs.reward : b.reward;
+  
   let html = '<div class="space-y-4">';
-  html += `<div class="bg-violet-50 rounded-xl p-3.5 border border-violet-100 text-sm text-violet-800"><div class="font-semibold mb-1">📋 ${escapeHtml(b.title)}</div><div class="text-xs">${escapeHtml(b.desc || '설명 없음')}</div></div>`;
+  html += `<div class="bg-violet-50/10 rounded-xl p-3.5 border border-violet-100/30 text-sm"><div class="font-semibold text-white mb-1">📋 ${escapeHtml(b.title)}</div><div class="text-xs text-white/65">${escapeHtml(b.desc || '설명 없음')}</div></div>`;
+  
+  if (isMilestone && currentMs) {
+    html += `<div class="bg-emerald-50/10 rounded-xl p-3 border border-emerald-100/30">`;
+    html += `<div class="text-xs text-emerald-200 font-semibold mb-1">🎯 현재 마일스톤 (${(b.currentMilestone || 0) + 1}/${b.milestones.length})</div>`;
+    html += `<div class="text-sm text-white font-semibold">${escapeHtml(currentMs.title)}</div>`;
+    html += `<div class="text-xs text-white/65 mt-1">이 마일스톤 정산: ${currentMs.reward} XPLA (${currentMs.percent}%)</div>`;
+    html += `</div>`;
+  }
+  
   html += '<div><label class="block text-sm font-medium text-neutral-700 mb-1.5">결과물 요약</label><textarea id="submissionInput" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm resize-none" rows="5" placeholder="작업한 결과를 정리해주세요..."></textarea></div>';
-  html += `<div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800 border border-emerald-100"><div class="font-semibold mb-1">💰 예상 보상</div><div>승인 시 <strong>${(b.reward * 0.9).toFixed(1)} XPLA</strong>가 정산됩니다 (90%)</div></div>`;
+  html += `<div class="bg-emerald-50/10 rounded-xl p-3 text-xs text-emerald-200 border border-emerald-100/30"><div class="font-semibold mb-1">💰 예상 보상</div><div>승인 시 <strong>${(submitReward * 0.9).toFixed(1)} XPLA</strong>가 정산됩니다 (90%)</div></div>`;
   html += '<div class="flex gap-2">';
-  html += '<button onclick="closeWorkModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 font-medium text-sm">취소</button>';
-  html += `<button onclick="submitWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl bg-violet-600 text-white font-medium text-sm hover:bg-violet-700">제출하기</button>`;
+  html += '<button onclick="closeWorkModal()" class="flex-1 px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm">취소</button>';
+  html += `<button onclick="submitWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">제출하기</button>`;
   html += '</div></div>';
   document.getElementById('workContent').innerHTML = html;
   document.getElementById('workModal').classList.remove('hidden');
@@ -2490,7 +2822,21 @@ function closeWorkModal() { document.getElementById('workModal').classList.add('
 function submitWork(bountyId) {
   const summary = document.getElementById('submissionInput').value.trim();
   if (!summary) { showToast('결과물 요약을 작성해주세요'); return; }
-  db.ref('bounties/' + bountyId).update({ status: 'review', submission: { summary, proofBundle: '0x' + Math.random().toString(16).slice(2, 18), submittedAt: Date.now() } });
+  const b = bounties[bountyId];
+  if (!b) return;
+  
+  const submission = { summary, proofBundle: '0x' + Math.random().toString(16).slice(2, 18), submittedAt: Date.now() };
+  
+  // 마일스톤 모드: 현재 마일스톤의 submission 업데이트 + 상태 review
+  if (b.paymentType === 'milestone' && b.milestones) {
+    const milestones = [...b.milestones];
+    const idx = b.currentMilestone || 0;
+    milestones[idx] = { ...milestones[idx], status: 'review', submission };
+    db.ref('bounties/' + bountyId).update({ status: 'review', milestones, submission });
+  } else {
+    // 일반 모드
+    db.ref('bounties/' + bountyId).update({ status: 'review', submission });
+  }
   closeWorkModal();
   showToast('📤 결과물이 제출됐어요');
 }
@@ -2498,16 +2844,32 @@ function submitWork(bountyId) {
 function openReview(bountyId) {
   const b = bounties[bountyId];
   if (!b || !b.submission) return;
+  
+  const isMilestone = b.paymentType === 'milestone' && b.milestones;
+  const currentMs = isMilestone ? b.milestones[b.currentMilestone || 0] : null;
+  const reviewReward = currentMs ? currentMs.reward : b.reward;
+  
   let html = '<div class="space-y-4">';
-  html += '<div class="bg-violet-50 rounded-xl p-3.5 border border-violet-100">';
-  html += '<div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg><span class="text-xs font-semibold text-violet-900">Proof Bundle</span></div>';
-  html += `<div class="font-mono text-xs text-violet-700 break-all">${b.submission.proofBundle}</div></div>`;
+  
+  if (isMilestone && currentMs) {
+    html += `<div class="bg-emerald-50/10 rounded-xl p-3 border border-emerald-100/30">`;
+    html += `<div class="text-xs text-emerald-200 font-semibold mb-1">🎯 검토 중: 마일스톤 ${(b.currentMilestone || 0) + 1}/${b.milestones.length}</div>`;
+    html += `<div class="text-sm text-white font-semibold">${escapeHtml(currentMs.title)}</div>`;
+    html += `<div class="text-xs text-white/65 mt-1">이번 정산: ${reviewReward} XPLA · 승인 후 다음 마일스톤 활성화</div>`;
+    html += `</div>`;
+  }
+  
+  html += '<div class="bg-violet-50/10 rounded-xl p-3.5 border border-violet-100/30">';
+  html += '<div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-violet-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg><span class="text-xs font-semibold text-violet-200">Proof Bundle</span></div>';
+  html += `<div class="font-mono text-xs text-violet-200/80 break-all">${b.submission.proofBundle}</div></div>`;
   html += `<div><div class="text-sm font-medium text-neutral-700 mb-2">결과물 요약</div><div class="bg-neutral-50 rounded-xl p-3.5 text-sm text-neutral-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(b.submission.summary)}</div></div>`;
   html += `<div><div class="text-sm font-medium text-neutral-700 mb-2">작업자 정보</div><div class="bg-neutral-50 rounded-xl p-3 text-xs"><div class="flex justify-between text-neutral-500"><span>주소</span><span class="font-mono text-neutral-700">${b.workerShort}</span></div></div></div>`;
-  html += '<div class="bg-amber-50 rounded-xl p-3 text-xs text-amber-800 border border-amber-100"><div class="font-semibold mb-1">⏰ 14일 안에 응답하지 않으면</div><div>컨트랙트가 자동으로 작업자에게 정산합니다</div></div>';
+  html += '<div class="bg-amber-50/10 rounded-xl p-3 text-xs text-amber-200 border border-amber-100/30"><div class="font-semibold mb-1">⏰ 14일 안에 응답하지 않으면</div><div class="opacity-80">컨트랙트가 자동으로 작업자에게 정산합니다</div></div>';
   html += '<div class="flex gap-2">';
-  html += `<button onclick="rejectWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl bg-neutral-100 text-neutral-700 font-medium text-sm hover:bg-neutral-200">거부</button>`;
-  html += `<button onclick="approveWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700">승인 · 정산</button>`;
+  html += `<button onclick="rejectWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm">거부</button>`;
+  
+  const approveLabel = isMilestone ? '승인 · 정산' : '승인 · 정산';
+  html += `<button onclick="approveWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">${approveLabel}</button>`;
   html += '</div></div>';
   document.getElementById('reviewContent').innerHTML = html;
   document.getElementById('reviewModal').classList.remove('hidden');
@@ -2517,15 +2879,91 @@ function closeReviewModal() { document.getElementById('reviewModal').classList.a
 function approveWork(bountyId) {
   const b = bounties[bountyId];
   if (!b) return;
-  db.ref('bounties/' + bountyId).update({ status: 'done', completedAt: Date.now() });
-  closeReviewModal();
-  openSettlement(b);
+  
+  // 마일스톤 모드: 현재 마일스톤만 완료, 다음 마일스톤 활성화
+  if (b.paymentType === 'milestone' && b.milestones) {
+    const milestones = [...b.milestones];
+    const idx = b.currentMilestone || 0;
+    milestones[idx] = { ...milestones[idx], status: 'done', completedAt: Date.now() };
+    
+    const isLastMilestone = idx === milestones.length - 1;
+    
+    if (isLastMilestone) {
+      // 마지막 마일스톤: 전체 완료
+      db.ref('bounties/' + bountyId).update({ status: 'done', milestones, completedAt: Date.now() });
+      closeReviewModal();
+      openMilestoneSettlement(b, milestones[idx], true);  // 최종 정산
+    } else {
+      // 다음 마일스톤 활성화
+      milestones[idx + 1] = { ...milestones[idx + 1], status: 'active' };
+      db.ref('bounties/' + bountyId).update({ 
+        status: 'progress', 
+        milestones, 
+        currentMilestone: idx + 1,
+        submission: null,  // 새 마일스톤용 초기화
+      });
+      closeReviewModal();
+      openMilestoneSettlement(b, milestones[idx], false);  // 부분 정산
+    }
+  } else {
+    // 일반 모드
+    db.ref('bounties/' + bountyId).update({ status: 'done', completedAt: Date.now() });
+    closeReviewModal();
+    openSettlement(b);
+  }
 }
 function rejectWork(bountyId) {
   if (!confirm('결과물을 거부하시겠어요? (재진행 처리)')) return;
-  db.ref('bounties/' + bountyId).update({ status: 'open', worker: null, workerShort: null, submission: null });
+  const b = bounties[bountyId];
+  if (!b) return;
+  
+  // 마일스톤 모드: 현재 마일스톤만 다시 active로
+  if (b.paymentType === 'milestone' && b.milestones) {
+    const milestones = [...b.milestones];
+    const idx = b.currentMilestone || 0;
+    milestones[idx] = { ...milestones[idx], status: 'active', submission: null };
+    db.ref('bounties/' + bountyId).update({ status: 'progress', milestones, submission: null });
+  } else {
+    db.ref('bounties/' + bountyId).update({ status: 'open', worker: null, workerShort: null, submission: null });
+  }
   closeReviewModal();
   showToast('재진행으로 전환됐어요');
+}
+
+// 마일스톤 정산 모달
+function openMilestoneSettlement(b, milestone, isFinal) {
+  const total = milestone.reward;
+  let html = '<div class="space-y-3">';
+  html += `<div class="text-center mb-4">`;
+  html += `<div class="text-xs text-neutral-500 mb-1">${isFinal ? '🎉 최종 마일스톤 정산' : '✓ 마일스톤 정산'}</div>`;
+  html += `<div class="font-display text-3xl font-bold tracking-tight text-white">${total} <span class="text-base font-medium text-white/55">XPLA</span></div>`;
+  html += `<div class="text-xs text-white/65 mt-1">${escapeHtml(milestone.title)} (${milestone.percent}%)</div>`;
+  html += `</div>`;
+  html += '<div class="space-y-2">';
+  html += `<div class="flex items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-100"><div><div class="text-sm font-medium text-emerald-900">작업자 보상</div><div class="text-xs text-emerald-700">${b.workerShort} · 90%</div></div><div class="font-display font-bold text-emerald-900">${(total * 0.9).toFixed(1)}</div></div>`;
+  html += `<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Validator</div><div class="text-xs text-neutral-500">검증자 · 3%</div></div><div class="font-display font-bold text-neutral-700">${(total * 0.03).toFixed(1)}</div></div>`;
+  html += `<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Burn</div><div class="text-xs text-neutral-500">토큰 소각 · 3%</div></div><div class="font-display font-bold text-neutral-700">${(total * 0.03).toFixed(1)}</div></div>`;
+  html += `<div class="flex items-center justify-between p-3 rounded-xl bg-neutral-50 border border-neutral-100"><div><div class="text-sm font-medium text-neutral-700">Ecosystem · Team</div><div class="text-xs text-neutral-500">생태계 · 4%</div></div><div class="font-display font-bold text-neutral-700">${(total * 0.04).toFixed(1)}</div></div>`;
+  html += '</div>';
+  
+  if (!isFinal) {
+    const nextIdx = (b.currentMilestone || 0) + 1;
+    const nextMs = b.milestones[nextIdx];
+    if (nextMs) {
+      html += `<div class="mt-4 px-3 py-2.5 rounded-xl bg-violet-50/10 border border-violet-100/30 flex items-start gap-2">`;
+      html += `<span class="text-base">🎯</span>`;
+      html += `<div class="text-xs text-violet-200"><div class="font-semibold mb-0.5">다음 마일스톤 활성화</div><div class="opacity-80">${escapeHtml(nextMs.title)} (${nextMs.reward} XPLA)</div></div>`;
+      html += `</div>`;
+    }
+  } else {
+    html += '<div class="mt-4 px-3 py-2.5 rounded-xl bg-emerald-50/10 border border-emerald-100/30 flex items-start gap-2"><svg class="w-4 h-4 mt-0.5 text-emerald-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg><div class="text-xs text-emerald-200"><div class="font-semibold mb-0.5">프로젝트 완료!</div><div class="opacity-80">모든 마일스톤이 정산되었습니다</div></div></div>';
+  }
+  
+  html += '<button onclick="closeSettlementModal()" class="w-full mt-3 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">확인</button>';
+  html += '</div>';
+  document.getElementById('settlementContent').innerHTML = html;
+  document.getElementById('settlementModal').classList.remove('hidden');
+  document.getElementById('settlementModal').classList.add('flex');
 }
 
 function openSettlement(b) {
