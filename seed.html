@@ -248,6 +248,10 @@ async function seedData() {
   log('$ bounx seed --insert', 'info');
   log('시드 데이터 등록 시작...', 'info');
   
+  // 매칭 방식: 정성적 카테고리는 일부 '승인 필요' 모드로
+  // 디자인, 기획, 콘텐츠, 마케팅 = 품질 차이 큰 작업
+  const APPROVAL_FRIENDLY_CATEGORIES = ['design', 'planning', 'content', 'marketing'];
+  
   let success = 0;
   let failed = 0;
   
@@ -259,6 +263,15 @@ async function seedData() {
       const requester = FAKE_USERS[Math.floor(Math.random() * FAKE_USERS.length)];
       const ageMinutes = Math.floor(Math.random() * 60 * 24 * 3); // 0-3일 전
       const createdAt = now - (ageMinutes * 60 * 1000);
+      
+      // 매칭 방식 결정
+      // - open 상태 + 정성적 카테고리: 50% 확률로 '승인 필요'
+      // - open 상태 + 정량적 카테고리: 항상 '선착순'
+      // - 다른 상태: 작업자 이미 정해진 상태라 기본 '선착순'
+      let matchingType = 'firstcome';
+      if (seed.status === 'open' && APPROVAL_FRIENDLY_CATEGORIES.includes(seed.categoryId) && Math.random() < 0.5) {
+        matchingType = 'approval';
+      }
       
       const bountyRef = db.ref('bounties').push();
       const bounty = {
@@ -274,6 +287,7 @@ async function seedData() {
         createdAt: createdAt,
         txHash: '0x' + Math.random().toString(16).slice(2, 18),
         likes: seed.likes || 0,
+        matchingType: matchingType,  // ⭐ 매칭 방식 추가
         isSeed: true, // 시드 데이터 표시
       };
       
@@ -287,6 +301,32 @@ async function seedData() {
         bounty.worker = worker.address;
         bounty.workerShort = worker.shortAddress;
         bounty.appliedAt = createdAt + 60000 * 30; // 30분 후 신청
+      }
+      
+      // 승인 필요 모드 + open 상태: 가상의 지원자 1-3명 추가
+      if (matchingType === 'approval' && seed.status === 'open') {
+        const applicants = {};
+        const applicantCount = Math.floor(Math.random() * 3) + 1; // 1-3명
+        const shuffled = [...FAKE_USERS].filter(u => u.address !== requester.address).sort(() => Math.random() - 0.5);
+        
+        const SAMPLE_APPLICATIONS = [
+          '관련 분야 5년 경력 있어요. 3일 안에 마무리 가능합니다.',
+          '비슷한 작업 경험 많아요. 포트폴리오 보여드릴게요.',
+          '제 강점은 빠른 결과물입니다. 1일 안에 초안 제공 가능해요.',
+          '이 카테고리 전문이에요. 디테일까지 잘 챙길게요.',
+          '품질에 자신 있습니다. 추가 수정 무료로 지원해요.',
+        ];
+        
+        for (let j = 0; j < Math.min(applicantCount, shuffled.length); j++) {
+          const applicant = shuffled[j];
+          applicants[applicant.address] = {
+            address: applicant.address,
+            shortAddress: applicant.shortAddress,
+            message: SAMPLE_APPLICATIONS[Math.floor(Math.random() * SAMPLE_APPLICATIONS.length)],
+            appliedAt: createdAt + 60000 * (j + 1) * 15, // 15분, 30분, 45분 후
+          };
+        }
+        bounty.applicants = applicants;
       }
       
       // 검토/완료 상태는 결과물 필요
