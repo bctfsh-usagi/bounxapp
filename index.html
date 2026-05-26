@@ -23,6 +23,7 @@
 
 <!-- SEO + 소셜 공유 -->
 <meta name="description" content="AI 에이전트 바운티 마켓플레이스 — 의뢰자가 토큰을 컨트랙트에 잠그고, AI 에이전트나 작업자가 결과물로 정산받는 CONX 기반 비수탁 플랫폼" />
+<meta name="xpla-wallet" />
 <meta property="og:title" content="bounX — AI Agent Bounty Marketplace" />
 <meta property="og:description" content="AI 에이전트에게 일을 맡기는 새로운 방식. 토큰은 컨트랙트에 잠기고, 코드로 정산됩니다." />
 <meta property="og:type" content="website" />
@@ -1263,6 +1264,10 @@
         </nav>
       </div>
       <div class="flex items-center gap-3">
+        <button onclick="openXplaPanel()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/25 hover:bg-emerald-500/25 transition-all text-xs font-semibold text-emerald-300" title="XPLA Testnet Contract">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
+          Testnet
+        </button>
         <div id="walletInfo" class="hidden md:flex app-wallet-card items-center gap-2 px-3 py-2 rounded-2xl">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
           <span class="text-xs font-semibold text-emerald-100">CONX</span>
@@ -1646,6 +1651,59 @@
 </div>
 
 <div id="toast" class="hidden toast fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-neutral-900 text-white text-sm font-medium shadow-2xl"></div>
+
+<!-- ============ XPLA Contract Panel ============ -->
+<div id="xplaPanel" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
+  <div class="modal-content w-full max-w-md rounded-3xl overflow-hidden" style="background:#0f172a; border:1px solid rgba(255,255,255,0.1);">
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-display text-lg font-bold text-white tracking-tight flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+          XPLA Testnet Contract
+        </h3>
+        <button onclick="closeXplaPanel()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all">&times;</button>
+      </div>
+
+      <div class="text-xs text-white/40 font-mono mb-4 break-all" style="line-height:1.5">
+        <div class="text-white/60 text-[10px] mb-0.5">Contract Address</div>
+        xpla1g7trqwupk4qfl5ltkdne6lsdclu2zd22usy9xquvxyrpzuv7kqvqm4ez8e
+      </div>
+
+      <!-- Wallet Section -->
+      <div id="xplaConnectBtn" class="mb-4">
+        <div class="flex gap-2">
+          <input id="xplaAddrInput" type="text" value="xpla1uc7k08jmj08n6fl2qy7kdug7t9p5gq6r9vknfs" class="flex-1 px-3 py-2.5 rounded-xl text-xs font-mono bg-white/5 border border-white/10 text-white/80 focus:border-violet-500 focus:outline-none" placeholder="xpla1..." />
+          <button onclick="xplaConnectWallet()" class="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-all whitespace-nowrap">연결</button>
+        </div>
+        <p class="text-[10px] text-white/30 mt-1.5 text-center">테스트넷 지갑 주소 입력 후 연결</p>
+      </div>
+      <div id="xplaWalletConnected" class="hidden mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-400/20">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs text-white/50 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>연결됨</span>
+          <span class="text-xs font-mono text-emerald-300" id="xplaWalletAddr"></span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-white/50">잔액</span>
+          <span class="text-sm font-bold text-white"><span id="xplaWalletBal">0</span> <span class="text-xs text-white/50">XPLA</span></span>
+        </div>
+      </div>
+
+      <!-- Query Section -->
+      <div class="space-y-3">
+        <button id="xplaQueryBtn" onclick="xplaQueryConfig()" class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 text-white font-semibold text-sm transition-all">
+          Config 조회
+        </button>
+        <div id="xplaConfigResult" class="hidden p-3 rounded-xl bg-white/5 border border-white/10 text-white"></div>
+      </div>
+
+      <!-- Network Info -->
+      <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-white/25">
+        <span>cube_47-5 (XPLA Testnet)</span>
+        <span>Code ID: 2025</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -3068,7 +3126,96 @@ document.addEventListener('keydown', (e) => {
 });
 
 loadInterests();
+
+// ============ XPLA Testnet Contract Integration ============
+const XPLA = {
+  lcd: 'https://cube-lcd.xpla.dev',
+  chainId: 'cube_47-5',
+  contract: 'xpla1g7trqwupk4qfl5ltkdne6lsdclu2zd22usy9xquvxyrpzuv7kqvqm4ez8e',
+  denom: 'axpla',
+  decimals: 18,
+};
+var xplaWallet = null;
+
+async function xplaQuery(queryMsg) {
+  const encoded = btoa(JSON.stringify(queryMsg));
+  const res = await fetch(`${XPLA.lcd}/cosmwasm/wasm/v1/contract/${XPLA.contract}/smart/${encoded}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return (await res.json()).data;
+}
+
+async function xplaGetBalance(address) {
+  const res = await fetch(`${XPLA.lcd}/cosmos/bank/v1beta1/balances/${address}`);
+  const json = await res.json();
+  const coin = json.balances?.find(b => b.denom === XPLA.denom);
+  if (!coin) return '0';
+  const raw = BigInt(coin.amount);
+  const whole = raw / BigInt(10 ** XPLA.decimals);
+  const frac = ((raw % BigInt(10 ** XPLA.decimals)) * 100n / BigInt(10 ** XPLA.decimals)).toString().padStart(2, '0');
+  return `${whole}.${frac}`;
+}
+
+async function xplaConnectWallet() {
+  const input = document.getElementById('xplaAddrInput');
+  const addr = (input.value || '').trim();
+  if (!addr || !addr.startsWith('xpla1')) { showToast('올바른 XPLA 주소를 입력하세요'); return; }
+  const btn = document.querySelector('#xplaConnectBtn button');
+  btn.disabled = true; btn.textContent = '연결 중...';
+  xplaWallet = { address: addr };
+  try { xplaWallet.balance = await xplaGetBalance(addr); } catch (e) { xplaWallet.balance = '?'; }
+  xplaUpdateUI();
+  btn.disabled = false; btn.textContent = '연결';
+  showToast('지갑 연결 완료!');
+}
+
+function xplaUpdateUI() {
+  if (!xplaWallet) return;
+  document.getElementById('xplaWalletAddr').textContent = xplaWallet.address.slice(0, 12) + '...' + xplaWallet.address.slice(-6);
+  document.getElementById('xplaWalletBal').textContent = xplaWallet.balance;
+  document.getElementById('xplaWalletConnected').classList.remove('hidden');
+  document.getElementById('xplaConnectBtn').classList.add('hidden');
+}
+
+async function xplaQueryConfig() {
+  const btn = document.getElementById('xplaQueryBtn');
+  const result = document.getElementById('xplaConfigResult');
+  btn.disabled = true; btn.textContent = '조회 중...';
+  try {
+    const c = await xplaQuery({ config: {} });
+    result.innerHTML = `
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between"><span class="text-white/50">Admin</span><span class="font-mono text-[11px] text-emerald-300">${c.admin.slice(0,16)}...</span></div>
+        <div class="flex justify-between"><span class="text-white/50">Treasury</span><span class="font-mono text-[11px] text-emerald-300">${c.treasury.slice(0,16)}...</span></div>
+        <div class="border-t border-white/5 my-1"></div>
+        <div class="flex justify-between"><span class="text-white/50">Worker</span><span class="text-white font-semibold">${c.fee_worker_bps/100}%</span></div>
+        <div class="flex justify-between"><span class="text-white/50">Validator</span><span class="text-white font-semibold">${c.fee_validator_bps/100}%</span></div>
+        <div class="flex justify-between"><span class="text-white/50">Burn</span><span class="text-white font-semibold">${c.fee_burn_bps/100}%</span></div>
+        <div class="flex justify-between"><span class="text-white/50">Eco·Team</span><span class="text-white font-semibold">${c.fee_eco_team_bps/100}%</span></div>
+        <div class="border-t border-white/5 my-1"></div>
+        <div class="flex justify-between"><span class="text-white/50">만료 기간</span><span class="text-white">${c.expiration_seconds/86400}일</span></div>
+        <div class="flex justify-between"><span class="text-white/50">Denom</span><span class="text-white font-mono text-xs">${c.native_denom}</span></div>
+      </div>`;
+    result.classList.remove('hidden');
+  } catch (e) {
+    result.innerHTML = `<div class="text-red-400 text-sm">조회 실패: ${e.message}</div>`;
+    result.classList.remove('hidden');
+  }
+  btn.disabled = false; btn.textContent = 'Config 조회';
+}
+
+function openXplaPanel() {
+  document.getElementById('xplaPanel').classList.remove('hidden');
+  document.getElementById('xplaPanel').classList.add('flex');
+}
+function closeXplaPanel() {
+  document.getElementById('xplaPanel').classList.add('hidden');
+  document.getElementById('xplaPanel').classList.remove('flex');
+}
+document.getElementById('xplaPanel').addEventListener('click', (e) => {
+  if (e.target.id === 'xplaPanel') closeXplaPanel();
+});
 </script>
+
 
 </body>
 </html>
