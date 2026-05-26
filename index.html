@@ -1696,6 +1696,32 @@
         <div id="xplaConfigResult" class="hidden p-3 rounded-xl bg-white/5 border border-white/10 text-white"></div>
       </div>
 
+      <!-- CreateBounty Section -->
+      <div class="mt-4 pt-4 border-t border-white/10">
+        <h4 class="text-sm font-semibold text-white mb-3">Create Bounty</h4>
+        <div class="space-y-2.5">
+          <input id="cbTitle" type="text" class="w-full px-3 py-2 rounded-lg text-sm bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-violet-500 focus:outline-none" placeholder="바운티 제목" />
+          <textarea id="cbDesc" rows="2" class="w-full px-3 py-2 rounded-lg text-sm bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-violet-500 focus:outline-none resize-none" placeholder="설명"></textarea>
+          <div class="grid grid-cols-2 gap-2">
+            <select id="cbCategory" class="px-3 py-2 rounded-lg text-sm bg-white/5 border border-white/10 text-white focus:border-violet-500 focus:outline-none">
+              <option value="research">리서치</option>
+              <option value="content">콘텐츠</option>
+              <option value="code" selected>코드</option>
+              <option value="design">디자인</option>
+              <option value="data">데이터</option>
+              <option value="translation">번역</option>
+              <option value="marketing">마케팅</option>
+              <option value="ai">AI/자동화</option>
+            </select>
+            <input id="cbReward" type="number" class="px-3 py-2 rounded-lg text-sm bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-violet-500 focus:outline-none" placeholder="보상 (XPLA)" value="1" min="0.01" step="0.01" />
+          </div>
+          <button onclick="xplaCreateBounty()" class="w-full px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-all">
+            Vault에서 서명하고 생성
+          </button>
+          <p class="text-[10px] text-white/25 text-center">vault.xpla.io에서 트랜잭션 서명 페이지가 열립니다</p>
+        </div>
+      </div>
+
       <!-- Network Info -->
       <div class="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-white/25">
         <span>cube_47-5 (XPLA Testnet)</span>
@@ -3201,6 +3227,78 @@ async function xplaQueryConfig() {
     result.classList.remove('hidden');
   }
   btn.disabled = false; btn.textContent = 'Config 조회';
+}
+
+function xplaToAxpla(xplaAmount) {
+  const parts = String(xplaAmount).split('.');
+  const whole = BigInt(parts[0] || '0');
+  let frac = (parts[1] || '0').padEnd(XPLA.decimals, '0').slice(0, XPLA.decimals);
+  return (whole * BigInt(10 ** XPLA.decimals) + BigInt(frac)).toString();
+}
+
+function xplaCreateBounty() {
+  const title = document.getElementById('cbTitle').value.trim();
+  const desc = document.getElementById('cbDesc').value.trim();
+  const category = document.getElementById('cbCategory').value;
+  const reward = document.getElementById('cbReward').value;
+
+  if (!title) { showToast('제목을 입력하세요'); return; }
+  if (!reward || parseFloat(reward) <= 0) { showToast('보상 금액을 입력하세요'); return; }
+
+  const deadlineSeconds = Math.floor(Date.now() / 1000) + 14 * 86400;
+  const executeMsg = {
+    create_bounty: {
+      title: title,
+      description: desc || title,
+      category: category,
+      external_link: null,
+      deadline: deadlineSeconds,
+      matching_type: 'approval',
+      payment_type: 'lump',
+      milestones: [],
+    }
+  };
+
+  const axplaAmount = xplaToAxpla(reward);
+  const msgJson = JSON.stringify(executeMsg);
+
+  navigator.clipboard.writeText(msgJson).then(() => {
+    showToast('실행 메시지가 클립보드에 복사됨!');
+  }).catch(() => {});
+
+  const vaultUrl = `https://vault.xpla.io/contract/execute/${XPLA.contract}`;
+  const infoWindow = window.open('', '_blank');
+  if (infoWindow) {
+    infoWindow.document.write(`
+      <!DOCTYPE html><html><head><meta charset="UTF-8"><title>bounX — Vault 서명</title>
+      <style>
+        body { font-family: -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; padding: 40px; max-width: 600px; margin: 0 auto; }
+        h2 { color: #a78bfa; } pre { background: #1e293b; padding: 16px; border-radius: 12px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
+        .step { margin: 20px 0; padding: 16px; background: #1e293b; border-radius: 12px; border-left: 3px solid #a78bfa; }
+        .step-num { color: #a78bfa; font-weight: bold; font-size: 18px; }
+        a { color: #6d5dfc; font-weight: bold; }
+        code { background: #334155; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+        .btn { display: inline-block; padding: 12px 24px; background: #6d5dfc; color: white; border-radius: 12px; text-decoration: none; font-weight: 600; margin-top: 8px; }
+        .btn:hover { background: #5b4de0; }
+      </style></head><body>
+      <h2>bounX — Create Bounty 서명</h2>
+      <div class="step"><span class="step-num">STEP 1</span><br/>아래 링크를 클릭하세요:<br/><br/>
+        <a href="${vaultUrl}" target="_blank" class="btn">Vault 열기 →</a>
+      </div>
+      <div class="step"><span class="step-num">STEP 2</span><br/><b>Execute Message</b> 칸에 아래 JSON을 붙여넣으세요 (이미 클립보드에 복사됨):<br/>
+        <pre>${JSON.stringify(executeMsg, null, 2)}</pre>
+        <button onclick="navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(executeMsg)}));this.textContent='복사됨!'" style="margin-top:8px;padding:8px 16px;background:#334155;border:none;color:#e2e8f0;border-radius:8px;cursor:pointer;">다시 복사</button>
+      </div>
+      <div class="step"><span class="step-num">STEP 3</span><br/>
+        <b>Amount</b>에 <code>${reward}</code> 입력 (단위: XPLA)<br/><br/>
+        Submit → 서명 → 완료!
+      </div>
+      <div style="margin-top:24px;padding:12px;background:#1e293b;border-radius:8px;font-size:12px;color:#94a3b8;">
+        <b>참고:</b> axpla 환산값 = ${axplaAmount} (${reward} XPLA × 10^18)
+      </div>
+      </body></html>
+    `);
+  }
 }
 
 function openXplaPanel() {
