@@ -1469,8 +1469,8 @@
         <div class="flex items-center justify-between"><span class="text-xs text-neutral-500">잔액</span><span class="font-display text-lg font-bold text-neutral-900"><span id="walletConnectBalance">0</span> XPLA</span></div>
       </div>
       <div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800 border border-emerald-100">
-        <div class="font-semibold mb-1">XPLA Testnet (cube_47-5)</div>
-        <div id="walletModalTip">Vault 크롬 익스텐션이 필요합니다</div>
+        <div class="font-semibold mb-1">지갑은 왜 필요한가요?</div>
+        <div id="walletModalTip">보상 예치와 정산을 위해 필요해요. 연결만으로는 토큰이 이동하지 않으며, 실제 실행 전에는 Vault에서 한 번 더 확인합니다.</div>
       </div>
       <button onclick="connectViaWC()" id="walletWCBtn" class="w-full px-4 py-3 rounded-xl premium-btn text-white font-semibold text-sm transition-all flex items-center justify-center gap-2">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.636 12.707l1.828-1.829M12 5.636l1.829 1.828M18.364 12.707l-1.828-1.829M12 18.364l-1.829-1.828" stroke-linecap="round"/><circle cx="12" cy="12" r="3"/></svg>
@@ -1492,7 +1492,7 @@
     </div>
     <div class="mx-6 mt-4 px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-100 flex items-start gap-2">
       <svg class="w-4 h-4 mt-0.5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>
-      <p class="text-xs text-emerald-800"><span class="font-semibold">컨트랙트에 직접 잠금</span> · bounX는 토큰을 보관하지 않습니다</p>
+      <p class="text-xs text-emerald-800"><span class="font-semibold">보상은 스마트 컨트랙트에 안전하게 예치됩니다.</span> bounX는 토큰을 보관하지 않아요.</p>
     </div>
     <div class="p-6 space-y-4">
       <div><label class="block text-sm font-medium text-neutral-700 mb-1.5">제목</label><input id="titleInput" type="text" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm" placeholder="예: 한국 부동산 정책 변화 분석" /></div>
@@ -1578,17 +1578,19 @@
       </div>
       
       <div class="bg-neutral-50 rounded-xl p-3.5 text-xs text-neutral-600">
-        <div class="font-medium text-neutral-700 mb-1.5">컨트랙트 잠금 미리보기</div>
-        <div class="flex justify-between"><span>에이전트 보상 (90%)</span><span id="previewAgent">90 XPLA</span></div>
-        <div class="flex justify-between"><span>Validator (3%)</span><span id="previewValidator">3 XPLA</span></div>
-        <div class="flex justify-between"><span>Burn (3%)</span><span id="previewBurn">3 XPLA</span></div>
-        <div class="flex justify-between"><span>Eco · Team (4%)</span><span id="previewEco">4 XPLA</span></div>
-        <div class="border-t border-neutral-200 mt-1.5 pt-1.5 flex justify-between font-medium text-neutral-900"><span>총 잠금액</span><span id="previewTotal">100 XPLA</span></div>
+        <div class="font-medium text-neutral-700 mb-1.5">정산 구조 미리보기</div>
+        <div class="flex justify-between"><span>작업자 보상 (90%)</span><span id="previewAgent">90 XPLA</span></div>
+        <div class="flex justify-between"><span>검증자 (3%)</span><span id="previewValidator">3 XPLA</span></div>
+        <div class="flex justify-between"><span>소각 (3%)</span><span id="previewBurn">3 XPLA</span></div>
+        <div class="flex justify-between"><span>생태계 (4%)</span><span id="previewEco">4 XPLA</span></div>
+        <div class="border-t border-neutral-200 mt-1.5 pt-1.5 flex justify-between font-medium text-neutral-900"><span>예치할 보상</span><span id="previewTotal">100 XPLA</span></div>
+        <div class="flex justify-between text-neutral-400 mt-1"><span>예상 네트워크 수수료</span><span>~0.5 XPLA</span></div>
+        <div class="flex justify-between font-medium text-neutral-700 mt-1"><span>필요 잔액 (보상 + 수수료)</span><span id="previewNeeded">~100.5 XPLA</span></div>
       </div>
     </div>
     <div class="sticky bottom-0 bg-white border-t border-neutral-100 p-4 flex gap-2">
       <button onclick="closeCreateModal()" class="flex-1 px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm">취소</button>
-      <button onclick="submitBounty()" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm transition-all">컨트랙트에 잠그기</button>
+      <button onclick="submitBounty()" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm transition-all">보상 예치하고 등록하기</button>
     </div>
   </div>
 </div>
@@ -1886,40 +1888,48 @@ function disconnectWallet() {
 
 let _txPending = false;
 
+function friendlyError(e) {
+  const m = (e.message || '').toLowerCase();
+  if (m.includes('denied') || m.includes('cancel') || m.includes('reject')) return '지갑에서 서명을 취소했어요.';
+  if (m.includes('insufficient fee') || m.includes('minimum global fee')) return '네트워크 수수료가 부족해요. 잠시 후 다시 시도해주세요.';
+  if (m.includes('insufficient fund') || m.includes('insufficient balance')) return '잔액이 부족해요. 보상 금액과 네트워크 수수료를 확인해주세요.';
+  if (m.includes('network') || m.includes('chain')) return 'XPLA 테스트넷으로 연결해주세요.';
+  if (m.includes('timeout') || m.includes('fetch')) return '네트워크 연결에 문제가 있어요. 잠시 후 다시 시도해주세요.';
+  return '처리 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.';
+}
+
 async function executeContract(executeMsg, axplaAmount, actionName) {
   if (!currentUser) { showWalletModal(); return; }
-  if (_txPending) { showToast('이전 트랜잭션 처리 중...'); return; }
+  if (_txPending) { showToast('이전 요청을 처리하고 있어요. 잠시만 기다려주세요.'); return; }
 
   if (xplaController && currentUser.connectType) {
-    // 컨트롤러 연결 상태 검증
     if (xplaController._states?.getValue) {
       const st = xplaController._states.getValue();
       if (st?.status !== 'WALLET_CONNECTED') {
-        showToast('지갑 연결이 끊겼어요. 다시 연결해주세요');
+        showToast('지갑 연결이 끊겼어요. 다시 연결해주세요.');
         showWalletModal();
         return;
       }
       const wcAddr = st.wallets?.[0]?.xplaAddress;
       if (wcAddr && wcAddr !== currentUser.address) {
-        showToast('지갑 주소가 변경되었어요. 다시 연결해주세요');
+        showToast('지갑 주소가 변경되었어요. 다시 연결해주세요.');
         disconnectWallet();
         return;
       }
       const connChainId = st.network?.chainID;
       if (connChainId && connChainId !== XPLA.chainId) {
-        showToast('네트워크가 다릅니다! ' + connChainId + ' → ' + XPLA.chainId + '로 변경해주세요');
+        showToast('XPLA 테스트넷으로 연결해주세요.');
         return;
       }
     }
 
-    // 잔액 사전 체크
     if (axplaAmount && axplaAmount !== '0') {
       try {
         const balStr = await xplaGetBalance(currentUser.address);
         const balNum = parseFloat(balStr) || 0;
         const rewardNum = parseFloat(axplaToXpla(axplaAmount)) || 0;
         if (balNum < rewardNum + TX_FEE_XPLA) {
-          showToast('잔액 부족! 필요: ' + (rewardNum + TX_FEE_XPLA).toFixed(2) + ' XPLA, 보유: ' + balNum.toFixed(2) + ' XPLA');
+          showToast('잔액이 부족해요. 필요: ' + (rewardNum + TX_FEE_XPLA).toFixed(2) + ' XPLA, 보유: ' + balNum.toFixed(2) + ' XPLA');
           return;
         }
       } catch(e) {}
@@ -1940,20 +1950,15 @@ async function executeContract(executeMsg, axplaAmount, actionName) {
       );
       const fee = new Fee(TX_FEE_GAS, TX_FEE_AMOUNT);
 
-      showToast('Vault에서 서명해주세요...');
+      showToast('지갑 확인 중...');
       const result = await xplaController.post({ msgs: [msg], fee });
       const txhash = result.txhash || '';
       showTxSuccess(actionName, txhash);
       setTimeout(async () => { await refreshBalance(); await loadContractBounties(); }, 3000);
       return result;
     } catch (e) {
-      const m = (e.message || '').toLowerCase();
-      if (m.includes('denied') || m.includes('cancel') || m.includes('reject')) {
-        showToast('서명이 취소되었어요');
-        throw e;
-      }
-      console.error('[executeContract] 실패:', e);
-      showToast('트랜잭션 실패: ' + e.message);
+      console.error('[executeContract]', e);
+      showToast(friendlyError(e));
       throw e;
     } finally {
       _txPending = false;
@@ -1965,10 +1970,11 @@ async function executeContract(executeMsg, axplaAmount, actionName) {
 
 function showTxSuccess(actionName, txhash) {
   const t = document.getElementById('toast');
-  const short = txhash.slice(0, 12) + '...';
-  t.innerHTML = actionName + ' 성공! <span class="font-mono text-xs opacity-75">' + short + '</span> '
-    + '<a href="' + EXPLORER_TX_URL + txhash + '" target="_blank" class="underline ml-1">보기</a> '
-    + '<button onclick="navigator.clipboard.writeText(\'' + txhash + '\');this.textContent=\'복사됨\'" class="underline ml-1">복사</button>';
+  const short = txhash.slice(0, 10) + '...';
+  t.innerHTML = '<div>' + actionName + '</div>'
+    + '<div class="flex items-center gap-2 mt-1"><span class="font-mono text-xs opacity-60">' + short + '</span>'
+    + '<a href="' + EXPLORER_TX_URL + txhash + '" target="_blank" class="text-xs underline opacity-75">거래 보기</a>'
+    + '<button onclick="navigator.clipboard.writeText(\'' + txhash + '\');this.textContent=\'복사됨\'" class="text-xs underline opacity-75">복사</button></div>';
   t.classList.remove('hidden');
   setTimeout(() => { t.classList.add('hidden'); t.innerHTML = ''; }, 8000);
 }
@@ -2450,6 +2456,8 @@ function updatePreview() {
   document.getElementById('previewValidator').textContent = (v * 0.03).toFixed(1) + ' XPLA';
   document.getElementById('previewBurn').textContent = (v * 0.03).toFixed(1) + ' XPLA';
   document.getElementById('previewEco').textContent = (v * 0.04).toFixed(1) + ' XPLA';
+  const needed = document.getElementById('previewNeeded');
+  if (needed) needed.textContent = '~' + (v + TX_FEE_XPLA).toFixed(1) + ' XPLA';
   document.getElementById('previewTotal').textContent = v + ' XPLA';
   // 마일스톤 금액 다시 계산
   updateMilestoneSummary();
@@ -2614,7 +2622,7 @@ function submitBounty() {
 
   const axplaAmount = xplaToAxpla(String(reward));
   closeCreateModal();
-  executeContract(executeMsg, axplaAmount, '바운티 등록').catch(() => {});
+  executeContract(executeMsg, axplaAmount, '등록 완료!').catch(() => {});
 }
 
 function timeAgo(ts) {
@@ -2680,11 +2688,11 @@ function renderActionSection() {
     if (item.actionType === 'review') {
       actionLabel = '🟣 검토 필요';
       badge = '<span class="badge-review text-[10px] font-semibold px-2 py-0.5 rounded-full">검토 대기</span>';
-      actionBtn = `<button onclick="event.stopPropagation(); openReview('${item.id}')" class="w-full mt-2 px-3 py-2 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700">지금 검토하기 →</button>`;
+      actionBtn = `<button onclick="event.stopPropagation(); openReview('${item.id}')" class="w-full mt-2 px-3 py-2 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700">결과 확인하기 →</button>`;
     } else if (item.actionType === 'submit') {
       actionLabel = '🟡 작업 중';
       badge = '<span class="badge-progress text-[10px] font-semibold px-2 py-0.5 rounded-full">제출 대기</span>';
-      actionBtn = `<button onclick="event.stopPropagation(); openWorkSubmit('${item.id}')" class="w-full mt-2 px-3 py-2 rounded-lg bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700">결과 제출하기 →</button>`;
+      actionBtn = `<button onclick="event.stopPropagation(); openWorkSubmit('${item.id}')" class="w-full mt-2 px-3 py-2 rounded-lg bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700">결과물 제출하기 →</button>`;
     } else if (item.actionType === 'select-applicant') {
       const applicantCount = item.applicants ? Object.keys(item.applicants).length : 0;
       actionLabel = '🎯 작업자 선택';
@@ -2868,12 +2876,12 @@ function renderFeed() {
     if (b.status === 'open' && isMine && matchingType === 'approval') {
       html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openApplicantsModal('${b.id}')">지원자 확인</button>`;
     } else if (b.status === 'open' && !isMine && currentUser) {
-      const btnLabel = matchingType === 'approval' ? '지원하기 📨' : '신청하기 ✋';
+      const btnLabel = matchingType === 'approval' ? '이 작업 지원하기' : '이 작업 신청하기';
       html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800" onclick="event.stopPropagation(); applyToBounty('${b.id}')">${btnLabel}</button>`;
     } else if (b.status === 'progress' && isWorker) {
-      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openWorkSubmit('${b.id}')">결과 제출</button>`;
+      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openWorkSubmit('${b.id}')">결과물 제출하기</button>`;
     } else if (b.status === 'review' && isMine) {
-      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openReview('${b.id}')">검토하기</button>`;
+      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openReview('${b.id}')">결과 확인하기</button>`;
     } else {
       html += `<span class="text-xs text-neutral-400">${b.workerShort ? b.workerShort + ' 진행 중' : '대기 중'}</span>`;
     }
@@ -2894,7 +2902,7 @@ function applyToBounty(bountyId) {
     openApplyMessageModal(bountyId);
   } else {
     const executeMsg = { apply_to_bounty: { bounty_id: b.numId, message: 'I want to work on this bounty' } };
-    executeContract(executeMsg, '0', '바운티 신청').catch(() => {});
+    executeContract(executeMsg, '0', '신청 완료!').catch(() => {});
   }
 }
 
@@ -2908,7 +2916,7 @@ function openApplyMessageModal(bountyId) {
   html += '<div class="bg-violet-50/10 rounded-xl p-3 text-xs border border-violet-100/30"><div class="font-semibold text-violet-200 mb-1">🎯 승인 대기</div><div class="text-white/60 leading-relaxed">의뢰자가 지원자 중에서 작업자를 선택해요. 선택되면 알림이 옵니다.</div></div>';
   html += '<div class="flex gap-2">';
   html += '<button onclick="closeApplyModal()" class="flex-1 px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm">취소</button>';
-  html += `<button onclick="submitApplication('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">지원하기</button>`;
+  html += `<button onclick="submitApplication('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">이 작업 지원하기</button>`;
   html += '</div></div>';
   
   document.getElementById('applyContent').innerHTML = html;
@@ -2929,7 +2937,7 @@ function submitApplication(bountyId) {
   if (!b) return;
   const executeMsg = { apply_to_bounty: { bounty_id: b.numId, message: message } };
   closeApplyModal();
-  executeContract(executeMsg, '0', '바운티 지원').catch(() => {});
+  executeContract(executeMsg, '0', '지원 완료!').catch(() => {});
 }
 
 async function openApplicantsModal(bountyId) {
@@ -2964,7 +2972,7 @@ async function openApplicantsModal(bountyId) {
       html += `<div class="flex items-center gap-2"><span class="font-mono text-sm font-semibold text-white">${shortAddr}</span><span class="text-xs text-white/45">·</span><span class="text-xs text-white/55">${timeAgo(a.applied_at * 1000)}</span></div>`;
       html += `<div class="text-xs text-white/72 mt-1.5 leading-relaxed">${escapeHtml(a.message)}</div>`;
       html += '</div></div>';
-      html += `<button onclick="selectApplicant('${b.id}', '${workerAddr}', '${shortAddr}')" class="w-full mt-2 px-3 py-2 rounded-lg premium-btn text-white text-xs font-semibold">이 사람으로 선택 ✓</button>`;
+      html += `<button onclick="selectApplicant('${b.id}', '${workerAddr}', '${shortAddr}')" class="w-full mt-2 px-3 py-2 rounded-lg premium-btn text-white text-xs font-semibold">작업자로 선택하기</button>`;
       html += '</div>';
     });
   }
@@ -2983,7 +2991,7 @@ function selectApplicant(bountyId, workerAddress, workerShort) {
   if (!b) return;
   const executeMsg = { accept_applicant: { bounty_id: b.numId, selected_worker: workerAddress } };
   closeApplicantsModal();
-  executeContract(executeMsg, '0', '지원자 수락').catch(() => {});
+  executeContract(executeMsg, '0', '작업자 선택 완료!').catch(() => {});
 }
 
 // comments removed — not available in contract
@@ -3097,9 +3105,9 @@ async function loadDetailApplicants(bountyId) {
 function cancelBounty(bountyId) {
   const b = bounties[bountyId];
   if (!b) return;
-  if (!confirm('바운티를 취소하시겠어요? 잠긴 토큰이 반환됩니다.')) return;
+  if (!confirm('바운티를 취소할까요? 예치한 보상이 지갑으로 돌아옵니다.')) return;
   const executeMsg = { cancel_bounty: { bounty_id: b.numId } };
-  executeContract(executeMsg, '0', '바운티 취소').catch(() => {});
+  executeContract(executeMsg, '0', '취소 완료! 보상이 반환되었어요.').catch(() => {});
 }
 function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden'); document.getElementById('detailModal').classList.remove('flex'); }
 
@@ -3127,7 +3135,7 @@ function openWorkSubmit(bountyId) {
   html += `<div class="bg-emerald-50/10 rounded-xl p-3 text-xs text-emerald-200 border border-emerald-100/30"><div class="font-semibold mb-1">💰 예상 보상</div><div>승인 시 <strong>${(submitReward * 0.9).toFixed(1)} XPLA</strong>가 정산됩니다 (90%)</div></div>`;
   html += '<div class="flex gap-2">';
   html += '<button onclick="closeWorkModal()" class="flex-1 px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm">취소</button>';
-  html += `<button onclick="submitWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">제출하기</button>`;
+  html += `<button onclick="submitWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">결과물 제출하기</button>`;
   html += '</div></div>';
   document.getElementById('workContent').innerHTML = html;
   document.getElementById('workModal').classList.remove('hidden');
@@ -3149,7 +3157,7 @@ function submitWork(bountyId) {
     }
   };
   closeWorkModal();
-  executeContract(executeMsg, '0', '작업 제출').catch(() => {});
+  executeContract(executeMsg, '0', '결과 제출 완료!').catch(() => {});
 }
 
 function openReview(bountyId) {
@@ -3177,9 +3185,9 @@ function openReview(bountyId) {
   html += `<div><div class="text-sm font-medium text-neutral-700 mb-2">작업자 정보</div><div class="bg-neutral-50 rounded-xl p-3 text-xs"><div class="flex justify-between text-neutral-500"><span>주소</span><span class="font-mono text-neutral-700">${b.workerShort}</span></div></div></div>`;
   html += '<div class="bg-amber-50/10 rounded-xl p-3 text-xs text-amber-200 border border-amber-100/30"><div class="font-semibold mb-1">⏰ 14일 안에 응답하지 않으면</div><div class="opacity-80">컨트랙트가 자동으로 작업자에게 정산합니다</div></div>';
   html += '<div class="flex gap-2">';
-  html += `<button onclick="rejectWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm">거부</button>`;
-  
-  const approveLabel = isMilestone ? '승인 · 정산' : '승인 · 정산';
+  html += `<button onclick="rejectWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm">수정 요청</button>`;
+
+  const approveLabel = '승인하고 정산하기';
   html += `<button onclick="approveWork('${b.id}')" class="flex-1 px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">${approveLabel}</button>`;
   html += '</div></div>';
   document.getElementById('reviewContent').innerHTML = html;
@@ -3192,15 +3200,15 @@ function approveWork(bountyId) {
   if (!b) return;
   const executeMsg = { approve_work: { bounty_id: b.numId } };
   closeReviewModal();
-  executeContract(executeMsg, '0', '작업 승인').then(() => { openSettlement(b); }).catch(() => {});
+  executeContract(executeMsg, '0', '정산 완료!').then(() => { openSettlement(b); }).catch(() => {});
 }
 function rejectWork(bountyId) {
-  if (!confirm('결과물을 거부하시겠어요?')) return;
+  if (!confirm('결과물이 부족한가요? 수정을 요청하면 작업자가 다시 제출할 수 있어요.')) return;
   const b = bounties[bountyId];
   if (!b) return;
   const executeMsg = { reject_work: { bounty_id: b.numId, reason: null } };
   closeReviewModal();
-  executeContract(executeMsg, '0', '작업 거부').catch(() => {});
+  executeContract(executeMsg, '0', '수정 요청 완료!').catch(() => {});
 }
 
 // 마일스톤 정산 모달
@@ -3396,7 +3404,7 @@ function xplaCreateBounty() {
   const executeMsg = {
     create_bounty: { title, description: desc || title, category, external_link: null, deadline: deadlineSeconds, matching_type: 'approval', payment_type: 'lump', milestones: [] }
   };
-  executeContract(executeMsg, xplaToAxpla(reward), '바운티 등록').catch(() => {});
+  executeContract(executeMsg, xplaToAxpla(reward), '등록 완료!').catch(() => {});
 }
 
 function openXplaPanel() {
