@@ -3446,8 +3446,8 @@ document.getElementById('xplaPanel').addEventListener('click', (e) => {
 <script type="module">
 try {
   console.log('[WC] Loading @xpla/wallet-controller...');
-  const { WalletController, ConnectType } = await import('https://esm.sh/@xpla/wallet-controller');
-  const { MsgExecuteContract, Fee } = await import('https://esm.sh/@xpla/xpla.js');
+  const { WalletController, ConnectType } = await import('https://esm.sh/@xpla/wallet-controller?bundle');
+  const { MsgExecuteContract, Fee } = await import('https://esm.sh/@xpla/xpla.js?bundle');
   console.log('[WC] Packages loaded!');
 
   const controller = new WalletController({
