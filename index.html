@@ -1477,7 +1477,7 @@
         WalletConnect (QR 스캔)
       </button>
       <div id="wcLoadingMsg" class="text-center text-xs text-white/40">WalletConnect 모듈 로딩 중...</div>
-      <button onclick="connectAndStart()" id="walletConnectBtn" class="w-full px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm transition-all">Vault 익스텐션으로 연결</button>
+      <button onclick="connectExtension()" id="walletConnectBtn" class="w-full px-4 py-2.5 rounded-xl premium-btn font-semibold text-sm transition-all">Vault 익스텐션으로 연결</button>
       <div id="walletManualToggle" class="text-center"><button onclick="showManualConnect()" class="text-xs text-white/50 hover:text-white/80 transition-colors">주소 직접 입력 (읽기 전용)</button></div>
     </div>
   </div>
@@ -1706,8 +1706,8 @@
         <button id="xplaQueryBtn" onclick="xplaQueryConfig()" class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 text-white font-semibold text-sm transition-all">
           Config 조회
         </button>
-        <button onclick="document.getElementById('diagResult').textContent=XplaVault.diagnose();document.getElementById('diagResult').classList.remove('hidden');" class="w-full px-4 py-2.5 rounded-xl bg-amber-500/15 border border-amber-400/25 hover:bg-amber-500/25 text-amber-200 font-semibold text-sm transition-all">
-          익스텐션 진단
+        <button onclick="document.getElementById('diagResult').textContent='controller: '+(xplaController?'OK':'null')+'\navailableConnectTypes: '+JSON.stringify(xplaConnectTypes)+'\ncurrentUser: '+(currentUser?currentUser.address+' ('+currentUser.connectType+')':'null')+'\nXplaWC loaded: '+!!window.XplaWC;document.getElementById('diagResult').classList.remove('hidden');" class="w-full px-4 py-2.5 rounded-xl bg-amber-500/15 border border-amber-400/25 hover:bg-amber-500/25 text-amber-200 font-semibold text-sm transition-all">
+          월렛 진단
         </button>
         <div id="diagResult" class="hidden p-3 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-mono whitespace-pre-wrap"></div>
         <div id="xplaConfigResult" class="hidden p-3 rounded-xl bg-white/5 border border-white/10 text-white"></div>
@@ -1792,147 +1792,115 @@ function xplaToAxpla(xplaAmount) {
   return (whole * BigInt(10 ** XPLA.decimals) + BigInt(frac)).toString();
 }
 
-// ============ XPLA Vault Extension (자동 서명) ============
-const XplaVault = {
-  _id: 0,
+// ============ XPLA Wallet (공식 @xpla/wallet-controller) ============
+// xpla-wc.js 번들이 window.XplaWC를 제공 → 여기서 초기화
 
-  isAvailable() {
-    return !!(window.xpla && typeof window.xpla.on === 'function');
-  },
+let xplaController = null;
+let xplaConnectTypes = [];
 
-  _request(sendType, responseEvent, data) {
-    const id = ++this._id;
-    return new Promise((resolve, reject) => {
-      let settled = false;
-      const cleanup = () => {
-        settled = true;
-        clearTimeout(timer);
-        try { window.xpla.off(responseEvent, xplaHandler); } catch(e) {}
-        window.removeEventListener('message', msgHandler);
-      };
-      const finish = (result) => {
-        if (settled) return;
-        cleanup();
-        console.log('[XplaVault] GOT response via', responseEvent, ':', result);
-        if (result?.error) {
-          reject(new Error(result.error.message || result.error.code || JSON.stringify(result.error)));
-        } else {
-          resolve(result);
-        }
-      };
-
-      const timer = setTimeout(() => {
-        if (settled) return;
-        cleanup();
-        reject(new Error('timeout'));
-      }, 5000);
-
-      // Channel 1: window.xpla.on (EventEmitter)
-      function xplaHandler(result) { finish(result); }
-      window.xpla.on(responseEvent, xplaHandler);
-
-      // Channel 2: window.postMessage 응답
-      function msgHandler(event) {
-        const msg = event.data?.xplavault;
-        if (!msg || typeof msg !== 'object') return;
-        if (msg.type === responseEvent) {
-          finish(msg.payload || msg);
-        }
-      }
-      window.addEventListener('message', msgHandler);
-
-      // 요청 전송
-      const payload = { type: sendType, id };
-      if (data !== undefined) payload.data = data;
-      console.log('[XplaVault] SEND:', payload);
-      window.postMessage({ xplavault: payload }, '*');
-    });
-  },
-
-  connect() {
-    return this._request('connect', 'onConnect');
-  },
-
-  post(txOptions) {
-    return this._request('post', 'onPost', txOptions);
-  },
-
-  diagnose() {
-    const info = [];
-    info.push('window.xpla: ' + (window.xpla ? Object.keys(window.xpla).join(', ') : 'missing'));
-    info.push('isAvailable: ' + this.isAvailable());
-    info.push('isXplaExtensionAvailable: ' + window.isXplaExtensionAvailable);
-    if (Array.isArray(window.xplaWallets)) {
-      window.xplaWallets.forEach((w, i) => {
-        info.push(`wallet[${i}]: ${w?.name} id="${w?.identifier}"`);
-      });
-    }
-    // window.xpla 이벤트 모니터링 시작
-    if (window.xpla) {
-      ['onConnect','onPost','onSign','onInfo','connect','post','sign','info'].forEach(evt => {
-        window.xpla.on(evt, (d) => console.log('[XplaVault] EVENT "' + evt + '":', d));
-      });
-      info.push('(이벤트 모니터링 시작됨 — 콘솔 확인)');
-    }
-    return info.join('\n');
+function initXplaController() {
+  if (!window.XplaWC) {
+    console.error('[Wallet] xpla-wc.js bundle not loaded');
+    return;
   }
-};
+  const { WalletController, ConnectType } = window.XplaWC;
+
+  xplaController = new WalletController({
+    defaultNetwork: {
+      name: 'testnet',
+      chainID: 'cube_47-5',
+      lcd: 'https://cube-lcd.xpla.dev',
+    },
+    walletConnectChainIds: {
+      0: { name: 'testnet', chainID: 'cube_47-5', lcd: 'https://cube-lcd.xpla.dev' },
+      1: { name: 'mainnet', chainID: 'dimension_37-1', lcd: 'https://dimension-lcd.xpla.dev' },
+    },
+  });
+
+  xplaController.availableConnectTypes().subscribe((types) => {
+    xplaConnectTypes = types;
+    console.log('[Wallet] availableConnectTypes:', types);
+    updateWalletModalButtons();
+  });
+
+  xplaController.states().subscribe(async (state) => {
+    console.log('[Wallet] state:', state.status, state.wallets);
+    if (state.status === 'WALLET_CONNECTED' && state.wallets?.length > 0) {
+      const addr = state.wallets[0].xplaAddress;
+      const connectType = state.wallets[0].connectType;
+      let balance = '0';
+      try { balance = await xplaGetBalance(addr); } catch(e) {}
+      currentUser = { address: addr, shortAddress: addr.slice(0, 8) + '...' + addr.slice(-4), balance, connectType };
+      saveUser(); updateUserUI();
+      closeWalletConnectModal();
+      showToast('지갑 연결 완료! (' + connectType + ')');
+      loadContractBounties();
+    }
+  });
+
+  console.log('[Wallet] Controller initialized');
+}
+
+function updateWalletModalButtons() {
+  const extBtn = document.getElementById('walletConnectBtn');
+  const wcBtn = document.getElementById('walletWCBtn');
+  const loadMsg = document.getElementById('wcLoadingMsg');
+  if (loadMsg) loadMsg.classList.add('hidden');
+
+  const hasExtension = xplaConnectTypes.includes('EXTENSION');
+  const hasWC = xplaConnectTypes.includes('WALLETCONNECT');
+
+  if (extBtn) {
+    extBtn.style.display = hasExtension ? '' : 'none';
+    if (hasExtension) extBtn.classList.replace('premium-secondary-btn', 'premium-btn');
+  }
+  if (wcBtn) wcBtn.style.display = hasWC ? '' : 'none';
+}
+
+function connectExtension() {
+  if (!xplaController) { showToast('월렛 모듈 로딩 중...'); return; }
+  xplaController.connect('EXTENSION');
+}
+
+function connectViaWC() {
+  if (!xplaController) { showToast('월렛 모듈 로딩 중...'); return; }
+  closeWalletConnectModal();
+  showToast('XPLA Vault 앱으로 QR 코드를 스캔하세요');
+  xplaController.connect('WALLETCONNECT');
+}
 
 function disconnectWallet() {
+  if (xplaController) {
+    try { xplaController.disconnect(); } catch(e) {}
+  }
   currentUser = null;
   localStorage.removeItem('bounx-wallet');
-  localStorage.removeItem('bounx-wc');
-  if (window.WC?.ready && window.WC.isConnected()) {
-    try { window.WC.disconnect(); } catch(e) {}
-  }
   document.getElementById('walletInfo')?.classList.add('hidden');
   showToast('지갑 연결 해제됨');
   setTimeout(() => location.reload(), 500);
 }
 
-function connectViaWC() {
-  if (!window.WC?.ready) {
-    showToast('WalletConnect 모듈 로딩 중... 잠시 후 다시 시도해주세요');
-    return;
-  }
-  closeWalletConnectModal();
-  showToast('XPLA Vault 앱으로 QR 코드를 스캔하세요');
-  window.WC.connectWalletConnect();
-}
-
-// WC 연결 완료 이벤트
-window.addEventListener('wc-connected', async (e) => {
-  const addr = e.detail.address;
-  if (!addr) return;
-  let balance = '0';
-  try { balance = await xplaGetBalance(addr); } catch(e) {}
-  currentUser = { address: addr, shortAddress: addr.slice(0, 8) + '...' + addr.slice(-4), balance, viaWC: true };
-  saveUser(); updateUserUI();
-  localStorage.setItem('bounx-wc', 'true');
-  showToast('WalletConnect 연결 완료!');
-  loadContractBounties();
-});
-
-// WC 모듈 로드 완료
-window.addEventListener('wc-ready', () => {
-  console.log('[App] WC module ready');
-  const msg = document.getElementById('wcLoadingMsg');
-  if (msg) msg.textContent = 'WalletConnect 준비 완료!';
-  setTimeout(() => { if (msg) msg.classList.add('hidden'); }, 2000);
-});
-
 async function executeContract(executeMsg, axplaAmount, actionName) {
   if (!currentUser) { showWalletModal(); return; }
 
-  const funds = axplaAmount && axplaAmount !== '0'
-    ? [{ denom: XPLA.denom, amount: axplaAmount }]
-    : [];
-
-  // 1차: WalletConnect (모바일 앱 자동 서명 + 브로드캐스트)
-  if (window.WC?.ready && window.WC.isConnected()) {
+  // 공식 컨트롤러로 트랜잭션 실행
+  if (xplaController && currentUser.connectType) {
     try {
-      showToast('XPLA Vault 앱에서 서명해주세요...');
-      const result = await window.WC.post(XPLA.contract, executeMsg, funds);
+      const { MsgExecuteContract, Fee } = window.XplaWC;
+      const coins = {};
+      if (axplaAmount && axplaAmount !== '0') {
+        coins[XPLA.denom] = axplaAmount;
+      }
+      const msg = new MsgExecuteContract(
+        currentUser.address,
+        XPLA.contract,
+        executeMsg,
+        Object.keys(coins).length > 0 ? coins : undefined
+      );
+      const fee = new Fee(600000, '1500000000000000axpla');
+
+      showToast('Vault에서 서명해주세요...');
+      const result = await xplaController.post({ msgs: [msg], fee });
       showToast(actionName + ' 성공! (tx: ' + (result.txhash || '').slice(0, 8) + '...)');
       setTimeout(async () => { await refreshBalance(); await loadContractBounties(); }, 3000);
       return result;
@@ -1942,47 +1910,20 @@ async function executeContract(executeMsg, axplaAmount, actionName) {
         showToast('서명이 취소되었어요');
         throw e;
       }
-      console.log('[executeContract] WC 실패:', e.message);
-      showToast('WC 실패: ' + e.message);
+      console.error('[executeContract] 실패:', e);
+      showToast('트랜잭션 실패: ' + e.message);
       throw e;
     }
   }
 
-  // 2차: 익스텐션 직접 연결 시도
-  if (XplaVault.isAvailable()) {
-    const msg = {
-      '@type': '/cosmwasm.wasm.v1.MsgExecuteContract',
-      sender: currentUser.address,
-      contract: XPLA.contract,
-      msg: executeMsg,
-      funds: funds
-    };
-    try {
-      showToast('Vault 서명 대기 중...');
-      const result = await XplaVault.post({ msgs: [msg] });
-      showToast(actionName + ' 성공!');
-      setTimeout(async () => { await refreshBalance(); await loadContractBounties(); }, 3000);
-      return result;
-    } catch (e) {
-      const m = (e.message || '').toLowerCase();
-      if (m.includes('denied') || m.includes('cancel')) {
-        showToast('서명이 취소되었어요');
-        throw e;
-      }
-      console.log('[executeContract] 익스텐션 실패, Vault 리다이렉트로 전환:', e.message);
-    }
-  }
-
-  // 3차 폴백: Vault 웹사이트로 바로 이동
+  // 폴백: Vault 웹사이트로 바로 이동
   vaultRedirect(executeMsg, axplaAmount, actionName);
 }
 
 function vaultRedirect(executeMsg, axplaAmount, actionName) {
-  const msgJson = JSON.stringify(executeMsg, null, 2);
   navigator.clipboard.writeText(JSON.stringify(executeMsg)).catch(() => {});
   const vaultUrl = `https://vault.xpla.io/contract/execute/${XPLA.contract}`;
   window.open(vaultUrl, '_blank');
-
   const amountHint = axplaAmount && axplaAmount !== '0'
     ? ' → Amount에 ' + axplaToXpla(axplaAmount) + ' XPLA 입력'
     : '';
@@ -2150,26 +2091,14 @@ function showWalletModal() {
   modal.classList.remove('hidden');
   modal.classList.add('flex');
 
-  const hasExt = XplaVault.isAvailable();
-  const btn = document.getElementById('walletConnectBtn');
-  const addrSection = document.getElementById('walletAddrSection');
   const subtitle = document.getElementById('walletModalSubtitle');
   const tip = document.getElementById('walletModalTip');
-  const toggle = document.getElementById('walletManualToggle');
+  const addrSection = document.getElementById('walletAddrSection');
 
-  if (hasExt) {
-    addrSection.classList.add('hidden');
-    btn.textContent = 'Vault 익스텐션으로 연결';
-    subtitle.textContent = 'Vault 익스텐션으로 자동 연결';
-    tip.textContent = '버튼을 누르면 Vault 팝업이 열립니다';
-    toggle.classList.remove('hidden');
-  } else {
-    addrSection.classList.remove('hidden');
-    btn.textContent = '연결하기';
-    subtitle.textContent = '지갑 주소를 입력하세요';
-    tip.textContent = '익스텐션 미설치 — 주소 직접 입력 (읽기 전용)';
-    toggle.classList.add('hidden');
-  }
+  addrSection.classList.add('hidden');
+  subtitle.textContent = xplaController ? 'XPLA Vault로 연결하세요' : '로딩 중...';
+  tip.textContent = xplaController ? '익스텐션 또는 모바일 앱으로 연결 가능' : 'Wallet 모듈 로딩 중...';
+  updateWalletModalButtons();
 
   if (currentUser) {
     document.getElementById('walletAddrInput').value = currentUser.address;
@@ -2183,33 +2112,13 @@ function showManualConnect() {
 }
 function closeWalletConnectModal() { document.getElementById('walletConnectModal').classList.add('hidden'); document.getElementById('walletConnectModal').classList.remove('flex'); }
 
-async function connectAndStart() {
-  const btn = document.getElementById('walletConnectBtn');
-
-  if (!XplaVault.isAvailable()) {
+function connectAndStart() {
+  if (!xplaController) {
     showManualConnect();
+    showToast('월렛 모듈 로딩 중... 주소를 직접 입력하거나 잠시 후 다시 시도해주세요');
     return;
   }
-
-  btn.disabled = true; btn.textContent = '연결 중...';
-  try {
-    const result = await XplaVault.connect();
-    const addr = result.address || (result.addresses && Object.values(result.addresses)[0]);
-    if (!addr) throw new Error('주소를 가져올 수 없습니다');
-    let balance = '0';
-    try { balance = await xplaGetBalance(addr); } catch (e) { balance = '?'; }
-    currentUser = { address: addr, shortAddress: addr.slice(0, 8) + '...' + addr.slice(-4), balance: balance };
-    saveUser(); updateUserUI();
-    closeWalletConnectModal();
-    showToast('지갑 연결 완료!');
-    loadContractBounties();
-  } catch (e) {
-    // 익스텐션 타임아웃 → 수동 입력으로 자동 전환
-    console.log('[connectAndStart] 익스텐션 연결 실패, 수동 입력 전환:', e.message);
-    showManualConnect();
-    showToast('익스텐션 연결 안됨 — 주소를 직접 입력해주세요');
-  }
-  btn.disabled = false; btn.textContent = 'Vault 익스텐션으로 연결';
+  connectExtension();
 }
 
 async function connectManual() {
@@ -3356,16 +3265,10 @@ async function xplaConnectWallet() {
   btn.disabled = true; btn.textContent = '연결 중...';
 
   let addr;
-  if (XplaVault.isAvailable()) {
-    try {
-      const result = await XplaVault.connect();
-      addr = result.address || (result.addresses && Object.values(result.addresses)[0]);
-      if (!addr) throw new Error('주소를 가져올 수 없습니다');
-    } catch (e) {
-      showToast('연결 실패: ' + e.message);
-      btn.disabled = false; btn.textContent = '연결';
-      return;
-    }
+  if (xplaController && xplaConnectTypes.includes('EXTENSION')) {
+    connectExtension();
+    btn.disabled = false; btn.textContent = '연결';
+    return;
   } else {
     const input = document.getElementById('xplaAddrInput');
     addr = (input.value || '').trim();
@@ -3442,93 +3345,20 @@ document.getElementById('xplaPanel').addEventListener('click', (e) => {
 });
 </script>
 
-<!-- ============ WalletConnect Module (XPLA wallet-controller) ============ -->
+<!-- ============ XPLA Wallet Controller Bundle ============ -->
 <script src="xpla-wc.js"></script>
 <script>
-window.addEventListener('xpla-wc-loaded', function() {
-try {
-  console.log('[WC] @xpla/wallet-controller loaded!');
-  const { WalletController, ConnectType, MsgExecuteContract, Fee } = window.XplaWC;
-
-  const controller = new WalletController({
-    defaultNetwork: {
-      name: 'testnet',
-      chainID: 'cube_47-5',
-      lcd: 'https://cube-lcd.xpla.dev',
-    },
-    walletConnectChainIds: {
-      0: { name: 'testnet', chainID: 'cube_47-5', lcd: 'https://cube-lcd.xpla.dev' },
-      1: { name: 'mainnet', chainID: 'dimension_37-1', lcd: 'https://dimension-lcd.xpla.dev' },
-    },
-  });
-
-  let wcState = null;
-
-  controller.states().subscribe((state) => {
-    wcState = state;
-    console.log('[WC] state:', state.status, state.wallets);
-    if (state.status === 'WALLET_CONNECTED' && state.wallets?.length > 0) {
-      const addr = state.wallets[0].xplaAddress;
-      window.dispatchEvent(new CustomEvent('wc-connected', { detail: { address: addr } }));
-    }
-  });
-
-  window.WC = {
-    ready: true,
-
-    connectExtension() {
-      controller.connect(ConnectType.EXTENSION);
-    },
-
-    connectWalletConnect() {
-      controller.connect(ConnectType.WALLETCONNECT);
-    },
-
-    async post(contractAddr, executeMsg, fundsArray) {
-      if (!wcState || wcState.status !== 'WALLET_CONNECTED') {
-        throw new Error('WalletConnect 미연결');
-      }
-      const sender = wcState.wallets[0].xplaAddress;
-      const coins = {};
-      if (fundsArray && fundsArray.length > 0) {
-        for (const f of fundsArray) coins[f.denom] = f.amount;
-      }
-      const msg = new MsgExecuteContract(
-        sender,
-        contractAddr,
-        executeMsg,
-        Object.keys(coins).length > 0 ? coins : undefined
-      );
-      const fee = new Fee(600000, '1500000000000000axpla');
-      const result = await controller.post({ msgs: [msg], fee });
-      console.log('[WC] post result:', result);
-      return result;
-    },
-
-    disconnect() {
-      controller.disconnect();
-      wcState = null;
-    },
-
-    isConnected() {
-      return !!(wcState && wcState.status === 'WALLET_CONNECTED' && wcState.wallets?.length > 0);
-    },
-
-    getAddress() {
-      return wcState?.wallets?.[0]?.xplaAddress || null;
-    },
-
-    MsgExecuteContract,
-    Fee,
-  };
-
-  window.dispatchEvent(new Event('wc-ready'));
-  console.log('[WC] Ready!');
-} catch (e) {
-  console.error('[WC] Failed to init:', e);
-  window.WC = { ready: false };
+// xpla-wc.js는 동기 로드 → window.XplaWC 즉시 사용 가능
+if (window.XplaWC) {
+  console.log('[Wallet] XplaWC bundle loaded, initializing controller...');
+  try {
+    initXplaController();
+  } catch(e) {
+    console.error('[Wallet] Controller init failed:', e);
+  }
+} else {
+  console.error('[Wallet] XplaWC bundle NOT loaded — xpla-wc.js 파일을 확인하세요');
 }
-});
 </script>
 
 </body>
