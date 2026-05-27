@@ -1,0 +1,16 @@
+{
+  "name": "bounx-wc-bundle",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@xpla/wallet-controller": "^1.7.3",
+    "@xpla/xpla.js": "^1.9.1",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

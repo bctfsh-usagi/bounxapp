@@ -3443,12 +3443,12 @@ document.getElementById('xplaPanel').addEventListener('click', (e) => {
 </script>
 
 <!-- ============ WalletConnect Module (XPLA wallet-controller) ============ -->
-<script type="module">
+<script src="xpla-wc.js"></script>
+<script>
+window.addEventListener('xpla-wc-loaded', function() {
 try {
-  console.log('[WC] Loading @xpla/wallet-controller...');
-  const { WalletController, ConnectType } = await import('https://esm.sh/@xpla/wallet-controller?bundle');
-  const { MsgExecuteContract, Fee } = await import('https://esm.sh/@xpla/xpla.js?bundle');
-  console.log('[WC] Packages loaded!');
+  console.log('[WC] @xpla/wallet-controller loaded!');
+  const { WalletController, ConnectType, MsgExecuteContract, Fee } = window.XplaWC;
 
   const controller = new WalletController({
     defaultNetwork: {
@@ -3525,9 +3525,10 @@ try {
   window.dispatchEvent(new Event('wc-ready'));
   console.log('[WC] Ready!');
 } catch (e) {
-  console.error('[WC] Failed to load:', e);
+  console.error('[WC] Failed to init:', e);
   window.WC = { ready: false };
 }
+});
 </script>
 
 </body>
