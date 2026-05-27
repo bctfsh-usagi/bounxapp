@@ -1897,7 +1897,7 @@ async function executeContract(executeMsg, axplaAmount, actionName) {
         executeMsg,
         Object.keys(coins).length > 0 ? coins : undefined
       );
-      const fee = new Fee(600000, '50000000000000000axpla');
+      const fee = new Fee(1000000, '100000000000000000axpla');
 
       showToast('Vault에서 서명해주세요...');
       const result = await xplaController.post({ msgs: [msg], fee });
