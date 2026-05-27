@@ -1264,7 +1264,7 @@
         </nav>
       </div>
       <div class="flex items-center gap-3">
-        <button onclick="openXplaPanel()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/25 hover:bg-emerald-500/25 transition-all text-xs font-semibold text-emerald-300" title="XPLA Testnet Contract">
+        <button id="xplaPanelBtn" onclick="openXplaPanel()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/25 hover:bg-emerald-500/25 transition-all text-xs font-semibold text-emerald-300" title="XPLA Testnet Contract">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
           Testnet
         </button>
@@ -1757,6 +1757,10 @@ const XPLA = {
   denom: 'axpla',
   decimals: 18,
 };
+const TX_FEE_GAS = 1000000;
+const TX_FEE_AMOUNT = '500000000000000000axpla';
+const TX_FEE_XPLA = 0.5;
+const EXPLORER_TX_URL = 'https://explorer.xpla.io/testnet/tx/';
 
 async function xplaQuery(queryMsg) {
   const encoded = btoa(JSON.stringify(queryMsg));
@@ -1880,11 +1884,43 @@ function disconnectWallet() {
   setTimeout(() => location.reload(), 500);
 }
 
+let _txPending = false;
+
 async function executeContract(executeMsg, axplaAmount, actionName) {
   if (!currentUser) { showWalletModal(); return; }
+  if (_txPending) { showToast('이전 트랜잭션 처리 중...'); return; }
 
-  // 공식 컨트롤러로 트랜잭션 실행
   if (xplaController && currentUser.connectType) {
+    // 컨트롤러 연결 상태 검증
+    if (xplaController._states?.getValue) {
+      const st = xplaController._states.getValue();
+      if (st?.status !== 'WALLET_CONNECTED') {
+        showToast('지갑 연결이 끊겼어요. 다시 연결해주세요');
+        showWalletModal();
+        return;
+      }
+      const wcAddr = st.wallets?.[0]?.xplaAddress;
+      if (wcAddr && wcAddr !== currentUser.address) {
+        showToast('지갑 주소가 변경되었어요. 다시 연결해주세요');
+        disconnectWallet();
+        return;
+      }
+    }
+
+    // 잔액 사전 체크
+    if (axplaAmount && axplaAmount !== '0') {
+      try {
+        const balStr = await xplaGetBalance(currentUser.address);
+        const balNum = parseFloat(balStr) || 0;
+        const rewardNum = parseFloat(axplaToXpla(axplaAmount)) || 0;
+        if (balNum < rewardNum + TX_FEE_XPLA) {
+          showToast('잔액 부족! 필요: ' + (rewardNum + TX_FEE_XPLA).toFixed(2) + ' XPLA, 보유: ' + balNum.toFixed(2) + ' XPLA');
+          return;
+        }
+      } catch(e) {}
+    }
+
+    _txPending = true;
     try {
       const { MsgExecuteContract, Fee } = window.XplaWC;
       const coins = {};
@@ -1897,11 +1933,12 @@ async function executeContract(executeMsg, axplaAmount, actionName) {
         executeMsg,
         Object.keys(coins).length > 0 ? coins : undefined
       );
-      const fee = new Fee(1000000, '500000000000000000axpla');
+      const fee = new Fee(TX_FEE_GAS, TX_FEE_AMOUNT);
 
       showToast('Vault에서 서명해주세요...');
       const result = await xplaController.post({ msgs: [msg], fee });
-      showToast(actionName + ' 성공! (tx: ' + (result.txhash || '').slice(0, 8) + '...)');
+      const txhash = result.txhash || '';
+      showTxSuccess(actionName, txhash);
       setTimeout(async () => { await refreshBalance(); await loadContractBounties(); }, 3000);
       return result;
     } catch (e) {
@@ -1913,11 +1950,22 @@ async function executeContract(executeMsg, axplaAmount, actionName) {
       console.error('[executeContract] 실패:', e);
       showToast('트랜잭션 실패: ' + e.message);
       throw e;
+    } finally {
+      _txPending = false;
     }
   }
 
-  // 폴백: Vault 웹사이트로 바로 이동
   vaultRedirect(executeMsg, axplaAmount, actionName);
+}
+
+function showTxSuccess(actionName, txhash) {
+  const t = document.getElementById('toast');
+  const short = txhash.slice(0, 12) + '...';
+  t.innerHTML = actionName + ' 성공! <span class="font-mono text-xs opacity-75">' + short + '</span> '
+    + '<a href="' + EXPLORER_TX_URL + txhash + '" target="_blank" class="underline ml-1">보기</a> '
+    + '<button onclick="navigator.clipboard.writeText(\'' + txhash + '\');this.textContent=\'복사됨\'" class="underline ml-1">복사</button>';
+  t.classList.remove('hidden');
+  setTimeout(() => { t.classList.add('hidden'); t.innerHTML = ''; }, 8000);
 }
 
 function vaultRedirect(executeMsg, axplaAmount, actionName) {
@@ -1932,13 +1980,23 @@ function vaultRedirect(executeMsg, axplaAmount, actionName) {
 
 // ============ Contract Data Layer ============
 async function fetchBounties(opts = {}) {
-  const query = { list_bounties: { limit: 50 } };
-  if (opts.status) query.list_bounties.status = opts.status;
-  if (opts.client) query.list_bounties.client = opts.client;
-  if (opts.worker) query.list_bounties.worker = opts.worker;
-  if (opts.startAfter) query.list_bounties.start_after = opts.startAfter;
-  const data = await xplaQuery(query);
-  return data.bounties || [];
+  const batchSize = 50;
+  const all = [];
+  let startAfter = opts.startAfter || undefined;
+  while (true) {
+    const query = { list_bounties: { limit: batchSize } };
+    if (opts.status) query.list_bounties.status = opts.status;
+    if (opts.client) query.list_bounties.client = opts.client;
+    if (opts.worker) query.list_bounties.worker = opts.worker;
+    if (startAfter) query.list_bounties.start_after = startAfter;
+    const data = await xplaQuery(query);
+    const batch = data.bounties || [];
+    all.push(...batch);
+    if (batch.length < batchSize) break;
+    startAfter = batch[batch.length - 1].id;
+    if (all.length > 500) break;
+  }
+  return all;
 }
 
 async function fetchBounty(bountyId) {
@@ -2084,6 +2142,9 @@ function enterApp() {
   populateCategorySelect();
   loadContractBounties();
   startAutoRefresh();
+  const isDebug = new URLSearchParams(window.location.search).has('debug');
+  const panelBtn = document.getElementById('xplaPanelBtn');
+  if (panelBtn && !isDebug) panelBtn.style.display = 'none';
 }
 
 function showWalletModal() {
@@ -2506,7 +2567,11 @@ function submitBounty() {
   const matchingType = document.querySelector('input[name="matchingType"]:checked')?.value || 'firstcome';
   const paymentType = document.querySelector('input[name="paymentType"]:checked')?.value || 'lump';
 
-  if (!title || !reward) { showToast('제목과 보상은 필수예요'); return; }
+  if (!title) { showToast('제목을 입력해주세요'); return; }
+  if (isNaN(reward) || reward <= 0) { showToast('보상 금액은 0보다 커야 해요'); return; }
+  if (reward < 0.01) { showToast('최소 보상은 0.01 XPLA예요'); return; }
+  const rewardStr = String(reward);
+  if (rewardStr.includes('.') && rewardStr.split('.')[1].length > 6) { showToast('소수점 6자리까지만 입력 가능해요'); return; }
 
   const deadlineMap = { '12시간': 12*3600, '1일': 86400, '3일': 3*86400, '7일': 7*86400 };
   const deadlineSeconds = Math.floor(Date.now() / 1000) + (deadlineMap[deadlineSelect] || 14*86400);
