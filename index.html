@@ -3056,7 +3056,7 @@
           </a>
         </div>
       </div>
-      <div id="walletManualToggle" class="text-center"><button onclick="showManualConnect()" class="text-xs text-white/50 hover:text-white/80 transition-colors">주소 직접 입력 (읽기 전용)</button></div>
+      <div id="walletManualToggle" class="hidden"></div>
     </div>
   </div>
 </div>
@@ -3731,7 +3731,14 @@ let refreshTimer = null;
 function initUser() {
   try {
     const saved = localStorage.getItem('bounx-wallet');
-    if (saved) currentUser = JSON.parse(saved);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.connectType) {
+        currentUser = parsed;
+      } else {
+        localStorage.removeItem('bounx-wallet');
+      }
+    }
   } catch (e) {}
 }
 function saveUser() { if (currentUser) localStorage.setItem('bounx-wallet', JSON.stringify(currentUser)); updateUserUI(); }
