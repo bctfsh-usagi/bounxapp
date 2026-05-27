@@ -1239,11 +1239,11 @@
   <div class="demo-banner">
     <div class="max-w-screen-lg mx-auto px-4 py-2 flex items-center justify-between text-xs">
       <div class="flex items-center gap-2">
-        <span class="font-semibold">📡 P2P 데모 모드</span>
+        <span class="font-semibold">📡 XPLA Testnet</span>
         <span class="hidden md:inline text-white/35">·</span>
-        <span class="hidden md:inline text-white/58">각 브라우저는 다른 유저로 작동합니다</span>
+        <span class="hidden md:inline text-white/58">CosmWasm 컨트랙트 기반 · Non-custodial</span>
       </div>
-      <span class="text-white/42 hidden md:inline">Firebase Realtime · 실시간 동기화</span>
+      <span class="text-white/42 hidden md:inline">cube_47-5 · LCD Query</span>
     </div>
   </div>
 
@@ -1275,7 +1275,9 @@
           <span class="text-xs font-bold tabular-nums text-white" id="userBalance">100</span>
           <span class="text-xs text-emerald-100/70">XPLA</span>
           <span class="w-px h-3 bg-white/12"></span>
-          <span class="text-xs font-mono text-emerald-100/75" id="userAddress">0x...</span>
+          <span class="text-xs font-mono text-emerald-100/75" id="userAddress">xpla1...</span>
+          <span class="w-px h-3 bg-white/12"></span>
+          <button onclick="disconnectWallet()" class="text-xs text-rose-300/70 hover:text-rose-300 transition-colors" title="연결 해제">연결해제</button>
         </div>
       </div>
     </div>
@@ -1295,7 +1297,7 @@
               Smart feed · Live bounty stream
             </div>
             <h1 class="font-display text-3xl md:text-5xl font-black tracking-tight leading-none text-white">
-              안녕하세요,<br class="md:hidden"/> <span class="shine-word" id="userGreet">0x...</span>
+              안녕하세요,<br class="md:hidden"/> <span class="shine-word" id="userGreet">xpla1...</span>
             </h1>
             <p class="text-sm text-white/58 mt-3" id="welcomeMsg">오늘도 좋은 작업이 있길!</p>
           </div>
@@ -1321,9 +1323,10 @@
         <div class="flex items-center gap-2">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot"></span>
           <span class="text-xs font-semibold text-emerald-100">CONX Wallet</span>
-          <span class="text-xs font-mono text-emerald-100/70" id="userAddressMobile">0x...</span>
+          <span class="text-xs font-mono text-emerald-100/70" id="userAddressMobile">xpla1...</span>
         </div>
-        <div><span class="font-bold tabular-nums text-white" id="userBalanceMobile">100</span> <span class="text-xs text-emerald-100/70">XPLA</span></div>
+        <div class="flex items-center gap-2"><span class="font-bold tabular-nums text-white" id="userBalanceMobile">100</span> <span class="text-xs text-emerald-100/70">XPLA</span>
+          <button onclick="disconnectWallet()" class="text-[10px] text-rose-300/70 hover:text-rose-300 ml-1">해제</button></div>
       </div>
 
       <!-- ⭐ 액션 필요 섹션 (있을 때만 표시) -->
@@ -1446,26 +1449,36 @@
   </footer>
 </div>
 
-<!-- 지갑 모달 -->
+<!-- 지갑 연결 모달 -->
 <div id="walletConnectModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center p-4">
   <div class="modal-content bg-white rounded-3xl w-full max-w-sm overflow-hidden">
     <div class="gradient-bg p-6 text-white text-center">
       <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/20 backdrop-blur mb-3">
         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
       </div>
-      <h3 class="font-display text-xl font-bold tracking-tight mb-1">CONX Wallet 연결됨</h3>
-      <p class="text-sm text-white/80">데모용으로 자동 연결되었어요</p>
+      <h3 class="font-display text-xl font-bold tracking-tight mb-1">XPLA Wallet 연결</h3>
+      <p class="text-sm text-white/80" id="walletModalSubtitle">Vault 익스텐션으로 자동 연결</p>
     </div>
     <div class="p-6 space-y-3">
-      <div class="bg-neutral-50 rounded-xl p-3.5">
-        <div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-500">지갑 주소</span><span class="font-mono text-sm text-neutral-900" id="walletConnectAddress">0x...</span></div>
-        <div class="flex items-center justify-between"><span class="text-xs text-neutral-500">잔액</span><span class="font-display text-lg font-bold text-neutral-900"><span id="walletConnectBalance">100</span> XPLA</span></div>
+      <div id="walletAddrSection" class="hidden">
+        <label class="block text-xs text-neutral-500 mb-1.5">XPLA 지갑 주소</label>
+        <input id="walletAddrInput" type="text" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm font-mono" placeholder="xpla1..." />
+      </div>
+      <div id="walletConnectedInfo" class="hidden bg-neutral-50 rounded-xl p-3.5">
+        <div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-500">지갑 주소</span><span class="font-mono text-sm text-neutral-900" id="walletConnectAddress">xpla1...</span></div>
+        <div class="flex items-center justify-between"><span class="text-xs text-neutral-500">잔액</span><span class="font-display text-lg font-bold text-neutral-900"><span id="walletConnectBalance">0</span> XPLA</span></div>
       </div>
       <div class="bg-emerald-50 rounded-xl p-3 text-xs text-emerald-800 border border-emerald-100">
-        <div class="font-semibold mb-1">🎁 신규 사용자 보너스</div>
-        <div>데모 사용을 위해 100 XPLA가 지급되었어요</div>
+        <div class="font-semibold mb-1">XPLA Testnet (cube_47-5)</div>
+        <div id="walletModalTip">Vault 크롬 익스텐션이 필요합니다</div>
       </div>
-      <button onclick="closeWalletConnectModal()" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm transition-all">시작하기</button>
+      <button onclick="connectViaWC()" id="walletWCBtn" class="w-full px-4 py-3 rounded-xl premium-btn text-white font-semibold text-sm transition-all flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.636 12.707l1.828-1.829M12 5.636l1.829 1.828M18.364 12.707l-1.828-1.829M12 18.364l-1.829-1.828" stroke-linecap="round"/><circle cx="12" cy="12" r="3"/></svg>
+        WalletConnect (QR 스캔)
+      </button>
+      <div id="wcLoadingMsg" class="text-center text-xs text-white/40">WalletConnect 모듈 로딩 중...</div>
+      <button onclick="connectAndStart()" id="walletConnectBtn" class="w-full px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm transition-all">Vault 익스텐션으로 연결</button>
+      <div id="walletManualToggle" class="text-center"><button onclick="showManualConnect()" class="text-xs text-white/50 hover:text-white/80 transition-colors">주소 직접 입력 (읽기 전용)</button></div>
     </div>
   </div>
 </div>
@@ -1693,6 +1706,10 @@
         <button id="xplaQueryBtn" onclick="xplaQueryConfig()" class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 text-white font-semibold text-sm transition-all">
           Config 조회
         </button>
+        <button onclick="document.getElementById('diagResult').textContent=XplaVault.diagnose();document.getElementById('diagResult').classList.remove('hidden');" class="w-full px-4 py-2.5 rounded-xl bg-amber-500/15 border border-amber-400/25 hover:bg-amber-500/25 text-amber-200 font-semibold text-sm transition-all">
+          익스텐션 진단
+        </button>
+        <div id="diagResult" class="hidden p-3 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-mono whitespace-pre-wrap"></div>
         <div id="xplaConfigResult" class="hidden p-3 rounded-xl bg-white/5 border border-white/10 text-white"></div>
       </div>
 
@@ -1731,22 +1748,317 @@
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDvyqVX-VzYj6Qz2Nz4TvzDYzc1-8vGJLA",
-  authDomain: "bounxapp.firebaseapp.com",
-  databaseURL: "https://bounxapp-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "bounxapp",
-  storageBucket: "bounxapp.firebasestorage.app",
-  messagingSenderId: "726222014757",
-  appId: "1:726222014757:web:c8f03fa7a26c4c24f0f2cc"
+// ============ XPLA Contract Config ============
+const XPLA = {
+  lcd: 'https://cube-lcd.xpla.dev',
+  chainId: 'cube_47-5',
+  contract: 'xpla1g7trqwupk4qfl5ltkdne6lsdclu2zd22usy9xquvxyrpzuv7kqvqm4ez8e',
+  denom: 'axpla',
+  decimals: 18,
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
+async function xplaQuery(queryMsg) {
+  const encoded = btoa(JSON.stringify(queryMsg));
+  const res = await fetch(`${XPLA.lcd}/cosmwasm/wasm/v1/contract/${XPLA.contract}/smart/${encoded}`);
+  if (!res.ok) throw new Error(`LCD query failed: HTTP ${res.status}`);
+  return (await res.json()).data;
+}
+
+async function xplaGetBalance(address) {
+  const res = await fetch(`${XPLA.lcd}/cosmos/bank/v1beta1/balances/${address}`);
+  const json = await res.json();
+  const coin = json.balances?.find(b => b.denom === XPLA.denom);
+  if (!coin) return '0';
+  return axplaToXpla(coin.amount);
+}
+
+function axplaToXpla(axplaStr) {
+  const raw = BigInt(axplaStr);
+  const whole = raw / BigInt(10 ** XPLA.decimals);
+  const frac = ((raw % BigInt(10 ** XPLA.decimals)) * 100n / BigInt(10 ** XPLA.decimals)).toString().padStart(2, '0');
+  return `${whole}.${frac}`;
+}
+
+function axplaToNumber(axplaStr) {
+  const raw = BigInt(axplaStr);
+  return Number(raw) / (10 ** XPLA.decimals);
+}
+
+function xplaToAxpla(xplaAmount) {
+  const parts = String(xplaAmount).split('.');
+  const whole = BigInt(parts[0] || '0');
+  let frac = (parts[1] || '0').padEnd(XPLA.decimals, '0').slice(0, XPLA.decimals);
+  return (whole * BigInt(10 ** XPLA.decimals) + BigInt(frac)).toString();
+}
+
+// ============ XPLA Vault Extension (자동 서명) ============
+const XplaVault = {
+  _id: 0,
+
+  isAvailable() {
+    return !!(window.xpla && typeof window.xpla.on === 'function');
+  },
+
+  _request(sendType, responseEvent, data) {
+    const id = ++this._id;
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      const cleanup = () => {
+        settled = true;
+        clearTimeout(timer);
+        try { window.xpla.off(responseEvent, xplaHandler); } catch(e) {}
+        window.removeEventListener('message', msgHandler);
+      };
+      const finish = (result) => {
+        if (settled) return;
+        cleanup();
+        console.log('[XplaVault] GOT response via', responseEvent, ':', result);
+        if (result?.error) {
+          reject(new Error(result.error.message || result.error.code || JSON.stringify(result.error)));
+        } else {
+          resolve(result);
+        }
+      };
+
+      const timer = setTimeout(() => {
+        if (settled) return;
+        cleanup();
+        reject(new Error('timeout'));
+      }, 5000);
+
+      // Channel 1: window.xpla.on (EventEmitter)
+      function xplaHandler(result) { finish(result); }
+      window.xpla.on(responseEvent, xplaHandler);
+
+      // Channel 2: window.postMessage 응답
+      function msgHandler(event) {
+        const msg = event.data?.xplavault;
+        if (!msg || typeof msg !== 'object') return;
+        if (msg.type === responseEvent) {
+          finish(msg.payload || msg);
+        }
+      }
+      window.addEventListener('message', msgHandler);
+
+      // 요청 전송
+      const payload = { type: sendType, id };
+      if (data !== undefined) payload.data = data;
+      console.log('[XplaVault] SEND:', payload);
+      window.postMessage({ xplavault: payload }, '*');
+    });
+  },
+
+  connect() {
+    return this._request('connect', 'onConnect');
+  },
+
+  post(txOptions) {
+    return this._request('post', 'onPost', txOptions);
+  },
+
+  diagnose() {
+    const info = [];
+    info.push('window.xpla: ' + (window.xpla ? Object.keys(window.xpla).join(', ') : 'missing'));
+    info.push('isAvailable: ' + this.isAvailable());
+    info.push('isXplaExtensionAvailable: ' + window.isXplaExtensionAvailable);
+    if (Array.isArray(window.xplaWallets)) {
+      window.xplaWallets.forEach((w, i) => {
+        info.push(`wallet[${i}]: ${w?.name} id="${w?.identifier}"`);
+      });
+    }
+    // window.xpla 이벤트 모니터링 시작
+    if (window.xpla) {
+      ['onConnect','onPost','onSign','onInfo','connect','post','sign','info'].forEach(evt => {
+        window.xpla.on(evt, (d) => console.log('[XplaVault] EVENT "' + evt + '":', d));
+      });
+      info.push('(이벤트 모니터링 시작됨 — 콘솔 확인)');
+    }
+    return info.join('\n');
+  }
+};
+
+function disconnectWallet() {
+  currentUser = null;
+  localStorage.removeItem('bounx-wallet');
+  localStorage.removeItem('bounx-wc');
+  if (window.WC?.ready && window.WC.isConnected()) {
+    try { window.WC.disconnect(); } catch(e) {}
+  }
+  document.getElementById('walletInfo')?.classList.add('hidden');
+  showToast('지갑 연결 해제됨');
+  setTimeout(() => location.reload(), 500);
+}
+
+function connectViaWC() {
+  if (!window.WC?.ready) {
+    showToast('WalletConnect 모듈 로딩 중... 잠시 후 다시 시도해주세요');
+    return;
+  }
+  closeWalletConnectModal();
+  showToast('XPLA Vault 앱으로 QR 코드를 스캔하세요');
+  window.WC.connectWalletConnect();
+}
+
+// WC 연결 완료 이벤트
+window.addEventListener('wc-connected', async (e) => {
+  const addr = e.detail.address;
+  if (!addr) return;
+  let balance = '0';
+  try { balance = await xplaGetBalance(addr); } catch(e) {}
+  currentUser = { address: addr, shortAddress: addr.slice(0, 8) + '...' + addr.slice(-4), balance, viaWC: true };
+  saveUser(); updateUserUI();
+  localStorage.setItem('bounx-wc', 'true');
+  showToast('WalletConnect 연결 완료!');
+  loadContractBounties();
+});
+
+// WC 모듈 로드 완료
+window.addEventListener('wc-ready', () => {
+  console.log('[App] WC module ready');
+  const msg = document.getElementById('wcLoadingMsg');
+  if (msg) msg.textContent = 'WalletConnect 준비 완료!';
+  setTimeout(() => { if (msg) msg.classList.add('hidden'); }, 2000);
+});
+
+async function executeContract(executeMsg, axplaAmount, actionName) {
+  if (!currentUser) { showWalletModal(); return; }
+
+  const funds = axplaAmount && axplaAmount !== '0'
+    ? [{ denom: XPLA.denom, amount: axplaAmount }]
+    : [];
+
+  // 1차: WalletConnect (모바일 앱 자동 서명 + 브로드캐스트)
+  if (window.WC?.ready && window.WC.isConnected()) {
+    try {
+      showToast('XPLA Vault 앱에서 서명해주세요...');
+      const result = await window.WC.post(XPLA.contract, executeMsg, funds);
+      showToast(actionName + ' 성공! (tx: ' + (result.txhash || '').slice(0, 8) + '...)');
+      setTimeout(async () => { await refreshBalance(); await loadContractBounties(); }, 3000);
+      return result;
+    } catch (e) {
+      const m = (e.message || '').toLowerCase();
+      if (m.includes('denied') || m.includes('cancel') || m.includes('reject')) {
+        showToast('서명이 취소되었어요');
+        throw e;
+      }
+      console.log('[executeContract] WC 실패:', e.message);
+      showToast('WC 실패: ' + e.message);
+      throw e;
+    }
+  }
+
+  // 2차: 익스텐션 직접 연결 시도
+  if (XplaVault.isAvailable()) {
+    const msg = {
+      '@type': '/cosmwasm.wasm.v1.MsgExecuteContract',
+      sender: currentUser.address,
+      contract: XPLA.contract,
+      msg: executeMsg,
+      funds: funds
+    };
+    try {
+      showToast('Vault 서명 대기 중...');
+      const result = await XplaVault.post({ msgs: [msg] });
+      showToast(actionName + ' 성공!');
+      setTimeout(async () => { await refreshBalance(); await loadContractBounties(); }, 3000);
+      return result;
+    } catch (e) {
+      const m = (e.message || '').toLowerCase();
+      if (m.includes('denied') || m.includes('cancel')) {
+        showToast('서명이 취소되었어요');
+        throw e;
+      }
+      console.log('[executeContract] 익스텐션 실패, Vault 리다이렉트로 전환:', e.message);
+    }
+  }
+
+  // 3차 폴백: Vault 웹사이트로 바로 이동
+  vaultRedirect(executeMsg, axplaAmount, actionName);
+}
+
+function vaultRedirect(executeMsg, axplaAmount, actionName) {
+  const msgJson = JSON.stringify(executeMsg, null, 2);
+  navigator.clipboard.writeText(JSON.stringify(executeMsg)).catch(() => {});
+  const vaultUrl = `https://vault.xpla.io/contract/execute/${XPLA.contract}`;
+  window.open(vaultUrl, '_blank');
+
+  const amountHint = axplaAmount && axplaAmount !== '0'
+    ? ' → Amount에 ' + axplaToXpla(axplaAmount) + ' XPLA 입력'
+    : '';
+  showToast('Vault가 열렸어요! Execute Message에 붙여넣기(Ctrl+V)' + amountHint + ' → Submit');
+}
+
+// ============ Contract Data Layer ============
+async function fetchBounties(opts = {}) {
+  const query = { list_bounties: { limit: 50 } };
+  if (opts.status) query.list_bounties.status = opts.status;
+  if (opts.client) query.list_bounties.client = opts.client;
+  if (opts.worker) query.list_bounties.worker = opts.worker;
+  if (opts.startAfter) query.list_bounties.start_after = opts.startAfter;
+  const data = await xplaQuery(query);
+  return data.bounties || [];
+}
+
+async function fetchBounty(bountyId) {
+  return await xplaQuery({ get_bounty: { bounty_id: Number(bountyId) } });
+}
+
+async function fetchApplicants(bountyId) {
+  const data = await xplaQuery({ get_applicants: { bounty_id: Number(bountyId) } });
+  return data.applicants || [];
+}
+
+async function fetchConfig() {
+  return await xplaQuery({ config: {} });
+}
+
+function mapContractBounty(raw) {
+  const rewardNum = axplaToNumber(raw.reward_amount);
+  const statusMap = { open: 'open', assigned: 'progress', in_progress: 'progress', submitted: 'review', settled: 'done', cancelled: 'done' };
+  const deadlineSec = raw.deadline;
+  const now = Math.floor(Date.now() / 1000);
+  const remaining = deadlineSec - now;
+  let deadlineLabel;
+  if (remaining <= 0) deadlineLabel = '만료됨';
+  else if (remaining < 3600) deadlineLabel = Math.floor(remaining / 60) + '분 남음';
+  else if (remaining < 86400) deadlineLabel = Math.floor(remaining / 3600) + '시간 남음';
+  else deadlineLabel = Math.floor(remaining / 86400) + '일 남음';
+
+  return {
+    id: String(raw.id),
+    numId: raw.id,
+    title: raw.title,
+    categoryId: raw.category,
+    desc: raw.description,
+    reward: Math.round(rewardNum * 100) / 100,
+    rewardAxpla: raw.reward_amount,
+    deadline: deadlineLabel,
+    deadlineTimestamp: deadlineSec,
+    status: statusMap[raw.status] || raw.status,
+    contractStatus: raw.status,
+    requester: raw.client,
+    requesterShort: raw.client.slice(0, 8) + '...' + raw.client.slice(-4),
+    worker: raw.worker || null,
+    workerShort: raw.worker ? raw.worker.slice(0, 8) + '...' + raw.worker.slice(-4) : null,
+    createdAt: raw.created_at * 1000,
+    likes: 0,
+    matchingType: raw.matching_type === 'first_come' ? 'firstcome' : raw.matching_type,
+    paymentType: raw.payment_type,
+    milestones: raw.milestones.map((m, i) => ({
+      id: `m_${i}`, title: m.title, percent: m.percent,
+      reward: Math.round(rewardNum * m.percent / 100 * 100) / 100,
+      status: m.completed ? 'done' : (i === raw.current_milestone_index && ['assigned','in_progress','submitted'].includes(raw.status) ? 'active' : 'pending'),
+    })),
+    currentMilestone: raw.current_milestone_index,
+    submission: raw.latest_summary ? { summary: raw.latest_summary, proofBundle: raw.latest_proof_hash || '', submittedAt: raw.submitted_at ? raw.submitted_at * 1000 : null } : null,
+    externalLink: raw.external_link,
+  };
+}
+
+// openVaultSign removed — replaced by executeContract() using Vault extension
+
+// ============ App Constants ============
 const CATEGORIES = [
   { id: 'research', icon: '📊', name: '리서치', desc: '시장/경쟁사/주제 조사' },
   { id: 'content', icon: '📝', name: '콘텐츠', desc: '블로그/카피/스토리' },
@@ -1772,39 +2084,38 @@ const PAGE_SIZE = 10;
 
 let bounties = {};
 let activeCategory = 'all';
-let activeStatus = 'open'; // 기본: 진행 가능
+let activeStatus = 'open';
 let activeSort = 'newest';
 let currentUser = null;
 let userInterests = [];
 let feedMode = 'recommended';
 let currentTab = 'home';
-let displayCount = PAGE_SIZE; // 현재 표시 중인 개수
+let displayCount = PAGE_SIZE;
+let refreshTimer = null;
 
-// ============ 사용자 ============
+// ============ Wallet / User ============
 function initUser() {
-  const STORAGE_KEY = 'bounx-user-v9';
-  let user = null;
-  try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) user = JSON.parse(saved); } catch (e) {}
-  if (!user || !user.address) {
-    const address = '0x' + Array.from({length: 40}, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    user = { address, shortAddress: address.slice(0, 6) + '...' + address.slice(-4), balance: 100, createdAt: new Date().toISOString() };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-  }
-  currentUser = user;
+  try {
+    const saved = localStorage.getItem('bounx-wallet');
+    if (saved) currentUser = JSON.parse(saved);
+  } catch (e) {}
 }
-function saveUser() { localStorage.setItem('bounx-user-v9', JSON.stringify(currentUser)); updateUserUI(); }
+function saveUser() { if (currentUser) localStorage.setItem('bounx-wallet', JSON.stringify(currentUser)); updateUserUI(); }
 function updateUserUI() {
   if (!currentUser) return;
-  ['userAddress', 'userAddressMobile'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = currentUser.shortAddress; });
-  ['userBalance', 'userBalanceMobile', 'userBalanceHero'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = currentUser.balance.toLocaleString(); });
+  const short = currentUser.shortAddress;
+  const bal = currentUser.balance || '0';
+  ['userAddress', 'userAddressMobile'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = short; });
+  ['userBalance', 'userBalanceMobile', 'userBalanceHero'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = bal; });
   const greet = document.getElementById('userGreet');
-  if (greet) greet.textContent = currentUser.shortAddress;
+  if (greet) greet.textContent = short;
+  document.getElementById('walletInfo')?.classList.remove('hidden');
 }
 
 function loadInterests() {
-  try { const saved = localStorage.getItem('bounx-interests-v9'); if (saved) userInterests = JSON.parse(saved); } catch (e) { userInterests = []; }
+  try { const saved = localStorage.getItem('bounx-interests'); if (saved) userInterests = JSON.parse(saved); } catch (e) { userInterests = []; }
 }
-function saveInterests() { localStorage.setItem('bounx-interests-v9', JSON.stringify(userInterests)); }
+function saveInterests() { localStorage.setItem('bounx-interests', JSON.stringify(userInterests)); }
 
 function showPage(page) {
   ['page-landing', 'page-onboarding', 'page-app'].forEach(id => { document.getElementById(id).classList.add('hidden'); });
@@ -1816,25 +2127,134 @@ function startApp() {
   if (userInterests.length === 0) { showPage('onboarding'); renderCategoryGrid(); }
   else { enterApp(); }
 }
-function goToLanding() { showPage('landing'); }
+function goToLanding() { if (refreshTimer) clearInterval(refreshTimer); showPage('landing'); }
 
 function enterApp() {
   showPage('app');
   initUser();
-  updateUserUI();
-  if (!sessionStorage.getItem('walletShown')) {
-    document.getElementById('walletConnectAddress').textContent = currentUser.shortAddress;
-    document.getElementById('walletConnectBalance').textContent = currentUser.balance;
-    document.getElementById('walletConnectModal').classList.remove('hidden');
-    document.getElementById('walletConnectModal').classList.add('flex');
-    sessionStorage.setItem('walletShown', '1');
+  if (!currentUser) {
+    showWalletModal();
+  } else {
+    updateUserUI();
+    refreshBalance();
   }
   renderStatusTabs();
   renderCategoryChips();
   populateCategorySelect();
-  listenToBounties();
+  loadContractBounties();
+  startAutoRefresh();
+}
+
+function showWalletModal() {
+  const modal = document.getElementById('walletConnectModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+
+  const hasExt = XplaVault.isAvailable();
+  const btn = document.getElementById('walletConnectBtn');
+  const addrSection = document.getElementById('walletAddrSection');
+  const subtitle = document.getElementById('walletModalSubtitle');
+  const tip = document.getElementById('walletModalTip');
+  const toggle = document.getElementById('walletManualToggle');
+
+  if (hasExt) {
+    addrSection.classList.add('hidden');
+    btn.textContent = 'Vault 익스텐션으로 연결';
+    subtitle.textContent = 'Vault 익스텐션으로 자동 연결';
+    tip.textContent = '버튼을 누르면 Vault 팝업이 열립니다';
+    toggle.classList.remove('hidden');
+  } else {
+    addrSection.classList.remove('hidden');
+    btn.textContent = '연결하기';
+    subtitle.textContent = '지갑 주소를 입력하세요';
+    tip.textContent = '익스텐션 미설치 — 주소 직접 입력 (읽기 전용)';
+    toggle.classList.add('hidden');
+  }
+
+  if (currentUser) {
+    document.getElementById('walletAddrInput').value = currentUser.address;
+  }
+}
+function showManualConnect() {
+  document.getElementById('walletAddrSection').classList.remove('hidden');
+  document.getElementById('walletConnectBtn').textContent = '연결하기';
+  document.getElementById('walletConnectBtn').setAttribute('onclick', 'connectManual()');
+  document.getElementById('walletManualToggle').classList.add('hidden');
 }
 function closeWalletConnectModal() { document.getElementById('walletConnectModal').classList.add('hidden'); document.getElementById('walletConnectModal').classList.remove('flex'); }
+
+async function connectAndStart() {
+  const btn = document.getElementById('walletConnectBtn');
+
+  if (!XplaVault.isAvailable()) {
+    showManualConnect();
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = '연결 중...';
+  try {
+    const result = await XplaVault.connect();
+    const addr = result.address || (result.addresses && Object.values(result.addresses)[0]);
+    if (!addr) throw new Error('주소를 가져올 수 없습니다');
+    let balance = '0';
+    try { balance = await xplaGetBalance(addr); } catch (e) { balance = '?'; }
+    currentUser = { address: addr, shortAddress: addr.slice(0, 8) + '...' + addr.slice(-4), balance: balance };
+    saveUser(); updateUserUI();
+    closeWalletConnectModal();
+    showToast('지갑 연결 완료!');
+    loadContractBounties();
+  } catch (e) {
+    // 익스텐션 타임아웃 → 수동 입력으로 자동 전환
+    console.log('[connectAndStart] 익스텐션 연결 실패, 수동 입력 전환:', e.message);
+    showManualConnect();
+    showToast('익스텐션 연결 안됨 — 주소를 직접 입력해주세요');
+  }
+  btn.disabled = false; btn.textContent = 'Vault 익스텐션으로 연결';
+}
+
+async function connectManual() {
+  const addr = (document.getElementById('walletAddrInput').value || '').trim();
+  if (!addr || !addr.startsWith('xpla1')) { showToast('올바른 XPLA 주소를 입력하세요 (xpla1...)'); return; }
+  const btn = document.getElementById('walletConnectBtn');
+  btn.disabled = true; btn.textContent = '연결 중...';
+  let balance = '0';
+  try { balance = await xplaGetBalance(addr); } catch (e) { balance = '?'; }
+  currentUser = { address: addr, shortAddress: addr.slice(0, 8) + '...' + addr.slice(-4), balance: balance };
+  saveUser(); updateUserUI();
+  closeWalletConnectModal();
+  showToast('지갑 연결 완료! (읽기 전용 — 트랜잭션에는 익스텐션 필요)');
+  loadContractBounties();
+  btn.disabled = false; btn.textContent = '연결하기';
+}
+
+async function refreshBalance() {
+  if (!currentUser) return;
+  try {
+    currentUser.balance = await xplaGetBalance(currentUser.address);
+    saveUser();
+  } catch (e) {}
+}
+
+async function loadContractBounties() {
+  try {
+    const raw = await fetchBounties();
+    bounties = {};
+    raw.forEach(r => {
+      const mapped = mapContractBounty(r);
+      bounties[mapped.id] = mapped;
+    });
+    if (currentTab === 'home') renderHome();
+    else renderActivity();
+  } catch (e) {
+    console.error('Failed to load bounties:', e);
+    showToast('바운티 로딩 실패: ' + e.message);
+  }
+}
+
+function startAutoRefresh() {
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(() => { loadContractBounties(); }, 15000);
+}
 
 // ============ 온보딩 ============
 function renderCategoryGrid() {
@@ -2039,16 +2459,7 @@ function loadMore() {
   renderFeed();
 }
 
-// ============ Firebase ============
-function listenToBounties() {
-  db.ref('bounties').on('value', (snapshot) => {
-    bounties = snapshot.val() || {};
-    if (currentTab === 'home') renderHome();
-    else renderActivity();
-    checkAndCollectRewards();
-    updateActivityDot();
-  });
-}
+// (contract polling replaces Firebase listener)
 
 // ============ 등록 ============
 function openCreateModal() { 
@@ -2177,80 +2588,54 @@ function updateMilestoneSummary() {
 }
 
 function submitBounty() {
+  if (!currentUser) { showWalletModal(); return; }
   const title = document.getElementById('titleInput').value.trim();
   const categoryId = document.getElementById('categoryInput').value;
   const desc = document.getElementById('descInput').value.trim();
   const reward = parseFloat(document.getElementById('rewardInput').value);
-  const deadline = document.getElementById('deadlineInput').value;
+  const deadlineSelect = document.getElementById('deadlineInput').value;
   const matchingType = document.querySelector('input[name="matchingType"]:checked')?.value || 'firstcome';
   const paymentType = document.querySelector('input[name="paymentType"]:checked')?.value || 'lump';
-  
+
   if (!title || !reward) { showToast('제목과 보상은 필수예요'); return; }
-  if (reward > currentUser.balance) { showToast('잔액이 부족해요 (' + currentUser.balance + ' XPLA 보유)'); return; }
-  
-  // 마일스톤 모드 검증
-  let milestones = null;
+
+  const deadlineMap = { '12시간': 12*3600, '1일': 86400, '3일': 3*86400, '7일': 7*86400 };
+  const deadlineSeconds = Math.floor(Date.now() / 1000) + (deadlineMap[deadlineSelect] || 14*86400);
+
+  let milestoneInputs = [];
   if (paymentType === 'milestone') {
     const list = document.getElementById('milestoneList');
     const items = Array.from(list.children);
     if (items.length < 1) { showToast('마일스톤을 최소 1개 만들어주세요'); return; }
-    
-    const ms = [];
     let totalPercent = 0;
     for (let i = 0; i < items.length; i++) {
-      const titleEl = items[i].querySelector('.ms-title');
-      const percentEl = items[i].querySelector('.ms-percent');
-      const msTitle = titleEl.value.trim();
-      const percent = parseInt(percentEl.value) || 0;
+      const msTitle = items[i].querySelector('.ms-title').value.trim();
+      const percent = parseInt(items[i].querySelector('.ms-percent').value) || 0;
       if (!msTitle) { showToast(`마일스톤 ${i + 1} 제목을 입력해주세요`); return; }
       if (percent < 5) { showToast(`마일스톤 ${i + 1} 비율은 최소 5% 이상`); return; }
       totalPercent += percent;
-      ms.push({ 
-        id: `m_${i}`, 
-        title: msTitle, 
-        percent: percent, 
-        reward: parseFloat((reward * percent / 100).toFixed(2)),
-        status: 'pending',  // pending | active | review | done
-      });
+      milestoneInputs.push({ title: msTitle, percent: percent });
     }
     if (totalPercent !== 100) { showToast(`마일스톤 합계가 100%여야 해요 (현재 ${totalPercent}%)`); return; }
-    
-    // 첫 마일스톤은 active 상태로
-    ms[0].status = 'active';
-    milestones = ms;
   }
-  
-  currentUser.balance -= reward;
-  saveUser();
-  const bountyRef = db.ref('bounties').push();
-  const bounty = {
-    id: bountyRef.key, title, categoryId, desc, reward, deadline,
-    status: 'open', requester: currentUser.address, requesterShort: currentUser.shortAddress,
-    createdAt: Date.now(), txHash: '0x' + Math.random().toString(16).slice(2, 18), likes: 0,
-    matchingType: matchingType,
-    paymentType: paymentType,
+
+  const contractMatchingType = matchingType === 'firstcome' ? 'first_come' : 'approval';
+  const executeMsg = {
+    create_bounty: {
+      title: title,
+      description: desc || title,
+      category: categoryId,
+      external_link: null,
+      deadline: deadlineSeconds,
+      matching_type: contractMatchingType,
+      payment_type: paymentType,
+      milestones: milestoneInputs,
+    }
   };
-  if (milestones) {
-    bounty.milestones = milestones;
-    bounty.currentMilestone = 0;
-  }
-  bountyRef.set(bounty);
+
+  const axplaAmount = xplaToAxpla(String(reward));
   closeCreateModal();
-  document.getElementById('titleInput').value = '';
-  document.getElementById('descInput').value = '';
-  document.getElementById('rewardInput').value = '';
-  // 매칭/결제 방식 초기화
-  const firstcomeRadio = document.querySelector('input[name="matchingType"][value="firstcome"]');
-  if (firstcomeRadio) { firstcomeRadio.checked = true; updateMatchingOption(); }
-  const lumpRadio = document.querySelector('input[name="paymentType"][value="lump"]');
-  if (lumpRadio) { lumpRadio.checked = true; updatePaymentOption(); }
-  document.getElementById('milestoneList').innerHTML = '';
-  updatePreview();
-  
-  const msg = paymentType === 'milestone' 
-    ? `✓ ${reward} XPLA 컨트랙트 잠금 (${milestones.length}단계 마일스톤)`
-    : `✓ ${reward} XPLA 컨트랙트에 잠금 완료`;
-  showToast(msg);
+  executeContract(executeMsg, axplaAmount, '바운티 등록').catch(() => {});
 }
 
 function timeAgo(ts) {
@@ -2269,17 +2654,12 @@ function getMyActionItems() {
   if (!currentUser) return [];
   const items = [];
   Object.values(bounties).forEach(b => {
-    // 의뢰자: 검토 대기 (가장 긴급)
     if (b.requester === currentUser.address && b.status === 'review') items.push({ ...b, actionType: 'review', priority: 1 });
-    // 작업자: 결과 제출 필요
     else if (b.worker === currentUser.address && b.status === 'progress') items.push({ ...b, actionType: 'submit', priority: 2 });
-    // 의뢰자: 지원자 검토 (승인 모드 + 지원자 있음)
-    else if (b.requester === currentUser.address && b.status === 'open' && b.matchingType === 'approval' && b.applicants && Object.keys(b.applicants).length > 0) {
+    else if (b.requester === currentUser.address && b.status === 'open' && b.matchingType === 'approval') {
       items.push({ ...b, actionType: 'select-applicant', priority: 2.5 });
     }
-    // 작업자: 의뢰자 검토 기다리는 중
     else if (b.worker === currentUser.address && b.status === 'review') items.push({ ...b, actionType: 'waiting-review', priority: 3 });
-    // 의뢰자: 작업자 작업 중 대기
     else if (b.requester === currentUser.address && b.status === 'progress') items.push({ ...b, actionType: 'waiting', priority: 4 });
   });
   items.sort((a, b) => a.priority - b.priority);
@@ -2449,10 +2829,8 @@ function renderFeed() {
   
   visible.forEach(b => {
     const cat = getCategoryById(b.categoryId);
-    const isMine = b.requester === currentUser.address;
-    const isWorker = b.worker === currentUser.address;
-    const likes = b.likes || 0;
-    const isLiked = (b.likedBy || {})[currentUser.address];
+    const isMine = currentUser && b.requester === currentUser.address;
+    const isWorker = currentUser && b.worker === currentUser.address;
     
     const card = document.createElement('article');
     card.className = 'feed-card rounded-2xl p-4 cursor-pointer' + (isMine ? ' my-bounty' : isWorker ? ' my-work' : '');
@@ -2500,34 +2878,17 @@ function renderFeed() {
     html += '<div class="flex items-center gap-3 mb-3 text-sm">';
     html += `<span class="font-display font-bold text-neutral-900">💰 ${b.reward} XPLA</span>`;
     html += `<span class="text-neutral-500">⏱ ${b.deadline}</span>`;
-    // 승인 모드면 지원자 수 표시
     if (b.status === 'open' && matchingType === 'approval') {
-      const applicantCount = b.applicants ? Object.keys(b.applicants).length : 0;
-      html += `<span class="text-neutral-500">📨 지원 ${applicantCount}명</span>`;
+      html += `<span class="text-neutral-500">📨 승인 필요</span>`;
     }
     html += '</div>';
     
     html += '<div class="flex items-center justify-between pt-3 border-t border-neutral-100">';
-    html += '<div class="flex items-center gap-1">';
-    html += `<button class="action-btn flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors" onclick="event.stopPropagation(); toggleLike('${b.id}')">`;
-    html += `<span class="text-base ${isLiked ? 'heart-pop' : ''}">${isLiked ? '💜' : '🤍'}</span>`;
-    html += `<span class="text-xs text-neutral-500">${likes}</span></button></div>`;
-    
-    // 액션 버튼: 매칭 모드 + 사용자 역할에 따라 분기
-    const hasApplied = b.applicants && b.applicants[currentUser.address];
+    html += `<div class="flex items-center gap-1"><span class="text-xs text-neutral-400 font-mono">#${b.numId}</span></div>`;
+
     if (b.status === 'open' && isMine && matchingType === 'approval') {
-      // 의뢰자: 지원자 보기
-      const applicantCount = b.applicants ? Object.keys(b.applicants).length : 0;
-      if (applicantCount > 0) {
-        html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openApplicantsModal('${b.id}')">지원자 ${applicantCount}명 검토</button>`;
-      } else {
-        html += `<span class="text-xs text-neutral-400">지원자 대기 중</span>`;
-      }
-    } else if (b.status === 'open' && !isMine && hasApplied) {
-      // 작업자: 이미 지원함
-      html += `<span class="text-xs text-violet-300">✓ 지원 완료</span>`;
-    } else if (b.status === 'open' && !isMine) {
-      // 작업자: 신청 가능
+      html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700" onclick="event.stopPropagation(); openApplicantsModal('${b.id}')">지원자 확인</button>`;
+    } else if (b.status === 'open' && !isMine && currentUser) {
       const btnLabel = matchingType === 'approval' ? '지원하기 📨' : '신청하기 ✋';
       html += `<button class="action-btn px-3.5 py-1.5 rounded-lg bg-neutral-900 text-white text-xs font-semibold hover:bg-neutral-800" onclick="event.stopPropagation(); applyToBounty('${b.id}')">${btnLabel}</button>`;
     } else if (b.status === 'progress' && isWorker) {
@@ -2543,50 +2904,25 @@ function renderFeed() {
   });
 }
 
-function toggleLike(bountyId) {
-  const b = bounties[bountyId];
-  if (!b) return;
-  const likedBy = b.likedBy || {};
-  const wasLiked = !!likedBy[currentUser.address];
-  if (wasLiked) {
-    delete likedBy[currentUser.address];
-    db.ref('bounties/' + bountyId).update({ likes: Math.max(0, (b.likes || 0) - 1), likedBy });
-  } else {
-    likedBy[currentUser.address] = true;
-    db.ref('bounties/' + bountyId).update({ likes: (b.likes || 0) + 1, likedBy });
-  }
-}
-
 function applyToBounty(bountyId) {
+  if (!currentUser) { showWalletModal(); return; }
   const b = bounties[bountyId];
   if (!b || b.status !== 'open') { showToast('이미 신청된 바운티예요'); return; }
   if (b.requester === currentUser.address) { showToast('자기 바운티에는 신청할 수 없어요'); return; }
-  
-  // 매칭 방식에 따라 분기
+
   const matchingType = b.matchingType || 'firstcome';
-  
   if (matchingType === 'approval') {
-    // 승인 필요 모드: 메시지 모달 열기
     openApplyMessageModal(bountyId);
   } else {
-    // 선착순: 기존대로 즉시 작업 시작
-    db.ref('bounties/' + bountyId).update({ status: 'progress', worker: currentUser.address, workerShort: currentUser.shortAddress, appliedAt: Date.now() });
-    showToast('🤝 신청 완료! 작업을 시작하세요');
+    const executeMsg = { apply_to_bounty: { bounty_id: b.numId, message: 'I want to work on this bounty' } };
+    executeContract(executeMsg, '0', '바운티 신청').catch(() => {});
   }
 }
 
-// 승인 모드: 지원 메시지 모달
 function openApplyMessageModal(bountyId) {
   const b = bounties[bountyId];
   if (!b) return;
-  
-  // 이미 지원했는지 체크
-  const applicants = b.applicants || {};
-  if (applicants[currentUser.address]) {
-    showToast('이미 지원한 바운티예요');
-    return;
-  }
-  
+
   let html = '<div class="space-y-4">';
   html += `<div class="comment-area rounded-xl p-3.5"><div class="text-xs text-white/55 mb-1">${getCategoryById(b.categoryId).icon} ${getCategoryById(b.categoryId).name} · 🎯 승인 필요</div><div class="font-semibold text-white text-sm">${escapeHtml(b.title)}</div></div>`;
   html += '<div><label class="block text-sm font-medium text-neutral-700 mb-1.5">자기소개 메시지</label><textarea id="applyMessageInput" class="input-field w-full px-3.5 py-2.5 rounded-xl text-sm resize-none" rows="4" placeholder="왜 내가 이 작업에 적합한지 짧게 소개해주세요. 예: 부동산 분야 5년 경험, 3일 안에 마무리 가능합니다."></textarea></div>';
@@ -2610,60 +2946,51 @@ function submitApplication(bountyId) {
   const message = document.getElementById('applyMessageInput').value.trim();
   if (!message) { showToast('자기소개 메시지를 작성해주세요'); return; }
   if (message.length < 10) { showToast('조금 더 자세히 적어주세요 (10자 이상)'); return; }
-  
   const b = bounties[bountyId];
   if (!b) return;
-  
-  const applicants = b.applicants || {};
-  applicants[currentUser.address] = {
-    address: currentUser.address,
-    shortAddress: currentUser.shortAddress,
-    message: message,
-    appliedAt: Date.now(),
-  };
-  
-  db.ref('bounties/' + bountyId).update({ applicants });
+  const executeMsg = { apply_to_bounty: { bounty_id: b.numId, message: message } };
   closeApplyModal();
-  showToast('📨 지원 완료! 의뢰자 응답을 기다려주세요');
+  executeContract(executeMsg, '0', '바운티 지원').catch(() => {});
 }
 
-// 의뢰자: 지원자 리스트 모달 열기
-function openApplicantsModal(bountyId) {
+async function openApplicantsModal(bountyId) {
   const b = bounties[bountyId];
   if (!b) return;
-  
-  const applicants = b.applicants || {};
-  const applicantList = Object.values(applicants).sort((a, b) => a.appliedAt - b.appliedAt);
-  
+  const cat = getCategoryById(b.categoryId);
+
+  document.getElementById('applicantsContent').innerHTML = '<div class="text-center py-8 text-white/55"><div class="text-sm">지원자 로딩 중...</div></div>';
+  document.getElementById('applicantsModal').classList.remove('hidden');
+  document.getElementById('applicantsModal').classList.add('flex');
+
+  let applicantList = [];
+  try { applicantList = await fetchApplicants(b.numId); } catch (e) { console.error(e); }
+
   let html = '<div class="space-y-3">';
-  html += `<div class="comment-area rounded-xl p-3.5"><div class="text-xs text-white/55 mb-1">${getCategoryById(b.categoryId).icon} ${getCategoryById(b.categoryId).name} · 🎯 승인 필요</div><div class="font-semibold text-white text-sm">${escapeHtml(b.title)}</div></div>`;
-  
+  html += `<div class="comment-area rounded-xl p-3.5"><div class="text-xs text-white/55 mb-1">${cat.icon} ${cat.name} · 🎯 승인 필요</div><div class="font-semibold text-white text-sm">${escapeHtml(b.title)}</div></div>`;
+
   if (applicantList.length === 0) {
     html += '<div class="text-center py-8 text-white/55"><div class="text-3xl mb-2">🕊️</div><div class="text-sm">아직 지원자가 없어요</div><div class="text-xs mt-1">조금만 기다려주세요</div></div>';
   } else {
     html += `<div class="text-xs text-white/55 mb-2">총 <span class="text-white font-semibold">${applicantList.length}명</span>이 지원했어요. 한 명을 선택해주세요.</div>`;
     applicantList.forEach(a => {
-      const avatarChar = a.shortAddress.slice(2, 3).toUpperCase();
+      const workerAddr = a.worker;
+      const shortAddr = workerAddr.slice(0, 8) + '...' + workerAddr.slice(-4);
+      const avatarChar = shortAddr.slice(4, 5).toUpperCase();
       const avatarColors = ['bg-violet-100 text-violet-700', 'bg-emerald-100 text-emerald-700', 'bg-amber-100 text-amber-700', 'bg-rose-100 text-rose-700', 'bg-sky-100 text-sky-700'];
-      const avatarColor = avatarColors[parseInt(a.shortAddress.slice(2, 4), 16) % avatarColors.length];
-      
+      const avatarColor = avatarColors[workerAddr.charCodeAt(6) % avatarColors.length];
       html += '<div class="applicant-card rounded-xl p-3.5">';
       html += '<div class="flex items-start gap-3 mb-2">';
       html += `<div class="w-9 h-9 rounded-full ${avatarColor} flex items-center justify-center font-bold text-xs flex-shrink-0">${avatarChar}</div>`;
       html += '<div class="flex-1 min-w-0">';
-      html += `<div class="flex items-center gap-2"><span class="font-mono text-sm font-semibold text-white">${a.shortAddress}</span><span class="text-xs text-white/45">·</span><span class="text-xs text-white/55">${timeAgo(a.appliedAt)}</span></div>`;
+      html += `<div class="flex items-center gap-2"><span class="font-mono text-sm font-semibold text-white">${shortAddr}</span><span class="text-xs text-white/45">·</span><span class="text-xs text-white/55">${timeAgo(a.applied_at * 1000)}</span></div>`;
       html += `<div class="text-xs text-white/72 mt-1.5 leading-relaxed">${escapeHtml(a.message)}</div>`;
       html += '</div></div>';
-      html += `<button onclick="selectApplicant('${b.id}', '${a.address}', '${a.shortAddress}')" class="w-full mt-2 px-3 py-2 rounded-lg premium-btn text-white text-xs font-semibold">이 사람으로 선택 ✓</button>`;
+      html += `<button onclick="selectApplicant('${b.id}', '${workerAddr}', '${shortAddr}')" class="w-full mt-2 px-3 py-2 rounded-lg premium-btn text-white text-xs font-semibold">이 사람으로 선택 ✓</button>`;
       html += '</div>';
     });
   }
-  
   html += '</div>';
-  
   document.getElementById('applicantsContent').innerHTML = html;
-  document.getElementById('applicantsModal').classList.remove('hidden');
-  document.getElementById('applicantsModal').classList.add('flex');
 }
 
 function closeApplicantsModal() {
@@ -2673,51 +3000,21 @@ function closeApplicantsModal() {
 
 function selectApplicant(bountyId, workerAddress, workerShort) {
   if (!confirm(workerShort + ' 님을 작업자로 선택하시겠어요?')) return;
-  db.ref('bounties/' + bountyId).update({
-    status: 'progress',
-    worker: workerAddress,
-    workerShort: workerShort,
-    appliedAt: Date.now(),
-  });
-  closeApplicantsModal();
-  showToast('✓ 작업자를 선택했어요. 작업이 시작됩니다');
-}
-
-// 댓글 추가
-function addComment(bountyId) {
-  const input = document.getElementById('commentInput');
-  if (!input) return;
-  const text = input.value.trim();
-  if (!text) return;
-  
   const b = bounties[bountyId];
   if (!b) return;
-  
-  const comments = b.comments || {};
-  const commentId = 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-  comments[commentId] = {
-    id: commentId,
-    author: currentUser.address,
-    authorShort: currentUser.shortAddress,
-    text: text,
-    createdAt: Date.now(),
-  };
-  
-  db.ref('bounties/' + bountyId).update({ comments }).then(() => {
-    input.value = '';
-    // 모달이 열려있으면 다시 렌더
-    if (!document.getElementById('detailModal').classList.contains('hidden')) {
-      openDetail(bountyId);
-    }
-  });
+  const executeMsg = { accept_applicant: { bounty_id: b.numId, selected_worker: workerAddress } };
+  closeApplicantsModal();
+  executeContract(executeMsg, '0', '지원자 수락').catch(() => {});
 }
 
-function openDetail(bountyId) {
+// comments removed — not available in contract
+
+async function openDetail(bountyId) {
   const b = bounties[bountyId];
   if (!b) return;
   const cat = getCategoryById(b.categoryId);
-  const isMine = b.requester === currentUser.address;
-  const isWorker = b.worker === currentUser.address;
+  const isMine = currentUser && b.requester === currentUser.address;
+  const isWorker = currentUser && b.worker === currentUser.address;
   const matchingType = b.matchingType || 'firstcome';
   const labels = {
     open: '<span class="badge-open text-xs font-semibold px-2 py-0.5 rounded-full">진행 가능</span>',
@@ -2729,17 +3026,14 @@ function openDetail(bountyId) {
   html += '<div class="flex items-center justify-between flex-wrap gap-2">';
   html += `<div class="text-xs text-neutral-500 font-medium">${cat.icon} ${cat.name}</div>`;
   html += '<div class="flex items-center gap-1.5">';
-  // 매칭 배지
   if (b.status === 'open') {
-    if (matchingType === 'firstcome') {
-      html += '<span class="badge-matching-firstcome text-[10px] font-semibold px-2 py-0.5 rounded-full">⚡ 선착순</span>';
-    } else {
-      html += '<span class="badge-matching-approval text-[10px] font-semibold px-2 py-0.5 rounded-full">🎯 승인 필요</span>';
-    }
+    html += matchingType === 'firstcome'
+      ? '<span class="badge-matching-firstcome text-[10px] font-semibold px-2 py-0.5 rounded-full">⚡ 선착순</span>'
+      : '<span class="badge-matching-approval text-[10px] font-semibold px-2 py-0.5 rounded-full">🎯 승인 필요</span>';
   }
   html += labels[b.status];
   html += '</div></div>';
-  
+
   html += `<div><h2 class="font-display text-xl font-bold tracking-tight mb-2">${escapeHtml(b.title)}</h2>`;
   if (b.desc) html += `<p class="text-sm text-neutral-600 leading-relaxed whitespace-pre-wrap">${escapeHtml(b.desc)}</p>`;
   html += '</div>';
@@ -2747,75 +3041,46 @@ function openDetail(bountyId) {
   html += `<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">보상</div><div class="font-display text-lg font-bold">${b.reward} XPLA</div></div>`;
   html += `<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">마감</div><div class="font-display text-lg font-bold">${b.deadline}</div></div>`;
   html += '</div>';
-  
-  // ⭐ 마일스톤 진행도 표시
-  if (b.paymentType === 'milestone' && b.milestones) {
+
+  if (b.paymentType === 'milestone' && b.milestones && b.milestones.length > 0) {
     const currentIdx = b.currentMilestone || 0;
     html += '<div class="milestone-progress">';
     html += '<div class="flex items-center justify-between mb-3"><span class="text-sm font-semibold text-white">🎯 마일스톤 진행도</span>';
     const doneCount = b.milestones.filter(m => m.status === 'done').length;
     html += `<span class="text-xs text-white/55">${doneCount}/${b.milestones.length} 완료</span></div>`;
-    
-    // 단계 시각화
     html += '<div class="flex items-center mb-3">';
     b.milestones.forEach((m, i) => {
-      let stepCls = 'pending';
-      let icon = i + 1;
+      let stepCls = 'pending', icon = i + 1;
       if (m.status === 'done') { stepCls = 'done'; icon = '✓'; }
       else if (m.status === 'active' || m.status === 'review') { stepCls = 'active'; }
       html += `<div class="milestone-step ${stepCls}">${icon}</div>`;
-      if (i < b.milestones.length - 1) {
-        const lineCls = m.status === 'done' ? 'done' : '';
-        html += `<div class="milestone-line ${lineCls}"></div>`;
-      }
+      if (i < b.milestones.length - 1) html += `<div class="milestone-line ${m.status === 'done' ? 'done' : ''}"></div>`;
     });
-    html += '</div>';
-    
-    // 각 마일스톤 상세
-    html += '<div class="space-y-1.5">';
+    html += '</div><div class="space-y-1.5">';
     b.milestones.forEach((m, i) => {
-      const isCurrent = i === currentIdx;
-      const isDone = m.status === 'done';
-      const isReview = m.status === 'review';
       let statusLabel = '';
-      if (isDone) statusLabel = '<span class="text-[10px] text-emerald-300 font-semibold">✓ 완료</span>';
-      else if (isReview) statusLabel = '<span class="text-[10px] text-violet-300 font-semibold">검토 중</span>';
-      else if (isCurrent) statusLabel = '<span class="text-[10px] text-cyan-300 font-semibold">진행 중</span>';
+      if (m.status === 'done') statusLabel = '<span class="text-[10px] text-emerald-300 font-semibold">✓ 완료</span>';
+      else if (m.status === 'active') statusLabel = '<span class="text-[10px] text-cyan-300 font-semibold">진행 중</span>';
       else statusLabel = '<span class="text-[10px] text-white/45">대기</span>';
-      
-      html += '<div class="flex items-center justify-between gap-2 text-xs">';
-      html += `<div class="flex items-center gap-2 flex-1 min-w-0"><span class="text-white/45 flex-shrink-0">${i + 1}.</span><span class="text-white/85 truncate ${isCurrent ? 'font-semibold' : ''}">${escapeHtml(m.title)}</span>${statusLabel}</div>`;
-      html += `<span class="text-white/65 font-mono flex-shrink-0">${m.reward} XPLA <span class="text-white/45">(${m.percent}%)</span></span>`;
-      html += '</div>';
+      html += `<div class="flex items-center justify-between gap-2 text-xs"><div class="flex items-center gap-2 flex-1 min-w-0"><span class="text-white/45 flex-shrink-0">${i + 1}.</span><span class="text-white/85 truncate ${i === currentIdx ? 'font-semibold' : ''}">${escapeHtml(m.title)}</span>${statusLabel}</div><span class="text-white/65 font-mono flex-shrink-0">${m.reward} XPLA <span class="text-white/45">(${m.percent}%)</span></span></div>`;
     });
-    html += '</div>';
-    html += '</div>';
+    html += '</div></div>';
   }
-  
+
   html += '<div class="space-y-2 text-xs">';
   html += `<div class="flex justify-between text-neutral-500"><span>의뢰자</span><span class="font-mono text-neutral-700">${b.requesterShort}${isMine ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : ''}</span></div>`;
   if (b.workerShort) html += `<div class="flex justify-between text-neutral-500"><span>작업자</span><span class="font-mono text-neutral-700">${b.workerShort}${isWorker ? ' <span class="my-badge text-[10px] font-semibold px-1.5 py-0.5 rounded ml-1">나</span>' : ''}</span></div>`;
-  html += `<div class="flex justify-between text-neutral-500"><span>트랜잭션</span><span class="font-mono text-neutral-700">${b.txHash.slice(0, 10)}...</span></div>`;
+  html += `<div class="flex justify-between text-neutral-500"><span>Bounty ID</span><span class="font-mono text-neutral-700">#${b.numId}</span></div>`;
+  html += `<div class="flex justify-between text-neutral-500"><span>컨트랙트 상태</span><span class="font-mono text-neutral-700">${b.contractStatus}</span></div>`;
   html += '</div>';
-  
+
   // 상태별 액션
-  if (b.status === 'open' && !isMine) {
-    const hasApplied = b.applicants && b.applicants[currentUser.address];
-    if (hasApplied) {
-      html += '<div class="bg-violet-50/10 rounded-xl p-3 text-xs text-violet-200 text-center border border-violet-100/30">✓ 이미 지원하셨어요. 의뢰자 응답을 기다려주세요</div>';
-    } else {
-      const btnLabel = matchingType === 'approval' ? '지원하기 📨' : '신청하기 ✋';
-      html += `<button onclick="closeDetailModal(); applyToBounty('${b.id}')" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">${btnLabel}</button>`;
-    }
+  if (b.status === 'open' && !isMine && currentUser) {
+    const btnLabel = matchingType === 'approval' ? '지원하기 📨' : '신청하기 ✋';
+    html += `<button onclick="closeDetailModal(); applyToBounty('${b.id}')" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">${btnLabel}</button>`;
   } else if (b.status === 'open' && isMine) {
-    const applicantCount = b.applicants ? Object.keys(b.applicants).length : 0;
-    if (matchingType === 'approval' && applicantCount > 0) {
-      html += `<button onclick="closeDetailModal(); openApplicantsModal('${b.id}')" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">지원자 ${applicantCount}명 검토하기 →</button>`;
-    } else if (matchingType === 'approval') {
-      html += '<div class="bg-blue-50/10 rounded-xl p-3 text-xs text-blue-200 text-center border border-blue-100/20">지원자를 기다리는 중...<br/><span class="opacity-75">🎯 승인 필요 모드 · 지원자가 모이면 알림이 와요</span></div>';
-    } else {
-      html += '<div class="bg-blue-50/10 rounded-xl p-3 text-xs text-blue-200 text-center border border-blue-100/20">다른 사용자가 신청하기를 기다리는 중...<br/><span class="opacity-75">⚡ 선착순 · 다른 브라우저에서 신청해보세요</span></div>';
-    }
+    html += `<button onclick="closeDetailModal(); openApplicantsModal('${b.id}')" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">지원자 확인하기 →</button>`;
+    html += `<button onclick="closeDetailModal(); cancelBounty('${b.id}')" class="w-full mt-2 px-4 py-2.5 rounded-xl premium-secondary-btn font-semibold text-sm">바운티 취소</button>`;
   } else if (b.status === 'progress' && isWorker) {
     html += `<button onclick="closeDetailModal(); openWorkSubmit('${b.id}')" class="w-full px-4 py-2.5 rounded-xl premium-btn text-white font-semibold text-sm">결과물 제출하기</button>`;
   } else if (b.status === 'progress' && isMine) {
@@ -2825,50 +3090,37 @@ function openDetail(bountyId) {
   } else if (b.status === 'review' && isWorker) {
     html += '<div class="bg-violet-50/10 rounded-xl p-3 text-xs text-violet-200 text-center border border-violet-100/30">의뢰자의 검토를 기다리는 중...</div>';
   } else if (b.status === 'done') {
-    html += `<div class="bg-emerald-50/10 rounded-xl p-3 text-xs text-emerald-200 border border-emerald-100/30"><div class="font-semibold mb-1">✓ 정산 완료</div><div class="opacity-75">${b.completedAt ? new Date(b.completedAt).toLocaleString('ko') : ''}</div></div>`;
+    html += '<div class="bg-emerald-50/10 rounded-xl p-3 text-xs text-emerald-200 border border-emerald-100/30"><div class="font-semibold mb-1">✓ 정산 완료</div></div>';
   }
-  
-  // ⭐ 댓글 영역 (작업 시작 후 표시)
-  const canComment = (isMine || isWorker) && ['progress', 'review', 'done'].includes(b.status);
-  const comments = b.comments || {};
-  const commentList = Object.values(comments).sort((a, b) => a.createdAt - b.createdAt);
-  
-  if (canComment || commentList.length > 0) {
-    html += '<div class="pt-3 border-t border-white/10">';
-    html += `<div class="flex items-center gap-2 mb-3"><span class="text-sm font-semibold text-white">💬 대화</span><span class="text-xs text-white/45">${commentList.length}개</span></div>`;
-    
-    // 댓글 리스트
-    html += '<div class="space-y-2 mb-3 max-h-64 overflow-y-auto">';
-    if (commentList.length === 0) {
-      html += '<div class="text-center py-4 text-white/45 text-xs">아직 대화가 없어요<br/><span class="opacity-75">작업 진행 상황을 공유해보세요</span></div>';
-    } else {
-      commentList.forEach(c => {
-        const isMyComment = c.author === currentUser.address;
-        const cls = isMyComment ? 'mine' : '';
-        const align = isMyComment ? 'items-end' : 'items-start';
-        html += `<div class="flex flex-col ${align}">`;
-        html += `<div class="comment-bubble ${cls} rounded-2xl px-3 py-2 max-w-[85%]">`;
-        html += `<div class="flex items-center gap-2 mb-0.5"><span class="text-[10px] font-mono text-white/60">${c.authorShort}</span><span class="text-[10px] text-white/40">${timeAgo(c.createdAt)}</span></div>`;
-        html += `<div class="text-xs text-white/90 leading-relaxed whitespace-pre-wrap">${escapeHtml(c.text)}</div>`;
-        html += '</div></div>';
-      });
-    }
-    html += '</div>';
-    
-    // 댓글 입력
-    if (canComment) {
-      html += '<div class="flex gap-2">';
-      html += `<input id="commentInput" type="text" class="input-field flex-1 px-3 py-2 rounded-xl text-sm" placeholder="메시지 입력..." onkeypress="if(event.key==='Enter') addComment('${b.id}')" />`;
-      html += `<button onclick="addComment('${b.id}')" class="px-4 py-2 rounded-xl premium-btn text-white text-xs font-semibold">전송</button>`;
-      html += '</div>';
-    }
-    html += '</div>';
-  }
-  
+
   html += '</div>';
   document.getElementById('detailContent').innerHTML = html;
   document.getElementById('detailModal').classList.remove('hidden');
   document.getElementById('detailModal').classList.add('flex');
+
+  // Load applicants asynchronously for approval mode bounties
+  if (b.status === 'open' && isMine && matchingType === 'approval') {
+    loadDetailApplicants(bountyId);
+  }
+}
+
+async function loadDetailApplicants(bountyId) {
+  const b = bounties[bountyId];
+  if (!b) return;
+  try {
+    const applicants = await fetchApplicants(b.numId);
+    if (applicants.length > 0) {
+      b._applicants = applicants;
+    }
+  } catch (e) { console.error('Failed to load applicants', e); }
+}
+
+function cancelBounty(bountyId) {
+  const b = bounties[bountyId];
+  if (!b) return;
+  if (!confirm('바운티를 취소하시겠어요? 잠긴 토큰이 반환됩니다.')) return;
+  const executeMsg = { cancel_bounty: { bounty_id: b.numId } };
+  executeContract(executeMsg, '0', '바운티 취소').catch(() => {});
 }
 function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden'); document.getElementById('detailModal').classList.remove('flex'); }
 
@@ -2908,21 +3160,17 @@ function submitWork(bountyId) {
   if (!summary) { showToast('결과물 요약을 작성해주세요'); return; }
   const b = bounties[bountyId];
   if (!b) return;
-  
-  const submission = { summary, proofBundle: '0x' + Math.random().toString(16).slice(2, 18), submittedAt: Date.now() };
-  
-  // 마일스톤 모드: 현재 마일스톤의 submission 업데이트 + 상태 review
-  if (b.paymentType === 'milestone' && b.milestones) {
-    const milestones = [...b.milestones];
-    const idx = b.currentMilestone || 0;
-    milestones[idx] = { ...milestones[idx], status: 'review', submission };
-    db.ref('bounties/' + bountyId).update({ status: 'review', milestones, submission });
-  } else {
-    // 일반 모드
-    db.ref('bounties/' + bountyId).update({ status: 'review', submission });
-  }
+  const proofHash = '0x' + Array.from(crypto.getRandomValues(new Uint8Array(16))).map(x => x.toString(16).padStart(2,'0')).join('');
+  const executeMsg = {
+    submit_work: {
+      bounty_id: b.numId,
+      proof_hash: proofHash,
+      summary: summary,
+      milestone_index: b.paymentType === 'milestone' ? b.currentMilestone : null,
+    }
+  };
   closeWorkModal();
-  showToast('📤 결과물이 제출됐어요');
+  executeContract(executeMsg, '0', '작업 제출').catch(() => {});
 }
 
 function openReview(bountyId) {
@@ -2963,55 +3211,17 @@ function closeReviewModal() { document.getElementById('reviewModal').classList.a
 function approveWork(bountyId) {
   const b = bounties[bountyId];
   if (!b) return;
-  
-  // 마일스톤 모드: 현재 마일스톤만 완료, 다음 마일스톤 활성화
-  if (b.paymentType === 'milestone' && b.milestones) {
-    const milestones = [...b.milestones];
-    const idx = b.currentMilestone || 0;
-    milestones[idx] = { ...milestones[idx], status: 'done', completedAt: Date.now() };
-    
-    const isLastMilestone = idx === milestones.length - 1;
-    
-    if (isLastMilestone) {
-      // 마지막 마일스톤: 전체 완료
-      db.ref('bounties/' + bountyId).update({ status: 'done', milestones, completedAt: Date.now() });
-      closeReviewModal();
-      openMilestoneSettlement(b, milestones[idx], true);  // 최종 정산
-    } else {
-      // 다음 마일스톤 활성화
-      milestones[idx + 1] = { ...milestones[idx + 1], status: 'active' };
-      db.ref('bounties/' + bountyId).update({ 
-        status: 'progress', 
-        milestones, 
-        currentMilestone: idx + 1,
-        submission: null,  // 새 마일스톤용 초기화
-      });
-      closeReviewModal();
-      openMilestoneSettlement(b, milestones[idx], false);  // 부분 정산
-    }
-  } else {
-    // 일반 모드
-    db.ref('bounties/' + bountyId).update({ status: 'done', completedAt: Date.now() });
-    closeReviewModal();
-    openSettlement(b);
-  }
+  const executeMsg = { approve_work: { bounty_id: b.numId } };
+  closeReviewModal();
+  executeContract(executeMsg, '0', '작업 승인').then(() => { openSettlement(b); }).catch(() => {});
 }
 function rejectWork(bountyId) {
-  if (!confirm('결과물을 거부하시겠어요? (재진행 처리)')) return;
+  if (!confirm('결과물을 거부하시겠어요?')) return;
   const b = bounties[bountyId];
   if (!b) return;
-  
-  // 마일스톤 모드: 현재 마일스톤만 다시 active로
-  if (b.paymentType === 'milestone' && b.milestones) {
-    const milestones = [...b.milestones];
-    const idx = b.currentMilestone || 0;
-    milestones[idx] = { ...milestones[idx], status: 'active', submission: null };
-    db.ref('bounties/' + bountyId).update({ status: 'progress', milestones, submission: null });
-  } else {
-    db.ref('bounties/' + bountyId).update({ status: 'open', worker: null, workerShort: null, submission: null });
-  }
+  const executeMsg = { reject_work: { bounty_id: b.numId, reason: null } };
   closeReviewModal();
-  showToast('재진행으로 전환됐어요');
+  executeContract(executeMsg, '0', '작업 거부').catch(() => {});
 }
 
 // 마일스톤 정산 모달
@@ -3068,20 +3278,7 @@ function openSettlement(b) {
 }
 function closeSettlementModal() { document.getElementById('settlementModal').classList.add('hidden'); document.getElementById('settlementModal').classList.remove('flex'); }
 
-function checkAndCollectRewards() {
-  if (!currentUser) return;
-  const collected = JSON.parse(localStorage.getItem('bounx-collected-v9') || '[]');
-  Object.values(bounties).forEach(b => {
-    if (b.worker === currentUser.address && b.status === 'done' && !collected.includes(b.id)) {
-      const reward = b.reward * 0.9;
-      currentUser.balance += reward;
-      collected.push(b.id);
-      showToast('💰 ' + reward.toFixed(1) + ' XPLA 정산 받음');
-      saveUser();
-    }
-  });
-  localStorage.setItem('bounx-collected-v9', JSON.stringify(collected));
-}
+// reward collection handled by contract automatically
 
 function renderActivity() {
   if (!currentUser) return;
@@ -3089,10 +3286,10 @@ function renderActivity() {
   const bountyArr = Object.values(bounties);
   const myBounties = bountyArr.filter(b => b.requester === currentUser.address || b.worker === currentUser.address);
   myBounties.sort((a, b) => b.createdAt - a.createdAt);
-  const locked = myBounties.filter(b => b.requester === currentUser.address && b.status !== 'done').reduce((s, b) => s + b.reward, 0);
+  const locked = myBounties.filter(b => b.requester === currentUser.address && !['done'].includes(b.status)).reduce((s, b) => s + b.reward, 0);
   const earned = myBounties.filter(b => b.worker === currentUser.address && b.status === 'done').reduce((s, b) => s + b.reward * 0.9, 0);
-  document.getElementById('stat-balance').textContent = currentUser.balance.toLocaleString();
-  document.getElementById('stat-locked').textContent = locked.toLocaleString();
+  document.getElementById('stat-balance').textContent = currentUser.balance || '0';
+  document.getElementById('stat-locked').textContent = locked.toFixed(1);
   document.getElementById('stat-earned').textContent = earned.toFixed(1);
   list.innerHTML = '';
   if (myBounties.length === 0) {
@@ -3153,53 +3350,40 @@ document.addEventListener('keydown', (e) => {
 
 loadInterests();
 
-// ============ XPLA Testnet Contract Integration ============
-const XPLA = {
-  lcd: 'https://cube-lcd.xpla.dev',
-  chainId: 'cube_47-5',
-  contract: 'xpla1g7trqwupk4qfl5ltkdne6lsdclu2zd22usy9xquvxyrpzuv7kqvqm4ez8e',
-  denom: 'axpla',
-  decimals: 18,
-};
-var xplaWallet = null;
-
-async function xplaQuery(queryMsg) {
-  const encoded = btoa(JSON.stringify(queryMsg));
-  const res = await fetch(`${XPLA.lcd}/cosmwasm/wasm/v1/contract/${XPLA.contract}/smart/${encoded}`);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return (await res.json()).data;
-}
-
-async function xplaGetBalance(address) {
-  const res = await fetch(`${XPLA.lcd}/cosmos/bank/v1beta1/balances/${address}`);
-  const json = await res.json();
-  const coin = json.balances?.find(b => b.denom === XPLA.denom);
-  if (!coin) return '0';
-  const raw = BigInt(coin.amount);
-  const whole = raw / BigInt(10 ** XPLA.decimals);
-  const frac = ((raw % BigInt(10 ** XPLA.decimals)) * 100n / BigInt(10 ** XPLA.decimals)).toString().padStart(2, '0');
-  return `${whole}.${frac}`;
-}
-
+// ============ XPLA Panel (debug tools) ============
 async function xplaConnectWallet() {
-  const input = document.getElementById('xplaAddrInput');
-  const addr = (input.value || '').trim();
-  if (!addr || !addr.startsWith('xpla1')) { showToast('올바른 XPLA 주소를 입력하세요'); return; }
   const btn = document.querySelector('#xplaConnectBtn button');
   btn.disabled = true; btn.textContent = '연결 중...';
-  xplaWallet = { address: addr };
-  try { xplaWallet.balance = await xplaGetBalance(addr); } catch (e) { xplaWallet.balance = '?'; }
-  xplaUpdateUI();
-  btn.disabled = false; btn.textContent = '연결';
-  showToast('지갑 연결 완료!');
-}
 
-function xplaUpdateUI() {
-  if (!xplaWallet) return;
-  document.getElementById('xplaWalletAddr').textContent = xplaWallet.address.slice(0, 12) + '...' + xplaWallet.address.slice(-6);
-  document.getElementById('xplaWalletBal').textContent = xplaWallet.balance;
+  let addr;
+  if (XplaVault.isAvailable()) {
+    try {
+      const result = await XplaVault.connect();
+      addr = result.address || (result.addresses && Object.values(result.addresses)[0]);
+      if (!addr) throw new Error('주소를 가져올 수 없습니다');
+    } catch (e) {
+      showToast('연결 실패: ' + e.message);
+      btn.disabled = false; btn.textContent = '연결';
+      return;
+    }
+  } else {
+    const input = document.getElementById('xplaAddrInput');
+    addr = (input.value || '').trim();
+    if (!addr || !addr.startsWith('xpla1')) { showToast('올바른 XPLA 주소를 입력하세요'); btn.disabled = false; btn.textContent = '연결'; return; }
+  }
+
+  let balance = '0';
+  try { balance = await xplaGetBalance(addr); } catch (e) { balance = '?'; }
+  currentUser = { address: addr, shortAddress: addr.slice(0, 8) + '...' + addr.slice(-4), balance: balance };
+  saveUser(); updateUserUI();
+  document.getElementById('xplaAddrInput').value = addr;
+  document.getElementById('xplaWalletAddr').textContent = addr.slice(0, 12) + '...' + addr.slice(-6);
+  document.getElementById('xplaWalletBal').textContent = balance;
   document.getElementById('xplaWalletConnected').classList.remove('hidden');
   document.getElementById('xplaConnectBtn').classList.add('hidden');
+  btn.disabled = false; btn.textContent = '연결';
+  showToast('지갑 연결 완료!');
+  loadContractBounties();
 }
 
 async function xplaQueryConfig() {
@@ -3207,20 +3391,19 @@ async function xplaQueryConfig() {
   const result = document.getElementById('xplaConfigResult');
   btn.disabled = true; btn.textContent = '조회 중...';
   try {
-    const c = await xplaQuery({ config: {} });
-    result.innerHTML = `
-      <div class="space-y-2 text-sm">
-        <div class="flex justify-between"><span class="text-white/50">Admin</span><span class="font-mono text-[11px] text-emerald-300">${c.admin.slice(0,16)}...</span></div>
-        <div class="flex justify-between"><span class="text-white/50">Treasury</span><span class="font-mono text-[11px] text-emerald-300">${c.treasury.slice(0,16)}...</span></div>
-        <div class="border-t border-white/5 my-1"></div>
-        <div class="flex justify-between"><span class="text-white/50">Worker</span><span class="text-white font-semibold">${c.fee_worker_bps/100}%</span></div>
-        <div class="flex justify-between"><span class="text-white/50">Validator</span><span class="text-white font-semibold">${c.fee_validator_bps/100}%</span></div>
-        <div class="flex justify-between"><span class="text-white/50">Burn</span><span class="text-white font-semibold">${c.fee_burn_bps/100}%</span></div>
-        <div class="flex justify-between"><span class="text-white/50">Eco·Team</span><span class="text-white font-semibold">${c.fee_eco_team_bps/100}%</span></div>
-        <div class="border-t border-white/5 my-1"></div>
-        <div class="flex justify-between"><span class="text-white/50">만료 기간</span><span class="text-white">${c.expiration_seconds/86400}일</span></div>
-        <div class="flex justify-between"><span class="text-white/50">Denom</span><span class="text-white font-mono text-xs">${c.native_denom}</span></div>
-      </div>`;
+    const c = await fetchConfig();
+    result.innerHTML = `<div class="space-y-2 text-sm">
+      <div class="flex justify-between"><span class="text-white/50">Admin</span><span class="font-mono text-[11px] text-emerald-300">${c.admin.slice(0,16)}...</span></div>
+      <div class="flex justify-between"><span class="text-white/50">Treasury</span><span class="font-mono text-[11px] text-emerald-300">${c.treasury.slice(0,16)}...</span></div>
+      <div class="border-t border-white/5 my-1"></div>
+      <div class="flex justify-between"><span class="text-white/50">Worker</span><span class="text-white font-semibold">${c.fee_worker_bps/100}%</span></div>
+      <div class="flex justify-between"><span class="text-white/50">Validator</span><span class="text-white font-semibold">${c.fee_validator_bps/100}%</span></div>
+      <div class="flex justify-between"><span class="text-white/50">Burn</span><span class="text-white font-semibold">${c.fee_burn_bps/100}%</span></div>
+      <div class="flex justify-between"><span class="text-white/50">Eco·Team</span><span class="text-white font-semibold">${c.fee_eco_team_bps/100}%</span></div>
+      <div class="border-t border-white/5 my-1"></div>
+      <div class="flex justify-between"><span class="text-white/50">만료 기간</span><span class="text-white">${c.expiration_seconds/86400}일</span></div>
+      <div class="flex justify-between"><span class="text-white/50">Denom</span><span class="text-white font-mono text-xs">${c.native_denom}</span></div>
+    </div>`;
     result.classList.remove('hidden');
   } catch (e) {
     result.innerHTML = `<div class="text-red-400 text-sm">조회 실패: ${e.message}</div>`;
@@ -3229,81 +3412,26 @@ async function xplaQueryConfig() {
   btn.disabled = false; btn.textContent = 'Config 조회';
 }
 
-function xplaToAxpla(xplaAmount) {
-  const parts = String(xplaAmount).split('.');
-  const whole = BigInt(parts[0] || '0');
-  let frac = (parts[1] || '0').padEnd(XPLA.decimals, '0').slice(0, XPLA.decimals);
-  return (whole * BigInt(10 ** XPLA.decimals) + BigInt(frac)).toString();
-}
-
 function xplaCreateBounty() {
   const title = document.getElementById('cbTitle').value.trim();
   const desc = document.getElementById('cbDesc').value.trim();
   const category = document.getElementById('cbCategory').value;
   const reward = document.getElementById('cbReward').value;
-
   if (!title) { showToast('제목을 입력하세요'); return; }
   if (!reward || parseFloat(reward) <= 0) { showToast('보상 금액을 입력하세요'); return; }
-
   const deadlineSeconds = Math.floor(Date.now() / 1000) + 14 * 86400;
   const executeMsg = {
-    create_bounty: {
-      title: title,
-      description: desc || title,
-      category: category,
-      external_link: null,
-      deadline: deadlineSeconds,
-      matching_type: 'approval',
-      payment_type: 'lump',
-      milestones: [],
-    }
+    create_bounty: { title, description: desc || title, category, external_link: null, deadline: deadlineSeconds, matching_type: 'approval', payment_type: 'lump', milestones: [] }
   };
-
-  const axplaAmount = xplaToAxpla(reward);
-  const msgJson = JSON.stringify(executeMsg);
-
-  navigator.clipboard.writeText(msgJson).then(() => {
-    showToast('실행 메시지가 클립보드에 복사됨!');
-  }).catch(() => {});
-
-  const vaultUrl = `https://vault.xpla.io/contract/execute/${XPLA.contract}`;
-  const infoWindow = window.open('', '_blank');
-  if (infoWindow) {
-    infoWindow.document.write(`
-      <!DOCTYPE html><html><head><meta charset="UTF-8"><title>bounX — Vault 서명</title>
-      <style>
-        body { font-family: -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; padding: 40px; max-width: 600px; margin: 0 auto; }
-        h2 { color: #a78bfa; } pre { background: #1e293b; padding: 16px; border-radius: 12px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
-        .step { margin: 20px 0; padding: 16px; background: #1e293b; border-radius: 12px; border-left: 3px solid #a78bfa; }
-        .step-num { color: #a78bfa; font-weight: bold; font-size: 18px; }
-        a { color: #6d5dfc; font-weight: bold; }
-        code { background: #334155; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
-        .btn { display: inline-block; padding: 12px 24px; background: #6d5dfc; color: white; border-radius: 12px; text-decoration: none; font-weight: 600; margin-top: 8px; }
-        .btn:hover { background: #5b4de0; }
-      </style></head><body>
-      <h2>bounX — Create Bounty 서명</h2>
-      <div class="step"><span class="step-num">STEP 1</span><br/>아래 링크를 클릭하세요:<br/><br/>
-        <a href="${vaultUrl}" target="_blank" class="btn">Vault 열기 →</a>
-      </div>
-      <div class="step"><span class="step-num">STEP 2</span><br/><b>Execute Message</b> 칸에 아래 JSON을 붙여넣으세요 (이미 클립보드에 복사됨):<br/>
-        <pre>${JSON.stringify(executeMsg, null, 2)}</pre>
-        <button onclick="navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(executeMsg)}));this.textContent='복사됨!'" style="margin-top:8px;padding:8px 16px;background:#334155;border:none;color:#e2e8f0;border-radius:8px;cursor:pointer;">다시 복사</button>
-      </div>
-      <div class="step"><span class="step-num">STEP 3</span><br/>
-        <b>Amount</b>에 <code>${reward}</code> 입력 (단위: XPLA)<br/><br/>
-        Submit → 서명 → 완료!
-      </div>
-      <div style="margin-top:24px;padding:12px;background:#1e293b;border-radius:8px;font-size:12px;color:#94a3b8;">
-        <b>참고:</b> axpla 환산값 = ${axplaAmount} (${reward} XPLA × 10^18)
-      </div>
-      </body></html>
-    `);
-  }
+  executeContract(executeMsg, xplaToAxpla(reward), '바운티 등록').catch(() => {});
 }
 
 function openXplaPanel() {
   document.getElementById('xplaPanel').classList.remove('hidden');
   document.getElementById('xplaPanel').classList.add('flex');
+  if (currentUser) {
+    document.getElementById('xplaAddrInput').value = currentUser.address;
+  }
 }
 function closeXplaPanel() {
   document.getElementById('xplaPanel').classList.add('hidden');
@@ -3314,6 +3442,93 @@ document.getElementById('xplaPanel').addEventListener('click', (e) => {
 });
 </script>
 
+<!-- ============ WalletConnect Module (XPLA wallet-controller) ============ -->
+<script type="module">
+try {
+  console.log('[WC] Loading @xpla/wallet-controller...');
+  const { WalletController, ConnectType } = await import('https://esm.sh/@xpla/wallet-controller');
+  const { MsgExecuteContract, Fee } = await import('https://esm.sh/@xpla/xpla.js');
+  console.log('[WC] Packages loaded!');
+
+  const controller = new WalletController({
+    defaultNetwork: {
+      name: 'testnet',
+      chainID: 'cube_47-5',
+      lcd: 'https://cube-lcd.xpla.dev',
+    },
+    walletConnectChainIds: {
+      0: { name: 'testnet', chainID: 'cube_47-5', lcd: 'https://cube-lcd.xpla.dev' },
+      1: { name: 'mainnet', chainID: 'dimension_37-1', lcd: 'https://dimension-lcd.xpla.dev' },
+    },
+  });
+
+  let wcState = null;
+
+  controller.states().subscribe((state) => {
+    wcState = state;
+    console.log('[WC] state:', state.status, state.wallets);
+    if (state.status === 'WALLET_CONNECTED' && state.wallets?.length > 0) {
+      const addr = state.wallets[0].xplaAddress;
+      window.dispatchEvent(new CustomEvent('wc-connected', { detail: { address: addr } }));
+    }
+  });
+
+  window.WC = {
+    ready: true,
+
+    connectExtension() {
+      controller.connect(ConnectType.EXTENSION);
+    },
+
+    connectWalletConnect() {
+      controller.connect(ConnectType.WALLETCONNECT);
+    },
+
+    async post(contractAddr, executeMsg, fundsArray) {
+      if (!wcState || wcState.status !== 'WALLET_CONNECTED') {
+        throw new Error('WalletConnect 미연결');
+      }
+      const sender = wcState.wallets[0].xplaAddress;
+      const coins = {};
+      if (fundsArray && fundsArray.length > 0) {
+        for (const f of fundsArray) coins[f.denom] = f.amount;
+      }
+      const msg = new MsgExecuteContract(
+        sender,
+        contractAddr,
+        executeMsg,
+        Object.keys(coins).length > 0 ? coins : undefined
+      );
+      const fee = new Fee(600000, '1500000000000000axpla');
+      const result = await controller.post({ msgs: [msg], fee });
+      console.log('[WC] post result:', result);
+      return result;
+    },
+
+    disconnect() {
+      controller.disconnect();
+      wcState = null;
+    },
+
+    isConnected() {
+      return !!(wcState && wcState.status === 'WALLET_CONNECTED' && wcState.wallets?.length > 0);
+    },
+
+    getAddress() {
+      return wcState?.wallets?.[0]?.xplaAddress || null;
+    },
+
+    MsgExecuteContract,
+    Fee,
+  };
+
+  window.dispatchEvent(new Event('wc-ready'));
+  console.log('[WC] Ready!');
+} catch (e) {
+  console.error('[WC] Failed to load:', e);
+  window.WC = { ready: false };
+}
+</script>
 
 </body>
 </html>
