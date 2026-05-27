@@ -909,18 +909,18 @@
   .modal-content button.premium-secondary-btn,
   #page-app button.premium-secondary-btn,
   button[onclick="resetFilters()"] {
-    background: rgba(255,255,255,0.08) !important;
-    border: 1px solid rgba(255,255,255,0.14) !important;
-    color: rgba(248,250,252,0.92) !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    background: var(--bx-bg-2, rgba(255,255,255,0.08)) !important;
+    border: 2px solid var(--bx-text, rgba(255,255,255,0.14)) !important;
+    color: var(--bx-text, rgba(248,250,252,0.92)) !important;
+    box-shadow: none !important;
   }
   #page-app button.bg-neutral-100:hover,
   .modal-content button.bg-neutral-100:hover,
   .modal-content button.premium-secondary-btn:hover,
   #page-app button.premium-secondary-btn:hover,
   button[onclick="resetFilters()"]:hover {
-    background: rgba(255,255,255,0.14) !important;
-    color: #ffffff !important;
+    background: var(--bx-line, rgba(255,255,255,0.14)) !important;
+    color: var(--bx-text, #ffffff) !important;
   }
   .modal-content button.text-neutral-400 {
     background: transparent !important;
@@ -954,6 +954,1572 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
   }
+
+  /* ============ bounX Warm Unified Theme Override — design only ============ */
+  :root {
+    --bx-bg: #f4ede3;
+    --bx-bg-2: #efe3d2;
+    --bx-panel: rgba(255, 250, 242, 0.84);
+    --bx-panel-solid: #fffaf2;
+    --bx-panel-soft: #f8efe4;
+    --bx-card: rgba(255, 250, 242, 0.92);
+    --bx-card-2: rgba(250, 242, 231, 0.92);
+    --bx-line: #d9cbb8;
+    --bx-line-soft: #e7dbcc;
+    --bx-text: #2f261f;
+    --bx-text-2: #44362c;
+    --bx-muted: #736250;
+    --bx-muted-2: #8d7b68;
+    --bx-accent: #8b5e3c;
+    --bx-accent-2: #c77742;
+    --bx-accent-soft: #eadbcc;
+    --bx-green: #2f7562;
+    --bx-purple: #7357a6;
+    --bx-danger: #b85252;
+    --bx-shadow: 0 22px 70px rgba(73, 51, 32, 0.10);
+    --bx-shadow-soft: 0 12px 40px rgba(73, 51, 32, 0.075);
+    --bx-radius: 28px;
+  }
+
+  html, body {
+    background: var(--bx-bg) !important;
+    color: var(--bx-text) !important;
+  }
+
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif !important;
+    letter-spacing: -0.01em;
+  }
+
+  .font-display {
+    font-family: Outfit, Inter, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif !important;
+    letter-spacing: -0.035em;
+  }
+
+  .gradient-word,
+  .shine-word {
+    background: linear-gradient(100deg, #2f261f 0%, #8b5e3c 46%, #c77742 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+  }
+
+  .gradient-bg,
+  .premium-btn,
+  .warm-primary-btn,
+  #page-app button.bg-violet-600,
+  #page-app button.bg-emerald-600,
+  #page-app button.bg-amber-600,
+  #page-app button.bg-neutral-900,
+  #page-app button.premium-btn,
+  .modal-content button.bg-violet-600,
+  .modal-content button.bg-emerald-600,
+  .modal-content button.bg-amber-600,
+  .modal-content button.bg-neutral-900,
+  .modal-content button.premium-btn,
+  #walletWCBtn,
+  #walletConnectBtn,
+  #onboardingNextBtn:not(:disabled),
+  #floatingBtn {
+    color: #fffaf2 !important;
+    background: #2f261f !important;
+    border: 1px solid rgba(47, 38, 31, 0.18) !important;
+    box-shadow: 0 15px 34px rgba(47, 38, 31, 0.18), inset 0 1px 0 rgba(255,255,255,0.12) !important;
+    text-shadow: none !important;
+  }
+
+  .premium-btn:hover,
+  .warm-primary-btn:hover,
+  #page-app button.bg-violet-600:hover,
+  #page-app button.bg-emerald-600:hover,
+  #page-app button.bg-amber-600:hover,
+  #page-app button.bg-neutral-900:hover,
+  #page-app button.premium-btn:hover,
+  .modal-content button.bg-violet-600:hover,
+  .modal-content button.bg-emerald-600:hover,
+  .modal-content button.bg-amber-600:hover,
+  .modal-content button.bg-neutral-900:hover,
+  .modal-content button.premium-btn:hover,
+  #walletWCBtn:hover,
+  #walletConnectBtn:hover,
+  #onboardingNextBtn:not(:disabled):hover,
+  #floatingBtn:hover {
+    background: #1f1915 !important;
+    color: #fffaf2 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 20px 46px rgba(47, 38, 31, 0.22), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+  }
+
+  .premium-btn:disabled,
+  #onboardingNextBtn:disabled,
+  button:disabled {
+    opacity: .45 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+
+  /* Landing */
+  .landing-shell {
+    color: var(--bx-text) !important;
+    background:
+      radial-gradient(circle at 14% 8%, rgba(198, 129, 75, 0.18), transparent 30%),
+      radial-gradient(circle at 82% 4%, rgba(116, 89, 62, 0.12), transparent 26%),
+      linear-gradient(180deg, rgba(255,250,242,0.65), rgba(244,237,227,0.20) 42%, rgba(244,237,227,1)),
+      var(--bx-bg) !important;
+  }
+
+  .landing-shell::before,
+  .landing-shell::after,
+  .landing-section-dark::before,
+  #page-onboarding::before,
+  #page-onboarding::after,
+  #page-app::before,
+  #page-app::after {
+    display: none !important;
+  }
+
+  .landing-glow,
+  .noise-layer,
+  .hero-orbit { display: none !important; }
+
+  .landing-nav,
+  .hero-kicker,
+  .metric-tile,
+  .hero-console,
+  .console-inner,
+  .bounty-card-visual,
+  .mini-chip,
+  .step-card-premium,
+  .feature-card-premium,
+  .cta-panel-premium {
+    color: var(--bx-text) !important;
+    background: var(--bx-panel) !important;
+    border: 1px solid var(--bx-line) !important;
+    box-shadow: var(--bx-shadow) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+
+  .landing-nav {
+    background: rgba(255,250,242,0.88) !important;
+    border-radius: 24px !important;
+  }
+
+  .brand-mark,
+  .number-token,
+  .app-orb {
+    color: #fffaf2 !important;
+    background: #2f261f !important;
+    box-shadow: 0 12px 28px rgba(47, 38, 31, 0.16) !important;
+  }
+
+  .landing-shell .text-white,
+  .landing-shell [class*="text-white/"],
+  .landing-section-dark .text-white,
+  .landing-section-dark [class*="text-white/"],
+  .landing-footer .text-white,
+  .landing-footer [class*="text-white/"] {
+    color: var(--bx-text) !important;
+  }
+
+  .landing-shell .text-white\/42,
+  .landing-shell .text-white\/45,
+  .landing-shell .text-white\/52,
+  .landing-shell .text-white\/56,
+  .landing-shell .text-white\/62,
+  .landing-shell .text-white\/66,
+  .landing-shell .text-white\/70,
+  .landing-section-dark .text-white\/42,
+  .landing-section-dark .text-white\/45,
+  .landing-section-dark .text-white\/52,
+  .landing-section-dark .text-white\/56,
+  .landing-section-dark .text-white\/62,
+  .landing-section-dark .text-white\/66,
+  .landing-section-dark .text-white\/70,
+  .landing-shell [class*="text-white/4"],
+  .landing-shell [class*="text-white/5"],
+  .landing-shell [class*="text-white/6"],
+  .landing-shell [class*="text-white/7"],
+  .landing-section-dark [class*="text-white/4"],
+  .landing-section-dark [class*="text-white/5"],
+  .landing-section-dark [class*="text-white/6"],
+  .landing-section-dark [class*="text-white/7"] {
+    color: var(--bx-muted) !important;
+  }
+
+  .landing-shell button.bg-white,
+  .hero-console button.bg-white,
+  .landing-nav button.bg-white,
+  .ghost-btn {
+    color: var(--bx-text) !important;
+    background: rgba(255,250,242,0.88) !important;
+    border: 1px solid var(--bx-line) !important;
+    box-shadow: var(--bx-shadow-soft) !important;
+  }
+
+  .landing-section-dark,
+  .landing-footer {
+    color: var(--bx-text) !important;
+    background: var(--bx-bg) !important;
+    border-color: rgba(216,203,184,.82) !important;
+  }
+
+  .hero-title-premium,
+  .hero-title,
+  .landing-section-dark h2,
+  .landing-section-dark h3 {
+    color: var(--bx-text) !important;
+  }
+
+  .section-eyebrow { color: var(--bx-accent) !important; }
+
+  .hero-kicker .bg-emerald-400,
+  .pulse-dot { background: var(--bx-accent-2) !important; }
+
+  .hero-console .bg-rose-400,
+  .hero-console .bg-amber-300,
+  .hero-console .bg-emerald-400 {
+    opacity: .75;
+  }
+
+  .hero-console .bg-white\/8,
+  .hero-console .bg-white\/10,
+  .hero-console .border-white\/10,
+  .landing-shell .bg-white\/8,
+  .landing-shell .bg-white\/10,
+  .landing-shell .border-white\/10 {
+    background: rgba(255,250,242,0.72) !important;
+    border-color: var(--bx-line-soft) !important;
+  }
+
+  /* App / Onboarding warm shell */
+  #page-onboarding,
+  #page-app {
+    color: var(--bx-text) !important;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(198,129,75,0.16), transparent 30%),
+      radial-gradient(circle at 86% 2%, rgba(104,83,62,0.09), transparent 28%),
+      linear-gradient(180deg, rgba(255,250,242,0.64), rgba(244,237,227,0.25) 40%, rgba(244,237,227,1)),
+      var(--bx-bg) !important;
+  }
+
+  #page-onboarding > :not(.landing-glow):not(.noise-layer),
+  #page-app > :not(.landing-glow):not(.noise-layer) {
+    position: relative;
+    z-index: 1;
+  }
+
+  #page-app header,
+  .demo-banner,
+  .app-hero-panel,
+  .onboarding-shell,
+  .empty-state-card,
+  .stat-card,
+  .mobile-bottom-nav,
+  #page-app footer,
+  #page-app .feed-card,
+  #page-app .action-card,
+  #page-app .cat-card,
+  #page-app .activity-card,
+  #page-onboarding .cat-card,
+  .modal-content,
+  #walletConnectedInfo,
+  .app-wallet-card,
+  .matching-card,
+  .applicant-card,
+  .comment-area,
+  .comment-bubble,
+  .milestone-item,
+  .milestone-progress {
+    color: var(--bx-text) !important;
+    background: var(--bx-card) !important;
+    border: 1px solid var(--bx-line) !important;
+    box-shadow: var(--bx-shadow) !important;
+    backdrop-filter: blur(20px) !important;
+  }
+
+  #page-app header {
+    background: rgba(255,250,242,0.92) !important;
+    border-bottom: 1px solid var(--bx-line) !important;
+    box-shadow: 0 14px 46px rgba(73, 51, 32, 0.08) !important;
+  }
+
+  .demo-banner {
+    background: rgba(255,250,242,0.78) !important;
+    color: var(--bx-muted) !important;
+    box-shadow: none !important;
+  }
+
+  .app-hero-panel {
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 91% 8%, rgba(198,129,75,0.18), transparent 30%),
+      rgba(255,250,242,0.86) !important;
+    border-radius: 28px !important;
+  }
+
+  .app-hero-panel::before {
+    background: radial-gradient(circle, rgba(198,129,75,0.20), transparent 66%) !important;
+  }
+
+  .feed-card,
+  .action-card,
+  .cat-card,
+  .activity-card,
+  .stat-card,
+  .empty-state-card {
+    border-radius: 24px !important;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+  }
+
+  .feed-card:hover,
+  .action-card:hover,
+  .cat-card:hover,
+  .activity-card:hover {
+    transform: translateY(-2px) !important;
+    background: #fffaf2 !important;
+    border-color: #cdbba6 !important;
+    box-shadow: 0 24px 70px rgba(73, 51, 32, 0.12) !important;
+  }
+
+  .feed-card.my-bounty { border-left: 4px solid var(--bx-accent-2) !important; }
+  .feed-card.my-work { border-left: 4px solid var(--bx-green) !important; }
+
+  .action-card.urgent {
+    background: linear-gradient(135deg, rgba(255,250,242,.96), rgba(246,232,216,.9)) !important;
+  }
+
+  .action-card.working {
+    background: linear-gradient(135deg, rgba(255,250,242,.96), rgba(242,229,207,.9)) !important;
+  }
+
+  .cat-card.selected,
+  .matching-option input:checked ~ .matching-card {
+    background: linear-gradient(135deg, #fffaf2, #eadbcc) !important;
+    border-color: var(--bx-accent) !important;
+    box-shadow: 0 0 0 1px rgba(139,94,60,.18), 0 18px 50px rgba(73,51,32,.10) !important;
+  }
+
+  /* Global text readability inside app / modals */
+  #page-app .text-white,
+  #page-app [class*="text-white/"],
+  #page-app .text-neutral-950,
+  #page-app .text-neutral-900,
+  #page-app .text-neutral-800,
+  #page-app .text-neutral-700,
+  #page-onboarding .text-white,
+  #page-onboarding [class*="text-white/"],
+  #page-onboarding .text-neutral-950,
+  #page-onboarding .text-neutral-900,
+  #page-onboarding .text-neutral-800,
+  #page-onboarding .text-neutral-700,
+  .modal-content .text-white,
+  .modal-content [class*="text-white/"],
+  .modal-content .text-neutral-950,
+  .modal-content .text-neutral-900,
+  .modal-content .text-neutral-800,
+  .modal-content .text-neutral-700,
+  #xplaPanel .text-white,
+  #xplaPanel [class*="text-white/"] {
+    color: var(--bx-text) !important;
+  }
+
+  #page-app .text-neutral-600,
+  #page-app .text-neutral-500,
+  #page-app .text-neutral-400,
+  #page-onboarding .text-neutral-600,
+  #page-onboarding .text-neutral-500,
+  #page-onboarding .text-neutral-400,
+  .modal-content .text-neutral-600,
+  .modal-content .text-neutral-500,
+  .modal-content .text-neutral-400,
+  #walletManualToggle button,
+  #feedEmpty .text-xs.text-neutral-500,
+  #feedEmpty button.text-xs {
+    color: var(--bx-muted) !important;
+  }
+
+  #page-app h1,
+  #page-app h2,
+  #page-app h3,
+  #page-app h4,
+  #page-onboarding h1,
+  #page-onboarding h2,
+  #page-onboarding h3,
+  .modal-content h1,
+  .modal-content h2,
+  .modal-content h3,
+  #feedSectionTitle,
+  #actionSection h2 {
+    color: var(--bx-text) !important;
+  }
+
+  #page-app .text-violet-700,
+  #page-app .text-violet-800,
+  #page-app .text-violet-900,
+  #page-onboarding .text-violet-700,
+  .modal-content .text-violet-700,
+  .modal-content .text-violet-800,
+  .modal-content .text-violet-900 {
+    color: var(--bx-purple) !important;
+  }
+
+  #page-app .text-emerald-600,
+  #page-app .text-emerald-700,
+  #page-app .text-emerald-800,
+  #page-app .text-emerald-900,
+  .modal-content .text-emerald-600,
+  .modal-content .text-emerald-700,
+  .modal-content .text-emerald-800,
+  .modal-content .text-emerald-900 {
+    color: var(--bx-green) !important;
+  }
+
+  #page-app .text-amber-700,
+  #page-app .text-amber-800,
+  .modal-content .text-amber-700,
+  .modal-content .text-amber-800 { color: #9a6a2e !important; }
+
+  #page-app .text-blue-600,
+  #page-app .text-blue-800,
+  .modal-content .text-blue-600,
+  .modal-content .text-blue-800 { color: #5b638f !important; }
+
+  #page-app .text-rose-300\/70,
+  #page-app .text-rose-300,
+  .modal-content .text-rose-300,
+  #page-app .text-rose-500,
+  .modal-content .text-rose-500 { color: var(--bx-danger) !important; }
+
+  /* Tailwind utility surfaces normalized */
+  #page-app .bg-white,
+  #page-app .bg-neutral-50,
+  #page-app .bg-neutral-100,
+  #page-onboarding .bg-white,
+  #page-onboarding .bg-neutral-50,
+  #page-onboarding .bg-neutral-100,
+  .modal-content .bg-white,
+  .modal-content .bg-neutral-50,
+  .modal-content .bg-neutral-100,
+  #xplaPanel .bg-slate-900,
+  #xplaPanel .bg-white\/5,
+  #xplaPanel .bg-white\/8,
+  #xplaPanel .bg-white\/10 {
+    background: rgba(255,250,242,0.78) !important;
+  }
+
+  #page-app .border-neutral-100,
+  #page-app .border-neutral-200,
+  #page-app .border-white\/10,
+  #page-app .border-white\/15,
+  #page-onboarding .border-neutral-100,
+  #page-onboarding .border-neutral-200,
+  .modal-content .border-neutral-100,
+  .modal-content .border-neutral-200,
+  .modal-content .border-white\/10,
+  #xplaPanel .border-white\/10 {
+    border-color: var(--bx-line) !important;
+  }
+
+  #page-app .bg-violet-50,
+  #page-app .bg-violet-100,
+  #page-app .bg-emerald-50,
+  #page-app .bg-emerald-100,
+  #page-app .bg-amber-50,
+  #page-app .bg-amber-100,
+  #page-app .bg-rose-50,
+  #page-app .bg-rose-100,
+  #page-app .bg-sky-100,
+  #page-app .bg-blue-50,
+  .modal-content .bg-violet-50,
+  .modal-content .bg-violet-100,
+  .modal-content .bg-emerald-50,
+  .modal-content .bg-emerald-100,
+  .modal-content .bg-amber-50,
+  .modal-content .bg-amber-100,
+  .modal-content .bg-rose-50,
+  .modal-content .bg-rose-100,
+  .modal-content .bg-sky-100,
+  .modal-content .bg-blue-50 {
+    background: #f3e7d8 !important;
+    border-color: #dfcfbd !important;
+  }
+
+  /* Chips, tabs, sorting, secondary buttons */
+  .chip,
+  .status-tab,
+  #feedModeBtn,
+  .sort-dropdown > button,
+  .load-more,
+  .premium-secondary-btn,
+  #page-app button.bg-neutral-100,
+  .modal-content button.bg-neutral-100,
+  button[onclick="resetFilters()"],
+  .ghost-btn,
+  .warm-secondary-btn {
+    color: var(--bx-text) !important;
+    background: rgba(255,250,242,0.86) !important;
+    border: 1px solid var(--bx-line) !important;
+    box-shadow: var(--bx-shadow-soft) !important;
+    backdrop-filter: blur(14px) !important;
+  }
+
+  .chip:hover,
+  .status-tab:hover,
+  #feedModeBtn:hover,
+  .sort-dropdown > button:hover,
+  .load-more:hover,
+  #page-app button.bg-neutral-100:hover,
+  .modal-content button.bg-neutral-100:hover,
+  button[onclick="resetFilters()"]:hover,
+  .ghost-btn:hover,
+  .warm-secondary-btn:hover {
+    color: var(--bx-text) !important;
+    background: #fffaf2 !important;
+    border-color: #c9b69e !important;
+    transform: translateY(-1px);
+  }
+
+  .chip.active,
+  .status-tab.active,
+  .tab-btn.active {
+    color: #fffaf2 !important;
+    background: #2f261f !important;
+    border-color: #2f261f !important;
+    box-shadow: 0 14px 34px rgba(47,38,31,0.16) !important;
+  }
+
+  .status-tab .count,
+  .status-tab.active .count {
+    color: inherit !important;
+    background: rgba(255,255,255,0.16) !important;
+  }
+
+  .tab-btn {
+    color: var(--bx-muted) !important;
+    border-radius: 9999px;
+  }
+
+  .tab-btn:hover {
+    color: var(--bx-text) !important;
+    background: rgba(139,94,60,0.10) !important;
+  }
+
+  .tab-btn.active::after { display: none !important; }
+
+  .sort-menu {
+    color: var(--bx-text) !important;
+    background: #fffaf2 !important;
+    border: 1px solid var(--bx-line) !important;
+    box-shadow: 0 24px 70px rgba(73, 51, 32, 0.16) !important;
+    border-radius: 18px !important;
+    padding: 6px !important;
+  }
+
+  .sort-item {
+    color: var(--bx-muted) !important;
+    border-radius: 12px !important;
+  }
+
+  .sort-item:hover,
+  .sort-item.active {
+    color: var(--bx-text) !important;
+    background: #f2e6d7 !important;
+  }
+
+  /* Badges */
+  .badge-open,
+  .badge-progress,
+  .badge-review,
+  .badge-done,
+  .my-badge,
+  .work-badge,
+  .badge-matching-firstcome,
+  .badge-matching-approval,
+  .badge-milestone {
+    font-weight: 700;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+  }
+
+  .badge-open,
+  .work-badge,
+  .badge-milestone {
+    background: #e3f0e7 !important;
+    color: #2f7562 !important;
+    border-color: #bfd9c8 !important;
+  }
+
+  .badge-progress {
+    background: #f4e9cf !important;
+    color: #8a632a !important;
+    border-color: #e3cd9d !important;
+  }
+
+  .badge-review,
+  .my-badge,
+  .badge-matching-approval {
+    background: #ece3ef !important;
+    color: #7357a6 !important;
+    border-color: #d6c7e1 !important;
+  }
+
+  .badge-done {
+    background: #e9dfd2 !important;
+    color: #736250 !important;
+    border-color: #d6c6b3 !important;
+  }
+
+  .badge-matching-firstcome {
+    background: #e0edf0 !important;
+    color: #347381 !important;
+    border-color: #bed9df !important;
+  }
+
+  /* Inputs and forms */
+  .input-field,
+  .milestone-item input,
+  input,
+  textarea,
+  select {
+    color: var(--bx-text) !important;
+    background: #fffaf2 !important;
+    border: 1px solid var(--bx-line) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.44) !important;
+  }
+
+  .input-field::placeholder,
+  input::placeholder,
+  textarea::placeholder { color: #9b8976 !important; }
+
+  .input-field:focus,
+  .milestone-item input:focus,
+  input:focus,
+  textarea:focus,
+  select:focus {
+    background: #fffaf2 !important;
+    border-color: var(--bx-accent) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 4px rgba(139,94,60,0.12), inset 0 1px 0 rgba(255,255,255,0.5) !important;
+  }
+
+  select.input-field option,
+  select option {
+    color: var(--bx-text) !important;
+    background: #fffaf2 !important;
+  }
+
+  /* Modals and wallet */
+  .modal-backdrop {
+    background: rgba(47,38,31,0.32) !important;
+    backdrop-filter: blur(16px) !important;
+  }
+
+  .modal-content {
+    background: rgba(255,250,242,0.96) !important;
+    border-radius: 28px !important;
+  }
+
+  .modal-content .sticky,
+  .modal-content header {
+    background: rgba(255,250,242,0.94) !important;
+    border-color: var(--bx-line) !important;
+    backdrop-filter: blur(16px) !important;
+  }
+
+  .modal-content button.text-neutral-400,
+  .modal-content button.text-white\/50,
+  .modal-content button[class*="text-white/"] {
+    color: var(--bx-muted) !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .modal-content button.text-neutral-400:hover,
+  .modal-content button.text-white\/50:hover,
+  .modal-content button[class*="text-white/"]:hover {
+    color: var(--bx-text) !important;
+    background: rgba(139,94,60,0.10) !important;
+  }
+
+  #walletConnectModal .gradient-bg,
+  #walletConnectModal .premium-btn {
+    background: #2f261f !important;
+    color: #fffaf2 !important;
+  }
+
+  #walletModalTip,
+  #walletManualToggle button {
+    color: var(--bx-muted) !important;
+  }
+
+  #walletWCBtn svg,
+  .sort-dropdown > button svg { color: currentColor !important; }
+
+  /* XPLA diagnostic panel had inline dark style; make it readable in warm theme. */
+  #xplaPanel .modal-content,
+  #xplaPanel > div {
+    color: var(--bx-text) !important;
+    background: rgba(255,250,242,0.96) !important;
+    border: 1px solid var(--bx-line) !important;
+    box-shadow: var(--bx-shadow) !important;
+  }
+
+  #diagResult,
+  pre {
+    color: var(--bx-text) !important;
+    background: #f5eadc !important;
+    border: 1px solid var(--bx-line) !important;
+  }
+
+  /* AI / comment / milestone modules */
+  .matching-card,
+  .applicant-card,
+  .comment-area,
+  .comment-bubble,
+  .milestone-item,
+  .milestone-progress {
+    background: #fffaf2 !important;
+    border-color: var(--bx-line) !important;
+    box-shadow: var(--bx-shadow-soft) !important;
+  }
+
+  .comment-bubble.mine {
+    background: #f1e3d4 !important;
+    border-color: #d4bfa7 !important;
+  }
+
+  .check-indicator {
+    border-color: #cdbba6 !important;
+  }
+
+  .matching-option input:checked ~ .matching-card .check-indicator,
+  .milestone-step.done,
+  .milestone-step.active {
+    background: #2f261f !important;
+    color: #fffaf2 !important;
+    box-shadow: 0 0 0 3px rgba(47,38,31,.12) !important;
+  }
+
+  .milestone-step.pending {
+    background: #eadfce !important;
+    color: var(--bx-muted) !important;
+  }
+
+  .milestone-line { background: #dfcfbd !important; }
+  .milestone-line.done { background: #8b5e3c !important; }
+
+  /* Toast / navigation */
+  #toast {
+    color: var(--bx-text) !important;
+    background: rgba(255,250,242,0.96) !important;
+    border: 1px solid var(--bx-line) !important;
+    box-shadow: 0 18px 54px rgba(73,51,32,0.18) !important;
+  }
+
+  .mobile-bottom-nav {
+    background: rgba(255,250,242,0.94) !important;
+    border-radius: 24px !important;
+  }
+
+  .mobile-bottom-nav button {
+    color: var(--bx-muted) !important;
+  }
+
+  .mobile-bottom-nav button:hover,
+  .mobile-bottom-nav button.active {
+    color: var(--bx-text) !important;
+    background: rgba(139,94,60,0.10) !important;
+  }
+
+  #page-app footer {
+    background: rgba(255,250,242,0.74) !important;
+    color: var(--bx-muted) !important;
+    border-color: var(--bx-line) !important;
+  }
+
+  /* Keep button labels readable even when Tailwind text utilities are present. */
+  #page-app button.premium-btn,
+  #page-app button.bg-neutral-900,
+  #page-app button.bg-violet-600,
+  #page-app button.bg-emerald-600,
+  #page-app button.bg-amber-600,
+  .modal-content button.premium-btn,
+  .modal-content button.bg-neutral-900,
+  .modal-content button.bg-violet-600,
+  .modal-content button.bg-emerald-600,
+  .modal-content button.bg-amber-600,
+  #floatingBtn,
+  #walletWCBtn,
+  #walletConnectBtn,
+  #onboardingNextBtn:not(:disabled) {
+    color: #fffaf2 !important;
+  }
+
+  #page-app button.premium-btn *,
+  #page-app button.bg-neutral-900 *,
+  #page-app button.bg-violet-600 *,
+  #page-app button.bg-emerald-600 *,
+  #page-app button.bg-amber-600 *,
+  .modal-content button.premium-btn *,
+  .modal-content button.bg-neutral-900 *,
+  .modal-content button.bg-violet-600 *,
+  .modal-content button.bg-emerald-600 *,
+  .modal-content button.bg-amber-600 *,
+  #floatingBtn *,
+  #walletWCBtn *,
+  #walletConnectBtn * {
+    color: inherit !important;
+  }
+
+  /* Visual polish matching the reference: compact, warm, rounded, readable. */
+  .app-wallet-card,
+  #walletInfo,
+  #walletInfoMobile {
+    background: #eaf2e7 !important;
+    border-color: #cbdcbe !important;
+    box-shadow: none !important;
+  }
+
+  #walletInfo .w-2,
+  #walletInfoMobile .w-2,
+  .pulse-dot { background: #77c6a3 !important; }
+
+  .floating-btn {
+    border-radius: 22px !important;
+  }
+
+  .action-row::-webkit-scrollbar-thumb,
+  .chips-scroll::-webkit-scrollbar-thumb { background: #cdbba6 !important; }
+
+  @media (max-width: 768px) {
+    .landing-nav { border-radius: 20px !important; }
+    .hero-title-premium { letter-spacing: -0.052em !important; line-height: .98 !important; }
+    .app-hero-panel,
+    .feed-card,
+    .action-card,
+    .cat-card,
+    .modal-content { border-radius: 22px !important; }
+    #page-app main { padding-bottom: 8.5rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+  }
+
+
+
+  /* ============ Readability hotfix v2 ============ */
+  /* 1) Dark/active buttons: force all nested labels/icons to stay visible */
+  .chip.active,
+  .chip.active *,
+  .status-tab.active,
+  .status-tab.active *,
+  .tab-btn.active,
+  .tab-btn.active *,
+  #page-app button.premium-btn,
+  #page-app button.premium-btn *,
+  #page-app button.bg-neutral-900,
+  #page-app button.bg-neutral-900 *,
+  #page-app button.bg-violet-600,
+  #page-app button.bg-violet-600 *,
+  #page-app button.bg-emerald-600,
+  #page-app button.bg-emerald-600 *,
+  #page-app button.bg-amber-600,
+  #page-app button.bg-amber-600 *,
+  .modal-content button.premium-btn,
+  .modal-content button.premium-btn *,
+  .modal-content button.bg-neutral-900,
+  .modal-content button.bg-neutral-900 *,
+  .modal-content button.bg-violet-600,
+  .modal-content button.bg-violet-600 *,
+  .modal-content button.bg-emerald-600,
+  .modal-content button.bg-emerald-600 *,
+  .modal-content button.bg-amber-600,
+  .modal-content button.bg-amber-600 *,
+  #walletWCBtn,
+  #walletWCBtn *,
+  #walletConnectBtn,
+  #walletConnectBtn *,
+  #onboardingNextBtn:not(:disabled),
+  #onboardingNextBtn:not(:disabled) *,
+  #floatingBtn,
+  #floatingBtn * {
+    color: #fffaf2 !important;
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  /* 2) Wallet status pill: stronger contrast on the mint background */
+  #walletInfo,
+  #walletInfoMobile,
+  .app-wallet-card {
+    color: var(--bx-text) !important;
+    background: #e6f0e2 !important;
+    border-color: #c7d8ba !important;
+  }
+
+  #walletInfo span,
+  #walletInfo button,
+  #walletInfoMobile span,
+  #walletInfoMobile button,
+  .app-wallet-card .font-mono,
+  .app-wallet-card .font-bold,
+  .app-wallet-card .font-semibold {
+    color: var(--bx-text) !important;
+  }
+
+  #walletInfo .w-px,
+  #walletInfoMobile .w-px,
+  .app-wallet-card .w-px {
+    background: #c4d3bb !important;
+  }
+
+  #walletInfo button,
+  #walletInfoMobile button {
+    color: #b74d44 !important;
+    font-weight: 700 !important;
+  }
+
+  #walletInfo button:hover,
+  #walletInfoMobile button:hover {
+    color: #9f3f36 !important;
+  }
+
+  /* 3) Wallet connect modal top hero: keep title/subtitle readable on dark panel */
+  #walletConnectModal .gradient-bg,
+  #walletConnectModal .gradient-bg * {
+    color: #fffaf2 !important;
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  #walletConnectModal .gradient-bg {
+    background: linear-gradient(135deg, #2f261f 0%, #3b2d23 100%) !important;
+  }
+
+  #walletConnectModal .gradient-bg .bg-white\/20 {
+    background: rgba(255,250,242,0.18) !important;
+    border: 1px solid rgba(255,250,242,0.14);
+  }
+
+  /* 4) Wallet connect modal body helper texts were too faint after theme conversion */
+  #walletConnectModal #wcLoadingMsg,
+  #walletConnectModal #walletManualToggle button,
+  #walletConnectModal label,
+  #walletConnectModal .text-neutral-500,
+  #walletConnectModal .text-neutral-400,
+  #walletConnectModal .text-white\/40,
+  #walletConnectModal .text-white\/50,
+  #walletConnectModal .text-white\/80 {
+    color: var(--bx-muted) !important;
+  }
+
+  #walletConnectModal .bg-emerald-50,
+  #walletConnectModal .border-emerald-100 {
+    background: #efe5d8 !important;
+    border-color: #dac7b2 !important;
+  }
+
+  #walletConnectModal .text-emerald-800,
+  #walletConnectModal .text-emerald-600 {
+    color: #2f7562 !important;
+  }
+
+  /* 5) Safety: active nav/category/status counts should inherit readable color */
+  .chip.active .count,
+  .status-tab.active .count,
+  .tab-btn.active .count {
+    color: #fffaf2 !important;
+    background: rgba(255,250,242,0.18) !important;
+  }
+
+
+
+  /* ============ Readability hotfix v3: global contrast lock ============ */
+  /* Landing/CTA primary buttons were outside the previous app/modal scope. */
+  .premium-btn,
+  .premium-btn *,
+  button.premium-btn,
+  button.premium-btn *,
+  a.premium-btn,
+  a.premium-btn *,
+  .warm-primary-btn,
+  .warm-primary-btn *,
+  #page-landing .premium-btn,
+  #page-landing .premium-btn *,
+  .cta-panel-premium .premium-btn,
+  .cta-panel-premium .premium-btn *,
+  .landing-shell .premium-btn,
+  .landing-shell .premium-btn *,
+  .gradient-bg,
+  .gradient-bg *,
+  button[class*="bg-neutral-900"],
+  button[class*="bg-neutral-900"] *,
+  button[class*="bg-neutral-950"],
+  button[class*="bg-neutral-950"] *,
+  button[class*="bg-stone-900"],
+  button[class*="bg-stone-900"] *,
+  button[class*="bg-zinc-900"],
+  button[class*="bg-zinc-900"] *,
+  .chip.active,
+  .chip.active *,
+  .status-tab.active,
+  .status-tab.active *,
+  .tab-btn.active,
+  .tab-btn.active *,
+  #floatingBtn,
+  #floatingBtn *,
+  #walletWCBtn,
+  #walletWCBtn *,
+  #walletConnectBtn,
+  #walletConnectBtn *,
+  #onboardingNextBtn:not(:disabled),
+  #onboardingNextBtn:not(:disabled) * {
+    color: #fffaf2 !important;
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  .premium-btn,
+  button.premium-btn,
+  a.premium-btn,
+  .warm-primary-btn,
+  #page-landing .premium-btn,
+  .cta-panel-premium .premium-btn,
+  .landing-shell .premium-btn,
+  #floatingBtn,
+  #walletWCBtn,
+  #walletConnectBtn,
+  #onboardingNextBtn:not(:disabled) {
+    background: #2f261f !important;
+    border: 1px solid rgba(47,38,31,0.18) !important;
+    box-shadow: 0 16px 38px rgba(47,38,31,0.18), inset 0 1px 0 rgba(255,250,242,0.14) !important;
+    text-shadow: none !important;
+  }
+
+  .premium-btn:hover,
+  button.premium-btn:hover,
+  a.premium-btn:hover,
+  .warm-primary-btn:hover,
+  #page-landing .premium-btn:hover,
+  .cta-panel-premium .premium-btn:hover,
+  .landing-shell .premium-btn:hover,
+  #floatingBtn:hover,
+  #walletWCBtn:hover,
+  #walletConnectBtn:hover,
+  #onboardingNextBtn:not(:disabled):hover {
+    background: #1f1915 !important;
+    color: #fffaf2 !important;
+    transform: translateY(-1px);
+  }
+
+  /* Light/secondary buttons: never allow pale text on pale beige surfaces. */
+  .premium-secondary-btn,
+  .premium-secondary-btn *,
+  .ghost-btn,
+  .ghost-btn *,
+  .warm-secondary-btn,
+  .warm-secondary-btn *,
+  button[class*="bg-white"],
+  button[class*="bg-white"] *,
+  button[class*="bg-neutral-50"],
+  button[class*="bg-neutral-50"] *,
+  button[class*="bg-neutral-100"],
+  button[class*="bg-neutral-100"] *,
+  #feedEmpty button:not(.premium-btn),
+  #feedEmpty button:not(.premium-btn) *,
+  button[onclick="resetFilters()"],
+  button[onclick="resetFilters()"] *,
+  button[onclick="openCreateModal()"],
+  button[onclick="openCreateModal()"] * {
+    color: #2f261f !important;
+    fill: currentColor !important;
+    stroke: currentColor !important;
+    text-shadow: none !important;
+  }
+
+  .premium-secondary-btn,
+  .ghost-btn,
+  .warm-secondary-btn,
+  button[class*="bg-white"],
+  button[class*="bg-neutral-50"],
+  button[class*="bg-neutral-100"],
+  #feedEmpty button.premium-secondary-btn,
+  button[onclick="resetFilters()"] {
+    background: var(--bx-bg-2, #efe3d2) !important;
+    border: 1.5px solid var(--bx-accent, #8b5e3c) !important;
+    box-shadow: 0 12px 34px rgba(69,48,31,0.07) !important;
+  }
+
+  #feedEmpty button.text-xs {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--bx-muted) !important;
+  }
+  #feedEmpty button.text-xs:hover {
+    color: var(--bx-text) !important;
+  }
+
+  /* Dark icon blocks/numeric tokens lost their labels because .text-white was remapped for warm sections. */
+  .brand-mark,
+  .brand-mark *,
+  .number-token,
+  .number-token *,
+  .app-orb,
+  .app-orb *,
+  .warm-icon,
+  .warm-icon * {
+    color: #fffaf2 !important;
+    fill: currentColor !important;
+    stroke: currentColor !important;
+  }
+
+  #page-app .brand-mark.text-white,
+  #page-app .brand-mark.text-sm,
+  #page-onboarding .brand-mark.text-white,
+  #page-onboarding .brand-mark.text-sm {
+    color: #fffaf2 !important;
+  }
+
+  .brand-mark,
+  .number-token,
+  .app-orb,
+  .warm-icon {
+    background: #2f261f !important;
+  }
+
+  /* Empty state should be completely readable on the warm surface. */
+  #feedEmpty,
+  #feedEmpty h1,
+  #feedEmpty h2,
+  #feedEmpty h3,
+  #feedEmpty p,
+  #feedEmpty span {
+    color: #2f261f !important;
+  }
+
+  #feedEmpty p,
+  #feedEmpty .text-xs {
+    color: #6d5c4d !important;
+  }
+
+  /* Wallet status pill: keep mint styling but make every label high contrast. */
+  #walletInfo,
+  #walletInfoMobile,
+  .app-wallet-card {
+    background: #e6f0e2 !important;
+    border-color: #c7d8ba !important;
+    color: #2f261f !important;
+  }
+
+  #walletInfo *,
+  #walletInfoMobile *,
+  .app-wallet-card * {
+    color: #2f261f !important;
+  }
+
+  #walletInfo button,
+  #walletInfoMobile button,
+  .app-wallet-card button {
+    color: #b74d44 !important;
+    font-weight: 700 !important;
+  }
+
+  #walletInfo .w-px,
+  #walletInfoMobile .w-px,
+  .app-wallet-card .w-px {
+    background: #c4d3bb !important;
+  }
+
+  /* Wallet modal helper texts and manual link. */
+  #walletConnectModal #wcLoadingMsg,
+  #walletConnectModal #walletManualToggle button,
+  #walletConnectModal label {
+    color: #6d5c4d !important;
+  }
+
+  #walletConnectModal .gradient-bg,
+  #walletConnectModal .gradient-bg * {
+    color: #fffaf2 !important;
+  }
+
+
+
+  /* ============ Landing-only reference style v5 ============
+     Keeps the original landing copy/content intact. This block changes only visual styling. */
+  #page-landing {
+    --ld-bg: #f6efe5;
+    --ld-card: #fffaf2;
+    --ld-soft: #f0e6d8;
+    --ld-text: #2b241f;
+    --ld-muted: #6f6257;
+    --ld-faint: #8e7f71;
+    --ld-line: #d8c8b5;
+    --ld-line-soft: #e4d8ca;
+    --ld-accent: #8c6547;
+    color: var(--ld-text) !important;
+    background:
+      radial-gradient(circle at 15% 12%, rgba(188, 123, 78, 0.13), transparent 32%),
+      radial-gradient(circle at 77% 20%, rgba(117, 92, 68, 0.08), transparent 30%),
+      linear-gradient(180deg, rgba(255, 250, 242, 0.72), rgba(246, 239, 229, 1) 56%),
+      var(--ld-bg) !important;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif !important;
+  }
+
+  #page-landing .noise-layer,
+  #page-landing .landing-glow,
+  #page-landing .hero-orbit,
+  #page-landing::before,
+  #page-landing::after {
+    display: none !important;
+  }
+
+  #page-landing main > section:first-child {
+    padding-top: clamp(4.5rem, 8vw, 8.75rem) !important;
+    padding-bottom: clamp(4.5rem, 8vw, 7.75rem) !important;
+  }
+
+  #page-landing main > section:first-child > div {
+    align-items: center !important;
+    gap: clamp(3rem, 6vw, 5.5rem) !important;
+  }
+
+  #page-landing .landing-nav {
+    height: 66px !important;
+    max-width: min(1240px, calc(100vw - 2rem)) !important;
+    border-radius: 22px !important;
+    background: rgba(255, 250, 242, 0.82) !important;
+    border: 1px solid var(--ld-line) !important;
+    box-shadow: 0 18px 70px rgba(72, 51, 34, 0.08) !important;
+    backdrop-filter: blur(22px) !important;
+  }
+
+  #page-landing .landing-nav .brand-mark,
+  #page-landing .brand-mark {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 12px !important;
+    color: #fffaf2 !important;
+    background: var(--ld-text) !important;
+    box-shadow: none !important;
+    font-family: Inter, system-ui, sans-serif !important;
+    font-size: 0.82rem !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  #page-landing .landing-nav .font-display.text-2xl,
+  #page-landing nav .font-display.text-2xl {
+    color: var(--ld-text) !important;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
+    font-size: 1.16rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.045em !important;
+  }
+
+  #page-landing .landing-nav a,
+  #page-landing .landing-nav .text-white\/62,
+  #page-landing .landing-nav .hover\:text-white:hover {
+    color: var(--ld-muted) !important;
+    font-weight: 650 !important;
+  }
+
+  #page-landing .landing-nav a:hover {
+    color: var(--ld-text) !important;
+  }
+
+  #page-landing .landing-nav span[class*="TESTNET"],
+  #page-landing .landing-nav .text-\[10px\] {
+    color: var(--ld-muted) !important;
+    background: rgba(255, 250, 242, 0.72) !important;
+    border-color: var(--ld-line) !important;
+  }
+
+  #page-landing .landing-nav button.bg-white,
+  #page-landing nav button.bg-white {
+    background: var(--ld-text) !important;
+    color: #fffaf2 !important;
+    border-radius: 999px !important;
+    padding: 0.72rem 1.35rem !important;
+    box-shadow: 0 14px 34px rgba(43, 36, 31, 0.14) !important;
+  }
+
+  #page-landing .hero-kicker {
+    color: var(--ld-muted) !important;
+    background: rgba(255, 250, 242, 0.72) !important;
+    border: 1px solid var(--ld-line) !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(18px) !important;
+  }
+
+  #page-landing .hero-kicker span:last-child,
+  #page-landing .hero-kicker [class*="text-white/"] {
+    color: var(--ld-muted) !important;
+  }
+
+  #page-landing .pulse-dot,
+  #page-landing .bg-emerald-400 {
+    background: #c77d4b !important;
+  }
+
+  #page-landing .hero-title-premium {
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.075em !important;
+    line-height: 0.9 !important;
+    color: var(--ld-text) !important;
+    font-size: clamp(4.35rem, 9vw, 8.7rem) !important;
+    max-width: 650px !important;
+    margin-bottom: 1.7rem !important;
+  }
+
+  #page-landing .hero-title-premium span,
+  #page-landing .hero-title-premium .text-white\/42,
+  #page-landing .hero-title-premium .shine-word {
+    color: var(--ld-accent) !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    animation: none !important;
+  }
+
+  #page-landing .hero-title-premium .text-white\/42 {
+    color: var(--ld-text) !important;
+  }
+
+  #page-landing p.text-lg,
+  #page-landing p.md\:text-xl,
+  #page-landing [class*="text-white/66"],
+  #page-landing [class*="text-white/56"],
+  #page-landing [class*="text-white/58"],
+  #page-landing [class*="text-white/52"],
+  #page-landing [class*="text-white/45"],
+  #page-landing [class*="text-white/42"] {
+    color: var(--ld-muted) !important;
+  }
+
+  #page-landing .premium-btn,
+  #page-landing button.premium-btn {
+    color: #fffaf2 !important;
+    background: var(--ld-text) !important;
+    border: 1px solid rgba(43, 36, 31, 0.08) !important;
+    border-radius: 999px !important;
+    box-shadow: 0 18px 42px rgba(43, 36, 31, 0.15) !important;
+  }
+
+  #page-landing .premium-btn *,
+  #page-landing button.premium-btn * {
+    color: inherit !important;
+  }
+
+  #page-landing .premium-btn:hover {
+    background: #1f1915 !important;
+    transform: translateY(-1px) !important;
+  }
+
+  #page-landing .ghost-btn {
+    color: var(--ld-text) !important;
+    background: rgba(255, 250, 242, 0.72) !important;
+    border: 1px solid var(--ld-line) !important;
+    border-radius: 999px !important;
+    box-shadow: 0 14px 34px rgba(72, 51, 34, 0.06) !important;
+  }
+
+  #page-landing .ghost-btn:hover {
+    color: var(--ld-text) !important;
+    background: #fffaf2 !important;
+    border-color: #cbb9a4 !important;
+  }
+
+  #page-landing .metric-tile {
+    color: var(--ld-text) !important;
+    background: rgba(255, 250, 242, 0.78) !important;
+    border: 1px solid var(--ld-line) !important;
+    border-radius: 18px !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(18px) !important;
+  }
+
+  #page-landing .metric-tile .font-display,
+  #page-landing .metric-tile .text-2xl {
+    color: var(--ld-text) !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.04em !important;
+  }
+
+  #page-landing .metric-tile .text-xs {
+    color: var(--ld-faint) !important;
+    letter-spacing: .12em !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+  }
+
+  #page-landing .hero-console {
+    color: var(--ld-text) !important;
+    background: rgba(255, 250, 242, 0.70) !important;
+    border: 1px solid var(--ld-line) !important;
+    border-radius: 34px !important;
+    box-shadow: 0 26px 90px rgba(72, 51, 34, 0.10) !important;
+    backdrop-filter: blur(24px) !important;
+  }
+
+  #page-landing .console-inner {
+    background: rgba(246, 239, 229, 0.72) !important;
+    border: 1px solid var(--ld-line-soft) !important;
+    border-radius: 28px !important;
+  }
+
+  #page-landing .bounty-card-visual,
+  #page-landing .mini-chip,
+  #page-landing .hero-console .bg-white\/8,
+  #page-landing .hero-console .border-white\/10 {
+    color: var(--ld-text) !important;
+    background: rgba(255, 250, 242, 0.86) !important;
+    border: 1px solid var(--ld-line-soft) !important;
+    box-shadow: 0 10px 28px rgba(72, 51, 34, 0.045) !important;
+  }
+
+  #page-landing .hero-console .bounty-card-visual.hot {
+    background: rgba(255, 250, 242, 0.92) !important;
+  }
+
+  #page-landing .hero-console .text-white,
+  #page-landing .hero-console h3,
+  #page-landing .hero-console h4,
+  #page-landing .hero-console .font-semibold,
+  #page-landing .hero-console .font-bold,
+  #page-landing .hero-console .font-black {
+    color: var(--ld-text) !important;
+  }
+
+  #page-landing .hero-console [class*="text-white/"],
+  #page-landing .hero-console .text-violet-100,
+  #page-landing .hero-console .text-emerald-200,
+  #page-landing .hero-console .text-xs {
+    color: var(--ld-muted) !important;
+  }
+
+  #page-landing .hero-console .bg-gradient-to-br,
+  #page-landing .hero-console .bg-violet-400,
+  #page-landing .number-token,
+  #page-landing .warm-icon {
+    background: var(--ld-text) !important;
+    color: #fffaf2 !important;
+  }
+
+  #page-landing .hero-console button.bg-white {
+    background: var(--ld-text) !important;
+    color: #fffaf2 !important;
+    border-radius: 999px !important;
+  }
+
+  #page-landing .landing-section-dark {
+    color: var(--ld-text) !important;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(188, 123, 78, 0.08), transparent 32%),
+      var(--ld-bg) !important;
+    border-color: var(--ld-line) !important;
+  }
+
+  #page-landing .landing-section-dark::before,
+  #page-landing .landing-section-dark::after {
+    display: none !important;
+  }
+
+  #page-landing .section-eyebrow {
+    color: var(--ld-accent) !important;
+    letter-spacing: .28em !important;
+  }
+
+  #page-landing .landing-section-dark h2,
+  #page-landing .landing-section-dark h3,
+  #page-landing .warm-section-title {
+    color: var(--ld-text) !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.055em !important;
+  }
+
+  #page-landing .landing-section-dark p,
+  #page-landing .landing-section-dark .text-sm,
+  #page-landing .landing-section-dark [class*="text-white/"] {
+    color: var(--ld-muted) !important;
+  }
+
+  #page-landing .step-card-premium,
+  #page-landing .feature-card-premium,
+  #page-landing .cta-panel-premium {
+    color: var(--ld-text) !important;
+    background: rgba(255, 250, 242, 0.74) !important;
+    border: 1px solid var(--ld-line) !important;
+    border-radius: 32px !important;
+    box-shadow: 0 18px 70px rgba(72, 51, 34, 0.07) !important;
+    backdrop-filter: blur(18px) !important;
+  }
+
+  #page-landing .step-card-premium:hover,
+  #page-landing .feature-card-premium:hover {
+    background: rgba(255, 250, 242, 0.92) !important;
+    border-color: #cdbca8 !important;
+    transform: translateY(-3px) !important;
+  }
+
+  #page-landing .number-token {
+    box-shadow: 0 14px 34px rgba(43, 36, 31, 0.12) !important;
+  }
+
+  #page-landing .feature-card-premium .text-4xl,
+  #page-landing .feature-card-premium .text-3xl {
+    filter: saturate(.75) sepia(.18);
+  }
+
+  #page-landing .cta-panel-premium {
+    background:
+      radial-gradient(circle at 18% 10%, rgba(188,123,78,0.14), transparent 34%),
+      rgba(255,250,242,0.82) !important;
+  }
+
+  #page-landing .landing-footer,
+  #page-landing footer {
+    color: var(--ld-faint) !important;
+    background: rgba(255, 250, 242, 0.42) !important;
+    border-color: var(--ld-line) !important;
+  }
+
+  #page-landing footer .text-white\/72,
+  #page-landing footer [class*="text-white/"] {
+    color: var(--ld-faint) !important;
+  }
+
+  @media (max-width: 1024px) {
+    #page-landing .hero-title-premium {
+      font-size: clamp(3.7rem, 13vw, 6.6rem) !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    #page-landing .landing-nav {
+      height: 60px !important;
+      border-radius: 18px !important;
+    }
+    #page-landing main > section:first-child {
+      padding-top: 4rem !important;
+    }
+    #page-landing .hero-title-premium {
+      font-size: clamp(3.2rem, 16vw, 5.1rem) !important;
+      line-height: .94 !important;
+      letter-spacing: -0.06em !important;
+    }
+    #page-landing .hero-console {
+      border-radius: 26px !important;
+    }
+    #page-landing .console-inner {
+      border-radius: 22px !important;
+    }
+  }
+
 </style>
 </head>
 <body class="min-h-screen">
@@ -1478,6 +3044,18 @@
       </button>
       <div id="wcLoadingMsg" class="text-center text-xs text-white/40">WalletConnect 모듈 로딩 중...</div>
       <button onclick="connectExtension()" id="walletConnectBtn" class="w-full px-4 py-2.5 rounded-xl premium-btn font-semibold text-sm transition-all">Vault 익스텐션으로 연결</button>
+      <!-- 지갑 미설치 안내 -->
+      <div id="walletInstallGuide" class="hidden">
+        <div class="rounded-xl p-4 border text-center" style="border-color:var(--bx-line);background:var(--bx-panel-soft);">
+          <div class="text-2xl mb-2">📥</div>
+          <p class="text-sm font-semibold mb-1" id="installGuideTitle" style="color:var(--bx-accent);">XPLA Vault가 설치되어 있지 않아요</p>
+          <p class="text-xs mb-3" id="installGuideDesc" style="color:var(--bx-muted);">아래 버튼을 눌러 설치 후 새로고침 해주세요</p>
+          <a id="installLink" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all" style="background:var(--bx-accent);color:#fffaf2;box-shadow:0 12px 32px rgba(139,94,60,0.2);">
+            <span id="installLinkIcon">🌐</span>
+            <span id="installLinkText">설치하기</span>
+          </a>
+        </div>
+      </div>
       <div id="walletManualToggle" class="text-center"><button onclick="showManualConnect()" class="text-xs text-white/50 hover:text-white/80 transition-colors">주소 직접 입력 (읽기 전용)</button></div>
     </div>
   </div>
@@ -1851,6 +3429,7 @@ function updateWalletModalButtons() {
   const extBtn = document.getElementById('walletConnectBtn');
   const wcBtn = document.getElementById('walletWCBtn');
   const loadMsg = document.getElementById('wcLoadingMsg');
+  const installGuide = document.getElementById('walletInstallGuide');
   if (loadMsg) loadMsg.classList.add('hidden');
 
   const hasExtension = xplaConnectTypes.includes('EXTENSION');
@@ -1861,6 +3440,51 @@ function updateWalletModalButtons() {
     if (hasExtension) extBtn.classList.replace('premium-secondary-btn', 'premium-btn');
   }
   if (wcBtn) wcBtn.style.display = hasWC ? '' : 'none';
+
+  if (installGuide) {
+    const ua = navigator.userAgent || '';
+    const isMobile = /android|iphone|ipad|ipod/i.test(ua);
+    const needsGuide = isMobile ? !hasWC : !hasExtension;
+    if (needsGuide) {
+      installGuide.classList.remove('hidden');
+      setupInstallLink();
+    } else {
+      installGuide.classList.add('hidden');
+    }
+  }
+}
+
+function setupInstallLink() {
+  const link = document.getElementById('installLink');
+  const icon = document.getElementById('installLinkIcon');
+  const text = document.getElementById('installLinkText');
+  const title = document.getElementById('installGuideTitle');
+  const desc = document.getElementById('installGuideDesc');
+  if (!link) return;
+
+  const ua = navigator.userAgent || '';
+  const isAndroid = /android/i.test(ua);
+  const isIOS = /iphone|ipad|ipod/i.test(ua);
+
+  if (isAndroid) {
+    link.href = 'https://play.google.com/store/apps/details?id=xpla.android';
+    icon.textContent = '▶';
+    text.textContent = 'Google Play에서 설치';
+    title.textContent = 'XPLA Vault 앱을 설치해주세요';
+    desc.textContent = '설치 후 WalletConnect(QR)로 연결할 수 있어요';
+  } else if (isIOS) {
+    link.href = 'https://apps.apple.com/us/app/xpla-vault/id1640593143';
+    icon.textContent = '🍎';
+    text.textContent = 'App Store에서 설치';
+    title.textContent = 'XPLA Vault 앱을 설치해주세요';
+    desc.textContent = '설치 후 WalletConnect(QR)로 연결할 수 있어요';
+  } else {
+    link.href = 'https://chrome.google.com/webstore/detail/xpla-vault-wallet/ocjobpilfplciaddcbafabcegbilnbnb';
+    icon.textContent = '🌐';
+    text.textContent = 'Chrome 익스텐션 설치';
+    title.textContent = 'XPLA Vault 익스텐션이 없어요';
+    desc.textContent = '설치 후 이 페이지를 새로고침 해주세요';
+  }
 }
 
 function connectExtension() {
@@ -2829,7 +4453,7 @@ function renderFeed() {
     
     let html = '';
     html += '<div class="flex items-start gap-3 mb-3">';
-    html += `<div class="w-10 h-10 rounded-full ${avatarColor} flex items-center justify-center font-bold text-sm flex-shrink-0">${avatarChar}</div>`;
+    html += `<div class="w-10 h-10 rounded-full ${avatarColor} flex items-center justify-center font-bold text-sm flex-shrink-0" style="border:1.5px solid var(--bx-line,#d9cbb8)">${avatarChar}</div>`;
     html += '<div class="flex-1 min-w-0">';
     html += '<div class="flex items-center gap-2 flex-wrap">';
     html += `<span class="font-semibold text-sm text-neutral-900 font-mono">${b.requesterShort}</span>`;
@@ -3025,8 +4649,8 @@ async function openDetail(bountyId) {
   if (b.desc) html += `<p class="text-sm text-neutral-600 leading-relaxed whitespace-pre-wrap">${escapeHtml(b.desc)}</p>`;
   html += '</div>';
   html += '<div class="grid grid-cols-2 gap-3">';
-  html += `<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">보상</div><div class="font-display text-lg font-bold">${b.reward} XPLA</div></div>`;
-  html += `<div class="bg-neutral-50 rounded-xl p-3"><div class="text-xs text-neutral-500 mb-1">마감</div><div class="font-display text-lg font-bold">${b.deadline}</div></div>`;
+  html += `<div class="bg-neutral-50 rounded-xl p-3" style="border:1.5px solid var(--bx-line,#d9cbb8)"><div class="text-xs text-neutral-500 mb-1">보상</div><div class="font-display text-lg font-bold">${b.reward} XPLA</div></div>`;
+  html += `<div class="bg-neutral-50 rounded-xl p-3" style="border:1.5px solid var(--bx-line,#d9cbb8)"><div class="text-xs text-neutral-500 mb-1">마감</div><div class="font-display text-lg font-bold">${b.deadline}</div></div>`;
   html += '</div>';
 
   if (b.paymentType === 'milestone' && b.milestones && b.milestones.length > 0) {
