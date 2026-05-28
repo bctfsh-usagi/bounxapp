@@ -2869,7 +2869,7 @@
               Smart feed · Live bounty stream
             </div>
             <h1 class="font-display text-3xl md:text-5xl font-black tracking-tight leading-none text-white">
-              안녕하세요,<br class="md:hidden"/> <span class="shine-word" id="userGreet">xpla1...</span>
+              안녕하세요 <span class="shine-word" id="userGreet">👋</span>
             </h1>
             <p class="text-sm text-white/58 mt-3" id="welcomeMsg">오늘도 좋은 작업이 있길!</p>
           </div>
@@ -3584,7 +3584,10 @@ async function executeContract(executeMsg, axplaAmount, actionName) {
       const result = await xplaController.post({ msgs: [msg], fee });
       const txhash = result.txhash || '';
       showTxSuccess(actionName, txhash);
-      setTimeout(async () => { await refreshBalance(); await loadContractBounties(); }, 3000);
+      // 블록 생성 + LCD 반영까지 보통 5~7초 → 여러 번 재시도해 반영 즉시 갱신
+      [3000, 6000, 9000, 13000].forEach(delay => {
+        setTimeout(async () => { try { await refreshBalance(); await loadContractBounties(); } catch (e) {} }, delay);
+      });
       return result;
     } catch (e) {
       console.error('[executeContract]', e);
@@ -3754,8 +3757,6 @@ function updateUserUI() {
   const bal = currentUser.balance || '0';
   ['userAddress', 'userAddressMobile'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = short; });
   ['userBalance', 'userBalanceMobile', 'userBalanceHero'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = bal; });
-  const greet = document.getElementById('userGreet');
-  if (greet) greet.textContent = short;
   document.getElementById('walletInfo')?.classList.remove('hidden');
 }
 
